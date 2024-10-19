@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    </head>
+    <body>
+        <script>
+            // Registering the custom 'custom-box' component with colors and size options
+            AFRAME.registerComponent('custom-box', {
+                schema: {
+                    colors: { type: 'array', default: ['red', 'green', 'black', 'purple', 'yellow'] }, // Array of colors
+                    size: { type: 'number', default: 5 } // Size of the box
+                },
+                
+                createBox: function () {
+                    const el = this.el;
+                    
+                    // Clear any existing children to avoid duplicates
+                    while (el.firstChild) {
+                        el.removeChild(el.firstChild);
+                    }
+                
+                    // Destructure the size and colors from the schema
+                    const { size, colors } = this.data;
+                
+                    // Define the planes (sides of the box)
+                    const planes = [
+                        { id: 'suelo', position: '0 0 0', rotation: '90 0 0', color: colors[0] },
+                        { id: 'techo', position: `0 ${size} 0`, rotation: '90 0 0', color: colors[1] },
+                        { id: 'derecha', position: `${size / 2} ${size / 2} 0`, rotation: '0 90 0', color: colors[2] },
+                        { id: 'izquierda', position: `-${size / 2} ${size / 2} 0`, rotation: '0 90 0', color: colors[3] },
+                        { id: 'fondo', position: `0 ${size / 2} -${size / 2}`, rotation: '0 0 90', color: colors[4] }
+                    ];
+                
+                    // Loop through each plane and create it as an entity
+                    planes.forEach(plane => {
+                        const planeEl = document.createElement('a-plane');
+                        planeEl.setAttribute('id', plane.id);
+                        planeEl.setAttribute('position', plane.position);
+                        planeEl.setAttribute('rotation', plane.rotation);
+                        planeEl.setAttribute('width', size);
+                        planeEl.setAttribute('height', size);
+                        planeEl.setAttribute('material', 'side: double; color: ' + plane.color);
+                        el.appendChild(planeEl); // Attach plane to the parent entity
+                    });
+                },
+
+                init: function () {
+                    // Initial creation of the box
+                    this.createBox();
+                },
+
+                update: function () {
+                    // Recreate the box whenever the properties change
+                    this.createBox();
+                },
+            });
+
+            AFRAME.registerComponent('bouncing-ball', {
+                schema: {
+                    dur: { type: 'number', default: 1000 },
+                    color: { type: 'string', default: 'blue' },
+                    radius: { type: 'number', default: 0.5 }
+                },
+
+                startBouncing: function () {
+                    const el = this.el;
+                    const data = this.data;
+                
+                    el.setAttribute('animation', {
+                        property: 'position',
+                        to: `${el.getAttribute('position').x} ${data.radius} ${el.getAttribute('position').z}`,
+                        dir: 'alternate',
+                        dur: data.dur,
+                        loop: true
+                    });
+                },
+
+                init: function () {
+                    const el = this.el;
+                    const data = this.data;
+                
+                    // Create the sphere geometry and material
+                    const geometry = new THREE.SphereGeometry(data.radius);
+                    const material = new THREE.MeshStandardMaterial({ color: data.color });
+                    const mesh = new THREE.Mesh(geometry, material);
+
+                    // Set the 3D object to the entity
+                    el.setObject3D('mesh', mesh);
+                
+                    // Set the animation
+                    this.startBouncing();
+                },
+            
+                update: function () {
+                    // Update the geometry and material if any properties change
+                    const data = this.data;
+                    const mesh = this.el.getObject3D('mesh');
+                
+                    if (mesh) {
+                        mesh.geometry.dispose(); // Dispose the old geometry
+                        mesh.geometry = new THREE.SphereGeometry(data.radius);
+                        mesh.material.dispose(); // Dispose the old material
+                        mesh.material = new THREE.MeshStandardMaterial({ color: data.color });
+                    }
+                }
+            });
+
+        </script>
+
+        <a-scene>
+            <!-- Box component usage with custom colors and size -->
+            <a-entity custom-box="colors: red,green,black,purple,yellow; size: 5" position="0 0 0"></a-entity>
+            <a-entity custom-box="colors: blue,yellow,green,orange,red; size: 5" position="5.01 0 0"></a-entity>
+
+            <!-- Bouncing ball -->
+            <a-entity bouncing-ball="dur: 1000; color: orange; radius: 0.5" position="0 4 0"></a-entity>
+            <a-entity bouncing-ball="dur: 1000; color: blue; radius: 0.5" position="-5 4 0"></a-entity>
+
+            <!-- Camera -->
+            <a-camera position="0 2.5 8"></a-camera>
+        </a-scene>
+    </body>
+</html>
