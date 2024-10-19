@@ -60,16 +60,21 @@
                 schema: {
                     dur: { type: 'number', default: 1000 },
                     color: { type: 'string', default: 'blue' },
-                    radius: { type: 'number', default: 0.5 }
+                    radius: { type: 'number', default: 0.5 },
+                    bounceHeight: { type: 'number', default: 4 }
                 },
 
                 startBouncing: function () {
                     const el = this.el;
                     const data = this.data;
+
+                    // Calculate the vertical bounce position
+                    const bounceY = el.getAttribute('position').y - (data.bounceHeight - data.radius); // Height where the ball bounces, adjusted for radius
+
                 
                     el.setAttribute('animation', {
                         property: 'position',
-                        to: `${el.getAttribute('position').x} ${data.radius} ${el.getAttribute('position').z}`,
+                        to: `${el.getAttribute('position').x} ${bounceY} ${el.getAttribute('position').z}`,
                         dir: 'alternate',
                         dur: data.dur,
                         loop: true
@@ -110,15 +115,22 @@
 
         <a-scene>
             <!-- Box component usage with custom colors and size -->
-            <a-entity custom-box="colors: red,green,black,purple,yellow; size: 5" position="0 0 0"></a-entity>
-            <a-entity custom-box="colors: blue,yellow,green,orange,red; size: 5" position="5.01 0 0"></a-entity>
+            <a-entity custom-box="colors: red,green,black,purple,yellow; size: 5" position="-2.5 0 0"></a-entity>
+            <a-entity custom-box="colors: blue,yellow,green,orange,red; size: 5" position="2.51 0 0"></a-entity>
+            <a-entity custom-box="colors: red,green,black,purple,yellow; size: 5" position="-2.5 5.01 0"></a-entity>
+            <a-entity custom-box="colors: blue,yellow,green,orange,red; size: 5" position="2.51 5.01 0"></a-entity>
 
             <!-- Bouncing ball -->
-            <a-entity bouncing-ball="dur: 1000; color: orange; radius: 0.5" position="0 4 0"></a-entity>
-            <a-entity bouncing-ball="dur: 1000; color: blue; radius: 0.5" position="-5 4 0"></a-entity>
+            <a-entity bouncing-ball="dur: 1000; color: orange; radius: 0.5 bounceHeight=4" position="-2.5 4 0"></a-entity>
+            <a-entity bouncing-ball="dur: 2000; color: black; radius: 0.25 bounceHeight=4" position="2.5 4 0"></a-entity>
+            <a-entity bouncing-ball="dur: 500; color: green; radius: 0.75 bounceHeight=4" position="-2.5 9 0"></a-entity>
+            <a-entity bouncing-ball="dur: 250; color: purple; radius: 1 bounceHeight=4" position="2.5 9 0"></a-entity>
 
+            <!-- background -->
+            <a-sky color="#ADD8E6"></a-sky>
+            
             <!-- Camera -->
-            <a-camera position="0 2.5 8"></a-camera>
+            <a-camera position="0 5.1 12"></a-camera>
         </a-scene>
     </body>
 </html>
