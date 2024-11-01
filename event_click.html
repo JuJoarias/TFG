@@ -143,19 +143,13 @@
             <a-entity bouncing-ball="dur: 500; color: green; radius: 0.75 bounceHeight=4" position="-2.5 9 0"></a-entity>
             <a-entity bouncing-ball="dur: 250; color: purple; radius: 1 bounceHeight=4" position="2.5 9 0"></a-entity>
 
-            <!-- Camera -->
-            <a-entity camera look-controls position="0 5.1 12">
+            <a-entity camera look-controls position="0 1.6 0">
                 <a-entity teleport-controls="camera: #camera"></a-entity>
                 <a-entity cursor="rayOrigin: mouse"></a-entity>
                 <a-entity laser-controls="hand: right"></a-entity>
+                <a-entity id="left-controller" oculus-touch-controls="hand: left"></a-entity>
+                <a-entity id="right-controller" oculus-touch-controls="hand: right"></a-entity>
             </a-entity>
-    
-            <!-- Add the joystick movement controls -->
-            <a-entity id="controller" oculus-touch-controls="hand: right">
-                <a-entity teleport-controls="camera: #camera"></a-entity>
-            </a-entity>
-    
-            <a-entity id="left-controller" oculus-touch-controls="hand: left"></a-entity>
             
         </a-scene>
     </body>
