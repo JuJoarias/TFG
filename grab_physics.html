@@ -18,7 +18,7 @@
         <a-entity position="0 0 0" movement-controls="fly: false"
             wasd-controls="acceleration: 10; fly: false">
             
-            <a-entity sphere-collider="objects: .object"
+            <a-entity sphere-collider="objects: .grabbable"
                 super-hands hand-controls="hand: left">
             </a-entity>
 
@@ -33,27 +33,28 @@
 
         <a-sphere radius="0.05" position="0 0.58 -0.3" color="red"
             ammo-body="type: dynamic; shape: none; mass: 2;"
-            ammo-shape></a-sphere>
+            ammo-shape class="grabbable" grabbable>
+        </a-sphere>
 
         <a-entity
             geometry="primitive: box; width: 0.1; height: 0.5; depth: 0.1"
             position="-0.6 0.6 -0.2" rotation="0 45 0" material="color: brown"
             ammo-body="type: dynamic; mass: 2;"
-            ammo-shape>
+            ammo-shape class="grabbable" grabbable>
         </a-entity>
 
         <a-entity
             geometry="primitive: box; width: 0.1; height: 0.3; depth: 0.1"
             position="-0.6 0.6 0" rotation="0 45 0" material="color: brown"
             ammo-body="type: dynamic; mass: 2;"
-            ammo-shape>
+            ammo-shape class="grabbable" grabbable>
         </a-entity>
 
         <a-entity
             geometry="primitive: box; width: 0.1; height: 0.3; depth: 0.1"
             position="-0.6 0.6 0.2" rotation="0 45 0" material="color: brown"
             ammo-body="type: dynamic; mass: 2;"
-            ammo-shape>
+            ammo-shape class="grabbable" grabbable>
         </a-entity>
 
         <a-box position="0 0.5 0" width="75" height="0.1" depth="75"
