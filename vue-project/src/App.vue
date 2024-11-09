@@ -20,6 +20,17 @@ import HelloWorld from './components/HelloWorld.vue'
   <RouterView />
 </template>
 
+<script>
+import HelloWorld from './components/HelloWorld.vue'
+
+export default {
+  name: 'App',
+  components: {
+    HelloWorld
+  }
+}
+</script>
+
 <style scoped>
 header {
   line-height: 1.5;
