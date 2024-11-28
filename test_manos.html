@@ -1,32 +1,42 @@
 <!DOCTYPE html>
-
-<html >
+<html lang="en">
   <head>
-    <title>Handy Component Test</title>
-    <script src="https://aframe.io/releases/1.4.1/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/build/three.min.js"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A-Frame Hand Tracking</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe-extras@6.1.1/dist/aframe-extras.min.js"></script>
-    <script src="handy.js"></script> <!-- Tu archivo JS con el componente -->
   </head>
   <body>
-    <a-scene>
-      <!-- Activar seguimiento de manos -->
+    <a-scene 
+      background="color: #444444"
+      webxr="optionalFeatures: hand-tracking; requiredFeatures: [hand-tracking]"
+      renderer="antialias: true; shadow: true">
+
+      <!-- Cámara -->
+      <a-camera position="0 1.6 3"></a-camera>
+
+      <!-- Luz Hemisférica -->
       <a-entity 
-        id="leftHand" 
-        hand-tracking-controls="hand: left" 
-        handy="hand: left">
+        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3">
       </a-entity>
 
+      <!-- Luz Direccional -->
       <a-entity 
-        id="rightHand" 
-        hand-tracking-controls="hand: right" 
-        handy="hand: right">
+        light="type: directional; intensity: 3; castShadow: true"
+        position="0 6 0">
       </a-entity>
 
-      <!-- Añadir algo al entorno -->
-      <a-plane position="0 0 -4" rotation="-90 0 0" width="100" height="100" color="#7BC8A4"></a-plane>
-      <a-sky color="#ECECEC"></a-sky>
+      <!-- Mano izquierda -->
+      <a-entity 
+        id="hand1" 
+        hand-tracking-controls="hand: left"></a-entity>
+
+      <!-- Mano derecha -->
+      <a-entity 
+        id="hand2" 
+        hand-tracking-controls="hand: right"></a-entity>
+
     </a-scene>
   </body>
 </html>
