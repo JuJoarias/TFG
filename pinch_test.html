@@ -50,8 +50,15 @@
         schema: {
           hand: { type: 'string' }
         },
-
+        
         init: function () {
+          const hand = this.data.hand; // "left" o "right"
+          const handEl = document.querySelector(`#${hand === 'left' ? 'hand1' : 'hand2'}`);
+          const cubesContainer = document.querySelector('#cubes');
+          
+          // Definir el umbral de distancia para el pinch (en unidades de A-Frame)
+          const pinchThreshold = 0.05; // Ajusta este valor según sea necesario
+
           this.previousPinchState = false; // Para saber si el pinch empezó o terminó
         },
 
@@ -75,12 +82,18 @@
                 Math.pow(indexTip[2] - thumbTip[2], 2)
               );
 
-              const isPinching = distance < 0.05; // Umbral para detectar pinch
+              const isPinching = distance < pinchThreshold;
 
               // Si estamos en estado de pinch y anteriormente no estábamos
               if (isPinching && !this.previousPinchState) {
-                // Disparar el evento "pinch"
-                this.el.emit('pinch', { hand: hand, position: indexTip });
+                // Crear el cubo en la punta del dedo índice
+                const cube = document.createElement('a-box');
+                cube.setAttribute('width', 0.2);
+                cube.setAttribute('height', 0.2);
+                cube.setAttribute('depth', 0.2);
+                cube.setAttribute('color', '#FF0000');
+                cube.setAttribute('position', `${indexTip[0]} ${indexTip[1]} ${indexTip[2]}`);
+                cubesContainer.appendChild(cube);
               }
 
               // Actualizar el estado del pinch
@@ -89,27 +102,6 @@
           }
         }
       });
-
-      // Escuchar el evento pinch y crear un cubo en la posición del dedo índice
-      document.querySelector('#hand1').addEventListener('pinch', function (event) {
-        createCube(event.detail.position);
-      });
-      
-      document.querySelector('#hand2').addEventListener('pinch', function (event) {
-        createCube(event.detail.position);
-      });
-
-      // Función para crear un cubo en la posición dada
-      function createCube(position) {
-        const cubesContainer = document.querySelector('#cubes');
-        const cube = document.createElement('a-box');
-        cube.setAttribute('width', 0.2);
-        cube.setAttribute('height', 0.2);
-        cube.setAttribute('depth', 0.2);
-        cube.setAttribute('color', '#FF0000');
-        cube.setAttribute('position', `${position[0]} ${position[1]} ${position[2]}`);
-        cubesContainer.appendChild(cube);
-      }
     </script>
   </body>
 </html>
