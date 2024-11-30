@@ -47,30 +47,69 @@
     <script>
       // Componente para detectar el gesto de pinch
       AFRAME.registerComponent('pinch-listener', {
+        schema: {
+          hand: { type: 'string' }
+        },
+
         init: function () {
+          this.previousPinchState = false; // Para saber si el pinch empezó o terminó
+        },
+
+        tick: function () {
           const hand = this.data.hand; // "left" o "right"
           const handEl = document.querySelector(`#${hand === 'left' ? 'hand1' : 'hand2'}`);
           const cubesContainer = document.querySelector('#cubes');
+          
+          const handTrackingComponent = handEl.components['hand-tracking-controls'];
+          const fingers = handTrackingComponent.hands[0]?.fingers;
 
-          // Cuando se detecta un pinch en la mano
-          handEl.addEventListener('pinchstart', function () {
-            // Detecta la posición de la punta del dedo índice
-            const handTrackingComponent = handEl.components['hand-tracking-controls'];
-            const fingerTip = handTrackingComponent.hands[0]?.fingers[1]?.tip;
+          if (fingers) {
+            const thumbTip = fingers[0]?.tip; // Pulgar
+            const indexTip = fingers[1]?.tip; // Índice
 
-            if (fingerTip) {
-              // Crea un cubo en la punta del dedo índice
-              const cube = document.createElement('a-box');
-              cube.setAttribute('width', 0.2);
-              cube.setAttribute('height', 0.2);
-              cube.setAttribute('depth', 0.2);
-              cube.setAttribute('color', '#FF0000');
-              cube.setAttribute('position', `${fingerTip[0]} ${fingerTip[1]} ${fingerTip[2]}`);
-              cubesContainer.appendChild(cube);
+            if (thumbTip && indexTip) {
+              // Calcular la distancia entre el pulgar y el índice
+              const distance = Math.sqrt(
+                Math.pow(indexTip[0] - thumbTip[0], 2) +
+                Math.pow(indexTip[1] - thumbTip[1], 2) +
+                Math.pow(indexTip[2] - thumbTip[2], 2)
+              );
+
+              const isPinching = distance < 0.05; // Umbral para detectar pinch
+
+              // Si estamos en estado de pinch y anteriormente no estábamos
+              if (isPinching && !this.previousPinchState) {
+                // Disparar el evento "pinch"
+                this.el.emit('pinch', { hand: hand, position: indexTip });
+              }
+
+              // Actualizar el estado del pinch
+              this.previousPinchState = isPinching;
             }
-          });
+          }
         }
       });
+
+      // Escuchar el evento pinch y crear un cubo en la posición del dedo índice
+      document.querySelector('#hand1').addEventListener('pinch', function (event) {
+        createCube(event.detail.position);
+      });
+      
+      document.querySelector('#hand2').addEventListener('pinch', function (event) {
+        createCube(event.detail.position);
+      });
+
+      // Función para crear un cubo en la posición dada
+      function createCube(position) {
+        const cubesContainer = document.querySelector('#cubes');
+        const cube = document.createElement('a-box');
+        cube.setAttribute('width', 0.2);
+        cube.setAttribute('height', 0.2);
+        cube.setAttribute('depth', 0.2);
+        cube.setAttribute('color', '#FF0000');
+        cube.setAttribute('position', `${position[0]} ${position[1]} ${position[2]}`);
+        cubesContainer.appendChild(cube);
+      }
     </script>
   </body>
 </html>
