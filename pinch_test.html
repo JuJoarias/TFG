@@ -2,76 +2,72 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-    <title>VR - Pinch to Create Cubes as Component</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://aframe.io/releases/1.2.0/aframe-hand-tracking.min.js"></script>
-    <style>
-      body {
-        margin: 0;
-        overflow: hidden;
-      }
-      a-scene {
-        height: 100vh;
-      }
-    </style>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A-Frame Hand Tracking with Pinch</title>
+    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
   </head>
   <body>
-    <a-scene vr-mode-ui="enabled: true" arjs="sourceType: webcam; debugUIEnabled: false;">
-      <!-- Luz ambiental -->
-      <a-light type="ambient" intensity="0.5" color="#ffffff"></a-light>
+    <a-scene 
+      background="color: #444444"
+      webxr="optionalFeatures: hand-tracking; requiredFeatures: [hand-tracking]"
+      renderer="antialias: true; shadow: true">
 
-      <!-- Luz direccional -->
-      <a-light type="directional" intensity="1" position="1 2 3" color="#ffffff"></a-light>
+      <!-- Cámara -->
+      <a-camera position="0 1.6 3"></a-camera>
 
-      <!-- Piso -->
-      <a-plane rotation="-90 0 0" width="4" height="4" color="#666666" shadow="receive: true"></a-plane>
+      <!-- Luz Hemisférica -->
+      <a-entity 
+        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3">
+      </a-entity>
 
-      <!-- Cámara con controles VR -->
-      <a-camera position="0 1.6 3" look-controls="pointerLockEnabled: true"></a-camera>
+      <!-- Luz Direccional -->
+      <a-entity 
+        light="type: directional; intensity: 3; castShadow: true"
+        position="0 6 0">
+      </a-entity>
 
-      <!-- Entidad para el componente pinch-to-create-cube -->
-      <a-entity pinch-to-create-cube></a-entity>
+      <!-- Mano izquierda -->
+      <a-entity 
+        id="hand1" 
+        hand-tracking-controls="hand: left"
+        pinch-listener="hand: left"></a-entity>
 
-      <!-- Controladores de manos -->
-      <a-entity id="left-hand" hand-controls="left: true" position="-0.5 1.5 -1" scale="0.3 0.3 0.3"></a-entity>
-      <a-entity id="right-hand" hand-controls="right: true" position="0.5 1.5 -1" scale="0.3 0.3 0.3"></a-entity>
+      <!-- Mano derecha -->
+      <a-entity 
+        id="hand2" 
+        hand-tracking-controls="hand: right"
+        pinch-listener="hand: right"></a-entity>
+
+      <!-- Entidad para los cubos -->
+      <a-entity id="cubes"></a-entity>
 
     </a-scene>
 
     <script>
-      // Componente que detecta el pinch y crea un cubo en la punta del dedo índice
-      AFRAME.registerComponent('pinch-to-create-cube', {
+      // Componente para detectar el gesto de pinch
+      AFRAME.registerComponent('pinch-listener', {
         init: function () {
-          const el = this.el;
+          const hand = this.data.hand; // "left" o "right"
+          const handEl = document.querySelector(`#${hand === 'left' ? 'hand1' : 'hand2'}`);
+          const cubesContainer = document.querySelector('#cubes');
 
-          // Función para crear un cubo en la punta del dedo índice
-          function createCubeAtFingerPosition(hand) {
-            const handEl = document.querySelector(`#${hand}-hand`);
-            
-            // Obtener la posición del dedo índice
-            const fingerTip = handEl.components['hand-controls'].fingers[1].tip; // Dedo índice es el 1
-            
+          // Cuando se detecta un pinch en la mano
+          handEl.addEventListener('pinchstart', function () {
+            // Detecta la posición de la punta del dedo índice
+            const handTrackingComponent = handEl.components['hand-tracking-controls'];
+            const fingerTip = handTrackingComponent.hands[0]?.fingers[1]?.tip;
+
             if (fingerTip) {
-              // Crear el cubo y posicionarlo en la punta del dedo índice
-              const newCube = document.createElement('a-box');
-              newCube.setAttribute('width', 0.2);
-              newCube.setAttribute('height', 0.2);
-              newCube.setAttribute('depth', 0.2);
-              newCube.setAttribute('color', '#ff0000'); // Rojo
-              newCube.setAttribute('position', `${fingerTip.x} ${fingerTip.y} ${fingerTip.z}`); // Posición del dedo
-              document.querySelector('a-scene').appendChild(newCube);
+              // Crea un cubo en la punta del dedo índice
+              const cube = document.createElement('a-box');
+              cube.setAttribute('width', 0.2);
+              cube.setAttribute('height', 0.2);
+              cube.setAttribute('depth', 0.2);
+              cube.setAttribute('color', '#FF0000');
+              cube.setAttribute('position', `${fingerTip[0]} ${fingerTip[1]} ${fingerTip[2]}`);
+              cubesContainer.appendChild(cube);
             }
-          }
-
-          // Detectar el gesto "pinch" (pellizco) en la mano derecha
-          document.querySelector('#right-hand').addEventListener('pinchstart', function () {
-            createCubeAtFingerPosition('right');
-          });
-
-          // Detectar el gesto "pinch" (pellizco) en la mano izquierda
-          document.querySelector('#left-hand').addEventListener('pinchstart', function () {
-            createCubeAtFingerPosition('left');
           });
         }
       });
