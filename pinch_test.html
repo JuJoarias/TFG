@@ -16,9 +16,9 @@
             // Crear el cubo
             const cube = document.createElement('a-box');
             cube.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-            cube.setAttribute('width', 0.2);
-            cube.setAttribute('height', 0.2);
-            cube.setAttribute('depth', 0.2);
+            cube.setAttribute('width', 0.02);
+            cube.setAttribute('height', 0.02);
+            cube.setAttribute('depth', 0.02);
             cube.setAttribute('color', '#4CC3D9');
             cube.setAttribute('class', 'movable'); // Clase para que sea detectable
 
@@ -67,7 +67,7 @@
             const cubePosition = cube.object3D.position;
             const distance = cubePosition.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
 
-            if (distance < 0.3 && distance < closestDistance) { // Umbral de detección
+            if (distance < 0.05 && distance < closestDistance) { // Umbral de detección
               closest = cube;
               closestDistance = distance;
             }
