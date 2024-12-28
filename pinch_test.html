@@ -10,8 +10,8 @@
       // Componente para crear cubos y círculos con la mano derecha
       AFRAME.registerComponent('create-on-pinch', {
         init: function () {
+          // Detectar cuando se inicia un pinch
           this.el.addEventListener('pinchstarted', (event) => {
-            // Verificamos si el pinch es detectado
             const hand = event.detail.hand;
             const thumbPosition = hand.thumb.tipPosition;
             const indexPosition = hand.index.tipPosition;
@@ -19,10 +19,10 @@
 
             let object;
 
-            // Detectar pinch normal (pulgar e índice)
+            // Detectar pinch con pulgar e índice
             const pinchWithIndex = this.isPinching(thumbPosition, indexPosition);
 
-            // Detectar pinch con el dedo medio (pulgar y medio)
+            // Detectar pinch con pulgar y medio
             const pinchWithMiddle = this.isPinching(thumbPosition, middlePosition);
 
             if (pinchWithIndex) {
@@ -111,39 +111,38 @@
     </script>
   </head>
   <body>
-    <a-scene 
+    <a-scene
       background="color: #444444"
       webxr="optionalFeatures: hand-tracking; requiredFeatures: [hand-tracking]"
-      renderer="antialias: true; shadow: true">
-
+      renderer="antialias: true; shadow: true"
+    >
       <!-- Cámara -->
       <a-camera position="0 1.6 3"></a-camera>
 
       <!-- Luz Hemisférica -->
-      <a-entity 
-        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3">
-      </a-entity>
+      <a-entity
+        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3"
+      ></a-entity>
 
       <!-- Luz Direccional -->
-      <a-entity 
+      <a-entity
         light="type: directional; intensity: 3; castShadow: true"
-        position="0 6 0">
-      </a-entity>
+        position="0 6 0"
+      ></a-entity>
 
       <!-- Mano izquierda para mover objetos -->
-      <a-entity 
-        id="hand1" 
+      <a-entity
+        id="hand1"
         hand-tracking-controls="hand: left"
-        interact-with-cube>
-      </a-entity>
+        interact-with-cube
+      ></a-entity>
 
       <!-- Mano derecha para crear objetos -->
-      <a-entity 
-        id="hand2" 
+      <a-entity
+        id="hand2"
         hand-tracking-controls="hand: right"
-        create-on-pinch>
-      </a-entity>
-
+        create-on-pinch
+      ></a-entity>
     </a-scene>
   </body>
 </html>
