@@ -7,68 +7,92 @@
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
     <script>
-      // Componente para crear cubos con la mano derecha
+      // Componente para crear cubos y círculos con la mano derecha
       AFRAME.registerComponent('create-on-pinch', {
         init: function () {
           this.el.addEventListener('pinchstarted', (event) => {
-            const position = event.detail.position; // Obtén la posición del pinch
+            const thumbPosition = event.detail.hand.thumb.position;
+            const indexPosition = event.detail.hand.index.position;
+            const middlePosition = event.detail.hand.middle.position;
 
-            // Crear el cubo
-            const cube = document.createElement('a-box');
-            cube.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-            cube.setAttribute('width', 0.08);
-            cube.setAttribute('height', 0.08);
-            cube.setAttribute('depth', 0.08);
-            cube.setAttribute('color', '#4CC3D9');
-            cube.setAttribute('class', 'movable'); // Clase para que sea detectable
+            // Detecta pinch normal (pulgar e índice)
+            const pinchWithIndex = thumbPosition.distanceTo(indexPosition) < 0.05;
 
-            // Añadir el cubo a la escena
-            this.el.sceneEl.appendChild(cube);
+            // Detecta pinch con el dedo medio (pulgar y medio)
+            const pinchWithMiddle = thumbPosition.distanceTo(middlePosition) < 0.05;
+
+            let object;
+
+            // Crear cubo si es un pinch normal (pulgar e índice)
+            if (pinchWithIndex) {
+              object = document.createElement('a-box');
+              object.setAttribute('color', '#4CC3D9');
+              object.setAttribute('width', 0.08);
+              object.setAttribute('height', 0.08);
+              object.setAttribute('depth', 0.08);
+            }
+
+            // Crear círculo si es un pinch con el dedo medio (pulgar y medio)
+            if (pinchWithMiddle) {
+              object = document.createElement('a-circle');
+              object.setAttribute('color', '#FFC0CB'); // Color rosa para el círculo
+              object.setAttribute('radius', 0.08);
+            }
+
+            if (object) {
+              // Obtener la posición del pinch
+              const position = event.detail.position;
+              object.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+              object.setAttribute('class', 'movable'); // Clase para que sea detectable por el otro componente
+
+              // Añadir el objeto (cubo o círculo) a la escena
+              this.el.sceneEl.appendChild(object);
+            }
           });
         },
       });
 
-      // Componente para mover cubos con la mano izquierda
+      // Componente para mover cubos y círculos con la mano izquierda
       AFRAME.registerComponent('interact-with-cube', {
         init: function () {
-          this.selectedCube = null;
+          this.selectedObject = null;
 
           // Detecta el inicio del pinch
           this.el.addEventListener('pinchstarted', (evt) => {
             const position = evt.detail.position;
 
-            // Detecta si el pinch está sobre un cubo
-            const intersected = this.getIntersectedCube(position);
+            // Detecta si el pinch está sobre un cubo o círculo
+            const intersected = this.getIntersectedObject(position);
             if (intersected) {
-              this.selectedCube = intersected;
+              this.selectedObject = intersected;
             }
           });
 
-          // Mueve el cubo seleccionado
+          // Mueve el cubo o círculo seleccionado
           this.el.addEventListener('pinchmoved', (evt) => {
-            if (this.selectedCube) {
+            if (this.selectedObject) {
               const position = evt.detail.position;
-              this.selectedCube.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+              this.selectedObject.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
             }
           });
 
-          // Suelta el cubo cuando se termina el pinch
+          // Suelta el cubo o círculo cuando se termina el pinch
           this.el.addEventListener('pinchended', () => {
-            this.selectedCube = null; // Libera el cubo
+            this.selectedObject = null; // Libera el objeto
           });
         },
 
-        getIntersectedCube: function (position) {
-          const cubes = Array.from(document.querySelectorAll('.movable'));
+        getIntersectedObject: function (position) {
+          const objects = Array.from(document.querySelectorAll('.movable'));
           let closest = null;
           let closestDistance = Infinity;
 
-          cubes.forEach((cube) => {
-            const cubePosition = cube.object3D.position;
-            const distance = cubePosition.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
+          objects.forEach((object) => {
+            const objectPosition = object.object3D.position;
+            const distance = objectPosition.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
 
             if (distance < 0.05 && distance < closestDistance) { // Umbral de detección
-              closest = cube;
+              closest = object;
               closestDistance = distance;
             }
           });
@@ -98,14 +122,14 @@
         position="0 6 0">
       </a-entity>
 
-      <!-- Mano izquierda -->
+      <!-- Mano izquierda para mover objetos -->
       <a-entity 
         id="hand1" 
         hand-tracking-controls="hand: left"
         interact-with-cube>
       </a-entity>
 
-      <!-- Mano derecha -->
+      <!-- Mano derecha para crear objetos -->
       <a-entity 
         id="hand2" 
         hand-tracking-controls="hand: right"
