@@ -11,20 +11,22 @@
       AFRAME.registerComponent('create-on-pinch', {
         init: function () {
           this.el.addEventListener('pinchstarted', (event) => {
-            const thumbPosition = event.detail.hand.thumb.position;
-            const indexPosition = event.detail.hand.index.position;
-            const middlePosition = event.detail.hand.middle.position;
-
-            // Detecta pinch normal (pulgar e índice)
-            const pinchWithIndex = thumbPosition.distanceTo(indexPosition) < 0.05;
-
-            // Detecta pinch con el dedo medio (pulgar y medio)
-            const pinchWithMiddle = thumbPosition.distanceTo(middlePosition) < 0.05;
+            // Verificamos si el pinch es detectado
+            const hand = event.detail.hand;
+            const thumbPosition = hand.thumb.tipPosition;
+            const indexPosition = hand.index.tipPosition;
+            const middlePosition = hand.middle.tipPosition;
 
             let object;
 
-            // Crear cubo si es un pinch normal (pulgar e índice)
+            // Detectar pinch normal (pulgar e índice)
+            const pinchWithIndex = this.isPinching(thumbPosition, indexPosition);
+
+            // Detectar pinch con el dedo medio (pulgar y medio)
+            const pinchWithMiddle = this.isPinching(thumbPosition, middlePosition);
+
             if (pinchWithIndex) {
+              // Crear un cubo para pinch con pulgar e índice
               object = document.createElement('a-box');
               object.setAttribute('color', '#4CC3D9');
               object.setAttribute('width', 0.08);
@@ -32,10 +34,10 @@
               object.setAttribute('depth', 0.08);
             }
 
-            // Crear círculo si es un pinch con el dedo medio (pulgar y medio)
             if (pinchWithMiddle) {
+              // Crear un círculo para pinch con pulgar y medio
               object = document.createElement('a-circle');
-              object.setAttribute('color', '#FFC0CB'); // Color rosa para el círculo
+              object.setAttribute('color', '#FFC0CB');
               object.setAttribute('radius', 0.08);
             }
 
@@ -43,13 +45,19 @@
               // Obtener la posición del pinch
               const position = event.detail.position;
               object.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-              object.setAttribute('class', 'movable'); // Clase para que sea detectable por el otro componente
+              object.setAttribute('class', 'movable'); // Clase para que sea detectable
 
               // Añadir el objeto (cubo o círculo) a la escena
               this.el.sceneEl.appendChild(object);
             }
           });
         },
+
+        isPinching: function (thumbPos, fingerPos) {
+          // Verificar si el pinch está ocurriendo entre el pulgar y el dedo específico
+          const distance = new THREE.Vector3().subVectors(thumbPos, fingerPos).length();
+          return distance < 0.05; // Umbral de detección para considerar un pinch
+        }
       });
 
       // Componente para mover cubos y círculos con la mano izquierda
