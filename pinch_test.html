@@ -3,62 +3,31 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>A-Frame Hand Tracking</title>
+    <title>A-Frame Hand Tracking - Pinch Gesture</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
-  </head>
-  <body>
-    <a-scene 
-      background="color: #444444"
-      webxr="optionalFeatures: hand-tracking; requiredFeatures: [hand-tracking]"
-      renderer="antialias: true; shadow: true">
-
-      <!-- Cámara -->
-      <a-camera position="0 1.6 3"></a-camera>
-
-      <!-- Luz Hemisférica -->
-      <a-entity 
-        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3">
-      </a-entity>
-
-      <!-- Luz Direccional -->
-      <a-entity 
-        light="type: directional; intensity: 3; castShadow: true"
-        position="0 6 0">
-      </a-entity>
-
-      <!-- Mano izquierda -->
-      <a-entity 
-        id="hand1" 
-        hand-tracking-controls="hand: left"
-        interact-with-cube>
-      </a-entity>
-
-      <!-- Mano derecha -->
-      <a-entity 
-        id="hand2" 
-        hand-tracking-controls="hand: right"
-        create-cube-on-pinch>
-      </a-entity>
-    </a-scene>
-
     <script>
-      // Componente para crear cubos al hacer pinch con la mano derecha
-      AFRAME.registerComponent('create-cube-on-pinch', {
+      // Custom component to detect pinch and create a cube
+      AFRAME.registerComponent('create-on-pinch', {
         init: function () {
-          this.el.addEventListener('pinchstarted', (evt) => {
-            const position = evt.detail.position || this.el.object3D.position;
+          this.el.addEventListener('pinchstarted', (event) => {
+            // Get hand position
+            const position = event.detail.position;
+
+            // Create a cube
             const cube = document.createElement('a-box');
-            cube.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+            cube.setAttribute('position', position);
+            cube.setAttribute('width', 0.2);
+            cube.setAttribute('height', 0.2);
+            cube.setAttribute('depth', 0.2);
             cube.setAttribute('color', '#4CC3D9');
-            cube.setAttribute('dynamic-body', ''); // Si quieres física
-            cube.setAttribute('class', 'movable'); // Para identificarlo
+
+            // Add the cube to the scene
             this.el.sceneEl.appendChild(cube);
           });
-        }
+        },
       });
 
-      // Componente para interactuar con cubos con la mano izquierda
       AFRAME.registerComponent('interact-with-cube', {
         init: function () {
           this.selectedCube = null;
@@ -105,5 +74,41 @@
         }
       });
     </script>
+  </head>
+  <body>
+    <a-scene 
+      background="color: #444444"
+      webxr="optionalFeatures: hand-tracking; requiredFeatures: [hand-tracking]"
+      renderer="antialias: true; shadow: true">
+
+      <!-- Cámara -->
+      <a-camera position="0 1.6 3"></a-camera>
+
+      <!-- Luz Hemisférica -->
+      <a-entity 
+        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3">
+      </a-entity>
+
+      <!-- Luz Direccional -->
+      <a-entity 
+        light="type: directional; intensity: 3; castShadow: true"
+        position="0 6 0">
+      </a-entity>
+
+      <!-- Mano izquierda con detección de pinch -->
+      <a-entity 
+        id="hand1" 
+        hand-tracking-controls="hand: left"
+        interact-with-cube>
+      </a-entity>
+
+      <!-- Mano derecha con detección de pinch -->
+      <a-entity 
+        id="hand2" 
+        hand-tracking-controls="hand: right"
+        create-on-pinch>
+      </a-entity>
+
+    </a-scene>
   </body>
 </html>
