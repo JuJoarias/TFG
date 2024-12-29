@@ -23,7 +23,7 @@
 
             if (handTracking) {
               textEntity.setAttribute('text', 'value: Manos detectadas! \n Intentando detectar dedos...; color: #FFF');
-              textEntity.setAttribute('text', 'value', handTracking);
+              
 
               // Verificar si las articulaciones de los dedos están disponibles
               if (handTracking.data.joints) {  // Cambié esto para acceder correctamente a los datos de joints
@@ -63,6 +63,7 @@
               } else {
                 // Si no se pueden obtener las articulaciones de las manos
                 textEntity.setAttribute('text', 'value: No se pueden obtener las articulaciones; color: #FFF');
+                textEntity.setAttribute('text', 'value', handTracking);              
               }
             } else {
               // Si el componente hand-tracking-controls no está disponible
