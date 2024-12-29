@@ -63,7 +63,10 @@
               } else {
                 // Si no se pueden obtener las articulaciones de las manos
                 textEntity.setAttribute('text', 'value: No se pueden obtener las articulaciones; color: #FFF');
-                textEntity.setAttribute('text', 'value', handTracking);              
+                const handTrackingDataStr = JSON.stringify(handTracking.data, null, 2);
+
+                // Asignar la cadena JSON a la entidad de texto
+                textEntity.setAttribute('text', `value: ${handTrackingDataStr}; color: #FFF`);              
               }
             } else {
               // Si el componente hand-tracking-controls no está disponible
