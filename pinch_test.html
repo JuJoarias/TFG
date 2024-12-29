@@ -19,9 +19,6 @@
             if (!this.handTracking) {
               this.handTracking = this.el.components['hand-tracking-controls'];
               textEntity.setAttribute('text', 'value: Manos detectadas!; color: #FFF');
-            }
-
-            if (this.handTracking) {
               const thumbTip = this.handTracking.joints['thumb-tip'];
               const indexTip = this.handTracking.joints['index-finger-tip'];
               textEntity.setAttribute('text', 'value: Detectando dedos... ; color: #FFF');
