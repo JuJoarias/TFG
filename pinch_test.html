@@ -10,7 +10,6 @@
       // Componente para crear cubos con pinch y cambiar el texto
       AFRAME.registerComponent('create-on-pinch', {
         init: function () {
-          this.handTracking = null;
           const textEntity = document.querySelector('#pinchText'); // Obtener el elemento de texto
           
           // Mostrar mensaje inicial
@@ -18,17 +17,16 @@
 
           // Detectar cuando se inicia un pinch
           this.el.addEventListener('pinchstarted', (event) => {
-            // Acceder al componente hand-tracking-controls
             const handTracking = this.el.components['hand-tracking-controls'];
 
             if (handTracking) {
               textEntity.setAttribute('text', 'value: Manos detectadas! \n Intentando detectar dedos...; color: #FFF');
               
-
-              // Verificar si las articulaciones de los dedos están disponibles
-              if (handTracking.data.joints) {  // Cambié esto para acceder correctamente a los datos de joints
-                const thumbTip = handTracking.data.joints['thumb-tip'];
-                const indexTip = handTracking.data.joints['index-finger-tip'];
+              // Verificar si las manos están disponibles
+              if (handTracking.data.hands && handTracking.data.hands.length > 0) {
+                const hand = handTracking.data.hands[0]; // Usamos la primera mano detectada
+                const thumbTip = hand.joints['thumb-tip']; // Articulación del pulgar
+                const indexTip = hand.joints['index-finger-tip']; // Articulación del índice
 
                 if (thumbTip && indexTip) {
                   // Calcular la distancia entre el pulgar y el índice
@@ -61,12 +59,8 @@
                   textEntity.setAttribute('text', 'value: No se detectaron los dedos; color: #FFF');
                 }
               } else {
-                // Si no se pueden obtener las articulaciones de las manos
-                textEntity.setAttribute('text', 'value: No se pueden obtener las articulaciones; color: #FFF');
-                const handTrackingDataStr = JSON.stringify(handTracking.data, null, 2);
-
-                // Asignar la cadena JSON a la entidad de texto
-                textEntity.setAttribute('text', `value: ${handTrackingDataStr}; color: #FFF`);              
+                // Si no se detectan manos
+                textEntity.setAttribute('text', 'value: No se detectaron manos; color: #FFF');
               }
             } else {
               // Si el componente hand-tracking-controls no está disponible
