@@ -15,26 +15,25 @@
           
           // Mostrar mensaje inicial
           textEntity.setAttribute('text', 'value: Esperando...; color: #FFF');
-          
+
           // Detectar cuando se inicia un pinch
           this.el.addEventListener('pinchstarted', (event) => {
             // Acceder al componente hand-tracking-controls
-            if (!this.handTracking) {
-              const handTracking = this.el.components['hand-tracking-controls'];
+            const handTracking = this.el.components['hand-tracking-controls'];
+
+            if (handTracking) {
               textEntity.setAttribute('text', 'value: Manos detectadas! \n Intentando detectar dedos...; color: #FFF');
               
               // Verificar si las articulaciones de los dedos están disponibles
-              if (handTracking && handTracking.joints) {
-                const thumbTip = handTracking.joints['thumb-tip'];
-                const indexTip = handTracking.joints['index-finger-tip'];
-
-                // Mostrar que estamos detectando los dedos
-                textEntity.setAttribute('text', 'value: Detectando dedos... ; color: #FFF');
+              if (handTracking.data.joints) {  // Cambié esto para acceder correctamente a los datos de joints
+                const thumbTip = handTracking.data.joints['thumb-tip'];
+                const indexTip = handTracking.data.joints['index-finger-tip'];
 
                 if (thumbTip && indexTip) {
                   // Calcular la distancia entre el pulgar y el índice
                   const distance = new THREE.Vector3().subVectors(thumbTip, indexTip).length();
 
+                  // Mostrar que los dedos están detectados
                   textEntity.setAttribute('text', 'value: Dedos detectados!; color: #FFF');
 
                   // Si la distancia es menor que el umbral, se considera un pinch
@@ -61,8 +60,12 @@
                   textEntity.setAttribute('text', 'value: No se detectaron los dedos; color: #FFF');
                 }
               } else {
-                textEntity.setAttribute('text', 'value: Fallo en la deteccion; color: #FFF');
+                // Si no se pueden obtener las articulaciones de las manos
+                textEntity.setAttribute('text', 'value: No se pueden obtener las articulaciones; color: #FFF');
               }
+            } else {
+              // Si el componente hand-tracking-controls no está disponible
+              textEntity.setAttribute('text', 'value: No se detecta el componente de seguimiento de manos; color: #FFF');
             }
           });
         }
