@@ -124,7 +124,7 @@
   <body>
     <a-scene
       background="color: #444444"
-      webxr="optionalFeatures: hand-tracking; requiredFeatures: [hand-tracking]"
+      webxr="optionalFeatures: hand-tracking; requiredFeatures: hand-tracking"
       renderer="antialias: true; shadow: true"
     >
       <!-- Cámara -->
@@ -158,7 +158,7 @@
       <!-- Mano derecha para crear objetos -->
       <a-entity
         id="hand2"
-        hand-tracking-controls="hand: right; modelStyle: dots;"
+        hand-tracking-controls="hand: right"
         create-on-pinch
       ></a-entity>
     </a-scene>
