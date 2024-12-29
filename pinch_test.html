@@ -120,29 +120,19 @@
       <a-camera position="0 1.6 3"></a-camera>
 
       <!-- Luz Hemisférica -->
-      <a-entity
-        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3"
-      ></a-entity>
+      <a-entity light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3"></a-entity>
 
       <!-- Luz Direccional -->
-      <a-entity
-        light="type: directional; intensity: 3; castShadow: true"
-        position="0 6 0"
-      ></a-entity>
+      <a-entity light="type: directional; intensity: 3; castShadow: true" position="0 6 0"></a-entity>
 
       <!-- Mano izquierda para mover objetos -->
-      <a-entity
-        id="hand1"
-        hand-tracking-controls="hand: left"
-        interact-with-cube
-      ></a-entity>
+      <a-entity id="hand1" hand-tracking-controls="hand: left" interact-with-cube></a-entity>
 
       <!-- Mano derecha para crear objetos -->
-      <a-entity
-        id="hand2"
-        hand-tracking-controls="hand: right"
-        create-on-pinch
-      ></a-entity>
+      <a-entity id="hand2" hand-tracking-controls="hand: right" create-on-pinch></a-entity>
+
+      <!-- Plano que actúa como suelo -->
+      <a-plane position="0 0 -5" rotation="-90 0 0" width="10" height="10" color="#7BC8A4" shadow="receive: true"></a-plane>
     </a-scene>
   </body>
 </html>
