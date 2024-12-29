@@ -10,49 +10,47 @@
       // Componente para crear cubos con pinch y cambiar el texto
       AFRAME.registerComponent('create-on-pinch', {
         init: function () {
+          this.handTracking = null;
           const textEntity = document.querySelector('#pinchText'); // Obtener el elemento de texto
 
           // Detectar cuando se inicia un pinch
           this.el.addEventListener('pinchstarted', (event) => {
-            const hand = event.detail.hand;
-            const thumbPosition = hand.thumb.tipPosition;
-            const indexPosition = hand.index.tipPosition;
+            // Accede al componente hand-tracking-controls
+            if (!this.handTracking) {
+              this.handTracking = this.el.components['hand-tracking-controls'];
+            }
 
-            let object;
+            if (this.handTracking && this.handTracking.joints) {
+              const thumbTip = this.handTracking.joints['thumb-tip'];
+              const indexTip = this.handTracking.joints['index-finger-tip'];
 
-            // Detectar pinch con pulgar e índice
-            const pinchWithIndex = this.isPinching(thumbPosition, indexPosition);
+              if (thumbTip && indexTip) {
+                // Calcular la distancia entre el pulgar y el índice
+                const distance = new THREE.Vector3().subVectors(thumbTip, indexTip).length();
 
-            if (pinchWithIndex) {
-              // Crear un cubo para pinch con pulgar e índice
-              object = document.createElement('a-box');
-              object.setAttribute('color', '#4CC3D9');
-              object.setAttribute('width', 0.08);
-              object.setAttribute('height', 0.08);
-              object.setAttribute('depth', 0.08);
+                if (distance < 0.1) { // Umbral de detección de pinch
+                  let object = document.createElement('a-box');
+                  object.setAttribute('color', '#4CC3D9');
+                  object.setAttribute('width', 0.08);
+                  object.setAttribute('height', 0.08);
+                  object.setAttribute('depth', 0.08);
 
-              // Cambiar el texto al detectar el pinch
-              if (textEntity) {
-                textEntity.setAttribute('text', 'value: ¡Pinch detectado!; color: #FFF');
+                  // Cambiar el texto al detectar el pinch
+                  if (textEntity) {
+                    textEntity.setAttribute('text', 'value: ¡Pinch detectado!; color: #FFF');
+                  }
+
+                  // Obtener la posición del pinch
+                  const position = event.detail.position;
+                  object.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+                  object.setAttribute('class', 'movable'); // Clase para que sea detectable
+
+                  // Añadir el objeto (cubo) a la escena
+                  this.el.sceneEl.appendChild(object);
+                }
               }
             }
-
-            if (object) {
-              // Obtener la posición del pinch
-              const position = event.detail.position;
-              object.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-              object.setAttribute('class', 'movable'); // Clase para que sea detectable
-
-              // Añadir el objeto (cubo) a la escena
-              this.el.sceneEl.appendChild(object);
-            }
           });
-        },
-
-        isPinching: function (thumbPos, fingerPos) {
-          // Verificar si el pinch está ocurriendo entre el pulgar y el índice
-          const distance = new THREE.Vector3().subVectors(thumbPos, fingerPos).length();
-          return distance < 0.05; // Umbral de detección para considerar un pinch
         }
       });
 
@@ -95,7 +93,7 @@
             const objectPosition = object.object3D.position;
             const distance = objectPosition.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
 
-            if (distance < 0.05 && distance < closestDistance) { // Umbral de detección
+            if (distance < 0.1 && distance < closestDistance) { // Aumentar umbral de detección
               closest = object;
               closestDistance = distance;
             }
