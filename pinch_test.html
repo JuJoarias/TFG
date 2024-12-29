@@ -12,12 +12,13 @@
         init: function () {
           this.handTracking = null;
           const textEntity = document.querySelector('#pinchText'); // Obtener el elemento de texto
-
+          textEntity.setAttribute('text', 'value: Evento detectado!; color: #FFF');
           // Detectar cuando se inicia un pinch
           this.el.addEventListener('pinchstarted', (event) => {
             // Accede al componente hand-tracking-controls
             if (!this.handTracking) {
               this.handTracking = this.el.components['hand-tracking-controls'];
+              textEntity.setAttribute('text', 'value: Manos detectadas!; color: #FFF');
             }
 
             if (this.handTracking && this.handTracking.joints) {
@@ -27,6 +28,7 @@
               if (thumbTip && indexTip) {
                 // Calcular la distancia entre el pulgar y el índice
                 const distance = new THREE.Vector3().subVectors(thumbTip, indexTip).length();
+                textEntity.setAttribute('text', 'value: dedos detectados!; color: #FFF');
 
                 if (distance < 0.1) { // Umbral de detección de pinch
                   let object = document.createElement('a-box');
