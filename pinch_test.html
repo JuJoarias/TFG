@@ -10,7 +10,7 @@
       // Componente para crear cubos con pinch y cambiar el texto
       AFRAME.registerComponent('create-on-pinch', {
         init: function () {
-          const textElement = document.querySelector('#pinchText'); // Obtener el elemento de texto
+          const textEntity = document.querySelector('#pinchText'); // Obtener el elemento de texto
 
           // Detectar cuando se inicia un pinch
           this.el.addEventListener('pinchstarted', (event) => {
@@ -32,8 +32,8 @@
               object.setAttribute('depth', 0.08);
 
               // Cambiar el texto al detectar el pinch
-              if (textElement) {
-                textElement.setAttribute('value', '¡Pinch detectado!');
+              if (textEntity) {
+                textEntity.setAttribute('text', 'value: ¡Pinch detectado!; color: #FFF');
               }
             }
 
@@ -126,15 +126,12 @@
         position="0 6 0"
       ></a-entity>
 
-      <!-- Texto que muestra el mensaje al realizar el pinch -->
-      <a-text
+      <!-- Entidad de texto que muestra el mensaje al realizar el pinch -->
+      <a-entity
         id="pinchText"
-        value="Esperando pinch..."
         position="0 2 -5"
-        color="#FFF"
-        width="6"
-        font="https://cdn.aframe.io/fonts/monoid.fnt"
-      ></a-text>
+        text="value: Esperando pinch...; color: #FFF; align: center; width: 6"
+      ></a-entity>
 
       <!-- Mano izquierda para mover objetos -->
       <a-entity
