@@ -23,7 +23,8 @@
 
             if (handTracking) {
               textEntity.setAttribute('text', 'value: Manos detectadas! \n Intentando detectar dedos...; color: #FFF');
-              
+              textEntity.setAttribute('text', 'value', handTracking);
+
               // Verificar si las articulaciones de los dedos están disponibles
               if (handTracking.data.joints) {  // Cambié esto para acceder correctamente a los datos de joints
                 const thumbTip = handTracking.data.joints['thumb-tip'];
