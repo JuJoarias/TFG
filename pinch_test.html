@@ -61,6 +61,12 @@
               } else {
                 // Si no se detectan manos
                 textEntity.setAttribute('text', 'value: No se detectaron manos; color: #FFF');
+                const handData = handTracking.data
+                const handTrackingDataStr = JSON.stringify(handData, null, 2);
+
+                // Asignar la cadena JSON a la entidad de texto
+                textEntity.setAttribute('text', `value: ${handTrackingDataStr}; color: #FFF`);              
+
               }
             } else {
               // Si el componente hand-tracking-controls no está disponible
