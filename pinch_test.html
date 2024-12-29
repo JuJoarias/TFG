@@ -21,10 +21,10 @@
               textEntity.setAttribute('text', 'value: Manos detectadas!; color: #FFF');
             }
 
-            if (this.handTracking && this.handTracking.joints) {
+            if (this.handTracking) {
               const thumbTip = this.handTracking.joints['thumb-tip'];
               const indexTip = this.handTracking.joints['index-finger-tip'];
-
+              textEntity.setAttribute('text', 'value: Detectando dedos... ; color: #FFF');
               if (thumbTip && indexTip) {
                 // Calcular la distancia entre el pulgar y el índice
                 const distance = new THREE.Vector3().subVectors(thumbTip, indexTip).length();
@@ -39,7 +39,7 @@
 
                   // Cambiar el texto al detectar el pinch
                   if (textEntity) {
-                    textEntity.setAttribute('text', 'value: ¡Pinch detectado!; color: #FFF');
+                    textEntity.setAttribute('text', 'value: ¡Pinch detectado con dedo indice!; color: #FFF');
                   }
 
                   // Obtener la posición del pinch
