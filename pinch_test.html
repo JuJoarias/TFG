@@ -9,8 +9,8 @@
     <script>
       AFRAME.registerComponent('detect-pinch-between-digits', {
         init: function () {
-          // Asignar el evento para detectar cuando se hace pinch
-          this.el.addEventListener('handtracking', (event) => {
+          // Verificar que el componente hand-tracking-controls está en la entidad
+          this.el.addEventListener('handtracked', (event) => {
             // Obtener las articulaciones de la mano
             this.updateText("dentro del evento");
             const handData = event.detail;
