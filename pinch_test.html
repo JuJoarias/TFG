@@ -8,15 +8,11 @@
     <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
     <script>
       AFRAME.registerComponent('detect-pinch-between-digits', {
-        init: function () {
-          // Verificar que el componente hand-tracking-controls está en la entidad
-          this.el.addEventListener('handtracked', (event) => {
-            // Obtener las articulaciones de la mano
-            this.updateText("dentro del evento");
-            const handData = event.detail;
-            if (!handData) return;
+        tick: function () {
+          // Obtener los datos de la mano desde el componente hand-tracking-controls
+          const handData = this.el.getAttribute('hand-tracking-controls').hand;
 
-            // Detectar las articulaciones del pulgar y el dedo medio
+          if (handData && handData.joints) {
             const thumbTip = handData.joints[4];  // Punta del pulgar
             const middleTip = handData.joints[12]; // Punta del dedo medio
 
@@ -25,14 +21,13 @@
               
               // Detectar si están lo suficientemente cerca (esto depende del umbral)
               if (distance < 0.05) { // Ajusta el umbral según el tamaño de tu escena
-                // Aquí puedes agregar el código para realizar una acción, como crear un objeto
                 this.createPinchEffect(thumbTip);
                 this.updateText("Pinch detectado entre pulgar y dedo medio");
               } else {
                 this.updateText("Pinch no detectado correctamente");
               }
             }
-          });
+          }
         },
 
         // Método para calcular la distancia entre dos puntos en el espacio 3D
