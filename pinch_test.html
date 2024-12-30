@@ -7,121 +7,62 @@
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
     <script>
-      // Componente para crear cubos con pinch y cambiar el texto
-      AFRAME.registerComponent('create-on-pinch', {
+      AFRAME.registerComponent('detect-pinch-between-digits', {
         init: function () {
-          const textEntity = document.querySelector('#pinchText'); // Obtener el elemento de texto
-          
-          // Mostrar mensaje inicial
-          textEntity.setAttribute('text', 'value: Esperando...; color: #FFF');
+          // Asignar el evento para detectar cuando se hace pinch
+          this.el.addEventListener('handtracking', (event) => {
+            // Obtener las articulaciones de la mano
+            const handData = event.detail;
+            if (!handData) return;
 
-          // Detectar cuando se inicia un pinch
-          this.el.addEventListener('pinchstarted', (event) => {
-            const handTracking = this.el.components['hand-tracking-controls'];
+            // Detectar las articulaciones del pulgar y el dedo medio
+            const thumbTip = handData.joints[4];  // Punta del pulgar
+            const middleTip = handData.joints[12]; // Punta del dedo medio
 
-            if (handTracking) {
-              textEntity.setAttribute('text', 'value: Manos detectadas! \n Intentando detectar dedos...; color: #FFF');
+            if (thumbTip && middleTip) {
+              const distance = this.calculateDistance(thumbTip, middleTip);
               
-              // Verificar si las manos están disponibles
-              if (handTracking.data.hands && handTracking.data.hands.length > 0) {
-                const hand = handTracking.data.hands[0]; // Usamos la primera mano detectada
-                const thumbTip = hand.joints['thumb-tip']; // Articulación del pulgar
-                const indexTip = hand.joints['index-finger-tip']; // Articulación del índice
-
-                if (thumbTip && indexTip) {
-                  // Calcular la distancia entre el pulgar y el índice
-                  const distance = new THREE.Vector3().subVectors(thumbTip, indexTip).length();
-
-                  // Mostrar que los dedos están detectados
-                  textEntity.setAttribute('text', 'value: Dedos detectados!; color: #FFF');
-
-                  // Si la distancia es menor que el umbral, se considera un pinch
-                  if (distance < 0.1) { // Umbral de detección de pinch
-                    let object = document.createElement('a-box');
-                    object.setAttribute('color', '#4CC3D9');
-                    object.setAttribute('width', 0.08);
-                    object.setAttribute('height', 0.08);
-                    object.setAttribute('depth', 0.08);
-
-                    // Cambiar el texto al detectar el pinch
-                    textEntity.setAttribute('text', 'value: ¡Pinch detectado con dedo índice!; color: #FFF');
-
-                    // Obtener la posición del pinch
-                    const position = event.detail.position;
-                    object.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-                    object.setAttribute('class', 'movable'); // Clase para que sea detectable
-
-                    // Añadir el objeto (cubo) a la escena
-                    this.el.sceneEl.appendChild(object);
-                  }
-                } else {
-                  // Si no se detectan los dedos
-                  textEntity.setAttribute('text', 'value: No se detectaron los dedos; color: #FFF');
-                }
+              // Detectar si están lo suficientemente cerca (esto depende del umbral)
+              if (distance < 0.05) { // Ajusta el umbral según el tamaño de tu escena
+                // Aquí puedes agregar el código para realizar una acción, como crear un objeto
+                this.createPinchEffect(thumbTip);
+                this.updateText("Pinch detectado entre pulgar y dedo medio");
               } else {
-                // Si no se detectan manos
-                textEntity.setAttribute('text', 'value: No se detectaron manos; color: #FFF');
-                const handData = handTracking.data
-                const handTrackingDataStr = JSON.stringify(handData, null, 2);
-
-                // Asignar la cadena JSON a la entidad de texto
-                textEntity.setAttribute('text', `value: ${handTrackingDataStr}; color: #FFF`);              
-
+                this.updateText("Pinch no detectado correctamente");
               }
-            } else {
-              // Si el componente hand-tracking-controls no está disponible
-              textEntity.setAttribute('text', 'value: No se detecta el componente de seguimiento de manos; color: #FFF');
             }
-          });
-        }
-      });
-
-      // Componente para mover cubos con pinch
-      AFRAME.registerComponent('interact-with-cube', {
-        init: function () {
-          this.selectedObject = null;
-
-          // Detecta el inicio del pinch
-          this.el.addEventListener('pinchstarted', (evt) => {
-            const position = evt.detail.position;
-
-            // Detecta si el pinch está sobre un cubo
-            const intersected = this.getIntersectedObject(position);
-            if (intersected) {
-              this.selectedObject = intersected;
-            }
-          });
-
-          // Mueve el cubo seleccionado
-          this.el.addEventListener('pinchmoved', (evt) => {
-            if (this.selectedObject) {
-              const position = evt.detail.position;
-              this.selectedObject.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-            }
-          });
-
-          // Suelta el cubo cuando se termina el pinch
-          this.el.addEventListener('pinchended', () => {
-            this.selectedObject = null; // Libera el objeto
           });
         },
 
-        getIntersectedObject: function (position) {
-          const objects = Array.from(document.querySelectorAll('.movable'));
-          let closest = null;
-          let closestDistance = Infinity;
+        // Método para calcular la distancia entre dos puntos en el espacio 3D
+        calculateDistance: function (point1, point2) {
+          const dx = point2.x - point1.x;
+          const dy = point2.y - point1.y;
+          const dz = point2.z - point1.z;
+          return Math.sqrt(dx * dx + dy * dy + dz * dz);
+        },
 
-          objects.forEach((object) => {
-            const objectPosition = object.object3D.position;
-            const distance = objectPosition.distanceTo(new THREE.Vector3(position.x, position.y, position.z));
+        // Método para crear algún efecto cuando detectes el pinch
+        createPinchEffect: function (pinchPosition) {
+          // Crear un cubo en la posición del pinch
+          let pinchObject = document.createElement('a-box');
+          pinchObject.setAttribute('color', '#FF5733');
+          pinchObject.setAttribute('width', 0.1);
+          pinchObject.setAttribute('height', 0.1);
+          pinchObject.setAttribute('depth', 0.1);
+          pinchObject.setAttribute('position', `${pinchPosition.x} ${pinchPosition.y} ${pinchPosition.z}`);
+          
+          // Añadir el cubo a la escena
+          this.el.sceneEl.appendChild(pinchObject);
+        },
 
-            if (distance < 0.1 && distance < closestDistance) { // Aumentar umbral de detección
-              closest = object;
-              closestDistance = distance;
-            }
-          });
-
-          return closest;
+        // Método para actualizar el texto en la escena
+        updateText: function (message) {
+          // Obtener la entidad de texto por su ID
+          const textEntity = document.getElementById('progress-text');
+          if (textEntity) {
+            textEntity.setAttribute('text', 'value', message);
+          }
         }
       });
     </script>
@@ -132,7 +73,6 @@
       webxr="optionalFeatures: hand-tracking; requiredFeatures: hand-tracking"
       renderer="antialias: true; shadow: true"
     >
-      <!-- Cámara -->
       <a-camera position="0 1.6 3"></a-camera>
 
       <!-- Luz Hemisférica -->
@@ -146,25 +86,18 @@
         position="0 6 0"
       ></a-entity>
 
-      <!-- Entidad de texto que muestra el mensaje al realizar el pinch -->
+      <!-- Entidad de texto que muestra el progreso -->
       <a-entity
-        id="pinchText"
-        position="0 2 -5"
-        text="value: Esperando pinch...; color: #FFF; align: center; width: 6"
+        id="progress-text"
+        position="0 2 -3"
+        scale="2 2 2"
+        text="value: Esperando pinch...; color: #FFFFFF; align: center; width: 6"
       ></a-entity>
 
-      <!-- Mano izquierda para mover objetos -->
+      <!-- Mano para detectar el pinch -->
       <a-entity
-        id="hand1"
-        hand-tracking-controls="hand: left"
-        interact-with-cube
-      ></a-entity>
-
-      <!-- Mano derecha para crear objetos -->
-      <a-entity
-        id="hand2"
         hand-tracking-controls="hand: right"
-        create-on-pinch
+        detect-pinch-between-digits
       ></a-entity>
     </a-scene>
   </body>
