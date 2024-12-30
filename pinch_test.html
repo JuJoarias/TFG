@@ -5,13 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>A-Frame Hand Tracking - Pinch Gesture</title>
     <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-hand-tracking-component@1.0.0/dist/aframe-hand-tracking-component.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aframe-webxr-hand-tracking/dist/aframe-webxr-hand-tracking.min.js"></script>
     <script>
       AFRAME.registerComponent('detect-pinch-between-digits', {
         tick: function () {
           // Obtener los datos de la mano desde el componente hand-tracking-controls
           this.updateText("Intentando obtener datos de la mano");
-          const handData = this.el.getAttribute('hand-tracking-controls').hand;
+          const handData = this.el.getAttribute('xr-hand-tracking');
           this.updateText(JSON.stringify(handData, null, 2));
           if(!handData){
             this.updateText("Fallo al obtener datos de la mano");
@@ -97,7 +97,7 @@
 
       <!-- Mano para detectar el pinch -->
       <a-entity
-        hand-tracking-controls="hand: right"
+        xr-hand-tracking="hand: right"
         detect-pinch-between-digits
       ></a-entity>
     </a-scene>
