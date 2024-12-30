@@ -3,84 +3,102 @@
 
 <head>
    <title>Hand Input Module in A-Frame</title>
+   <!-- Incluye la biblioteca principal de A-Frame -->
    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+   <!-- Incluye aframe-extras para funcionalidades adicionales -->
    <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
 </head>
 
 <body>
-   <a-scene xr-mode-ui="enabled: true; enterVRDisabled: false;" webxr="optionalFeatures: hand-tracking" background="color: #444444">
-       <a-box id="box" width="0.2" height="0.2" depth="0.2" position="0 1.2 -0.4" color="green"></a-box>
-       <a-entity hand-skeleton></a-entity>
+   <!-- La escena principal de A-Frame -->
+   <a-scene 
+      xr-mode-ui="enabled: true; enterVRDisabled: false;" <!-- Habilita el modo XR (VR/AR) -->
+      webxr="optionalFeatures: hand-tracking"> <!-- Activa la funcionalidad de seguimiento de manos -->
+      
+      <!-- Un cubo interactivo colocado en la escena -->
+      <a-box id="box" width="0.2" height="0.2" depth="0.2" position="0 1.2 -0.4" color="green"></a-box>
+
+      <!-- Componente personalizado para mostrar y manejar manos en la escena -->
+      <a-entity hand-skeleton></a-entity>
    </a-scene>
 
    <script>
+       // Definimos las articulaciones de los dedos en orden para construir las manos
        const orderedJoints = [
-           ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
-           ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
-           ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
-           ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
-           ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
+           ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"], // Dedo pulgar
+           ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"], // Índice
+           ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"], // Medio
+           ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"], // Anular
+           ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"] // Meñique
        ];
 
-       const minimumDistance = 0.1;
-       const pinchDistance = 0.01;
+       // Define la distancia mínima para detectar si la mano está cerca de la caja
+       const minimumDistance = 0.5;
 
+       // Define la distancia máxima para detectar un gesto de "pellizco" (pinch)
+       const pinchDistance = 0.05;
+
+       // Función para calcular la distancia entre dos puntos en 3D
        function calculateDistance(point1, point2) {
            return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2 + (point1.z - point2.z) ** 2);
        }
 
+       // Cambia el color de la caja dependiendo de la proximidad de las manos
        function updateBoxColour(box, rightHandClose, leftHandClose) {
            if (rightHandClose) {
-               box.setAttribute('color', 'red');
+               box.setAttribute('color', 'red'); // Mano derecha cerca: rojo
            } else if (leftHandClose) {
-               box.setAttribute('color', 'blue');
+               box.setAttribute('color', 'blue'); // Mano izquierda cerca: azul
            } else {
-               box.setAttribute('color', 'green');
+               box.setAttribute('color', 'green'); // Ninguna mano cerca: verde
            }
        }
-     
+
+       // Cambia la apariencia de la caja dependiendo de los gestos de las manos
        function updateBoxAppearance(box, isRightPinching, isLeftPinching) {
            if (isRightPinching) {
-               box.setAttribute('geometry', {primitive: 'torusKnot', radius: 0.1, radiusTubular: 0.02});
+               box.setAttribute('geometry', {primitive: 'torusKnot', radius: 0.1, radiusTubular: 0.02}); // Gesto de pellizco con mano derecha
            } else if (isLeftPinching) {
-               box.setAttribute('geometry', {primitive: 'dodecahedron', radius: 0.15}); 
+               box.setAttribute('geometry', {primitive: 'dodecahedron', radius: 0.15}); // Gesto de pellizco con mano izquierda
            } else {
-               box.setAttribute('geometry', {primitive: 'box', width: 0.2, height: 0.2, depth: 0.2});
+               box.setAttribute('geometry', {primitive: 'box', width: 0.2, height: 0.2, depth: 0.2}); // Forma predeterminada
            }
        }
 
+       // Componente personalizado para manejar las manos
        AFRAME.registerComponent('hand-skeleton', {
            init: function () {
-               this.referenceSpace = null;
-               this.frame = null;
-               this.spheres = {}; // donde se guardan las bolas que forman la mano
-               this.box = document.getElementById('box');
-               this.rightHandClose = false;
-               this.leftHandClose = false;
-
+               this.referenceSpace = null; // Espacio de referencia para XR
+               this.frame = null; // Referencia al marco XR actual
+               this.spheres = {}; // Esferas para representar articulaciones de las manos
+               this.box = document.getElementById('box'); // Referencia al cubo
+               this.rightHandClose = false; // Indica si la mano derecha está cerca de la caja
+               this.leftHandClose = false; // Indica si la mano izquierda está cerca de la caja
            },
 
+           // Método llamado en cada frame para actualizar la lógica del componente
            tick: function () {
                if (!this.frame) {
-                   this.frame = this.el.sceneEl.frame;
-                   this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
+                   this.frame = this.el.sceneEl.frame; // Obtiene el marco XR
+                   this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace(); // Obtiene el espacio de referencia XR
                } else {
-                   this.renderHandSkeleton();
-                   this.checkInteraction();
-                   this.detectGesture();
+                   this.renderHandSkeleton(); // Renderiza las manos
+                   this.checkInteraction(); // Detecta proximidad de manos
+                   this.detectGesture(); // Detecta gestos de pellizco
                }
            },
 
+           // Renderiza las articulaciones de las manos
            renderHandSkeleton: function () {
-               const session = this.el.sceneEl.renderer.xr.getSession();
-               const inputSources = session.inputSources;
+               const session = this.el.sceneEl.renderer.xr.getSession(); // Obtiene la sesión XR
+               const inputSources = session.inputSources; // Fuentes de entrada XR
                if (!this.frame || !this.referenceSpace) {
                    return;
                }
                for (const inputSource of inputSources) {
-                   if (inputSource.hand) {
+                   if (inputSource.hand) { // Comprueba si la fuente de entrada tiene una mano
                        const hand = inputSource.hand;
-                       const handedness = inputSource.handedness;
+                       const handedness = inputSource.handedness; // Determina si es mano derecha o izquierda
                        for (const finger of orderedJoints) {
                            for (const jointName of finger) {
                                const joint = hand.get(jointName);
@@ -101,6 +119,7 @@
                }
            },
 
+           // Comprueba si alguna mano está cerca de la caja
            checkInteraction: function () {
                let rightHandClose = false;
                let leftHandClose = false;
@@ -112,14 +131,15 @@
 
                    if (distance < minimumDistance) {
                        if (jointName.startsWith('right')) {
-                           rightHandClose = true;
+                           rightHandClose = true; // Mano derecha cerca
                        }
                        if (jointName.startsWith('left')) {
-                           leftHandClose = true;
+                           leftHandClose = true; // Mano izquierda cerca
                        }
                    }
                }
 
+               // Actualiza el color de la caja si cambia el estado de proximidad
                if (rightHandClose !== this.rightHandClose || leftHandClose !== this.leftHandClose) {
                    updateBoxColour(this.box, rightHandClose, leftHandClose);
                }
@@ -127,47 +147,47 @@
                this.rightHandClose = rightHandClose;
                this.leftHandClose = leftHandClose;
            },
-         
-         detectGesture: function () {
-                const session = this.el.sceneEl.renderer.xr.getSession();
-                const inputSources = session.inputSources;
 
-                let isRightPinching = false;
-                let isLeftPinching = false;
+           // Detecta gestos de pellizco (pinch) entre el pulgar y el índice
+           detectGesture: function () {
+               const session = this.el.sceneEl.renderer.xr.getSession();
+               const inputSources = session.inputSources;
 
-                for (const inputSource of inputSources) {
-                    if (inputSource.hand) {
-                        const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
-                        const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
+               let isRightPinching = false;
+               let isLeftPinching = false;
 
-                        if (thumbTip && indexTip) {
-                            const distance = calculateDistance(thumbTip.transform.position, indexTip.transform.position);
-                            if (distance < pinchDistance) {
-                                if (inputSource.handedness === 'right') {
-                                    isRightPinching = true;
-                                } else if (inputSource.handedness === 'left') {
-                                    isLeftPinching = true;
-                                }
-                            }
-                        }
-                    }
-                }
+               for (const inputSource of inputSources) {
+                   if (inputSource.hand) {
+                       const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
+                       const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
 
-                this.rightPinchDetected = isRightPinching;
-                this.leftPinchDetected = isLeftPinching;
+                       if (thumbTip && indexTip) {
+                           const distance = calculateDistance(thumbTip.transform.position, indexTip.transform.position);
+                           if (distance < pinchDistance) {
+                               if (inputSource.handedness === 'right') {
+                                   isRightPinching = true; // Gesto de pellizco con mano derecha
+                               } else if (inputSource.handedness === 'left') {
+                                   isLeftPinching = true; // Gesto de pellizco con mano izquierda
+                               }
+                           }
+                       }
+                   }
+               }
 
-                updateBoxAppearance(this.box, isRightPinching, isLeftPinching);
-            },
+               updateBoxAppearance(this.box, isRightPinching, isLeftPinching);
+           },
 
+           // Dibuja una esfera para representar una articulación de la mano
            drawSphere: function (radius, position) {
                const sphere = document.createElement('a-sphere');
                sphere.setAttribute('radius', radius);
-               sphere.setAttribute('color', '#ffffff');  // Cambié el color a blanco
+               sphere.setAttribute('color', '#ffffff'); // Color blanco para las esferas
                sphere.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
                this.el.appendChild(sphere);
                return sphere;
            },
 
+           // Elimina las esferas cuando el componente es destruido
            remove: function () {
                for (const jointName in this.spheres) {
                    this.spheres[jointName].parentNode.removeChild(this.spheres[jointName]);
@@ -175,7 +195,6 @@
            },
        });
    </script>
-
 </body>
 
 </html>
