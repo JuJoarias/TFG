@@ -10,7 +10,12 @@
       AFRAME.registerComponent('detect-pinch-between-digits', {
         tick: function () {
           // Obtener los datos de la mano desde el componente hand-tracking-controls
+          this.updateText("Intentando obtener datos de la mano");
           const handData = this.el.getAttribute('hand-tracking-controls').hand;
+          this.updateText(JSON.stringify(handData, null, 2));
+          if(!handData){
+            this.updateText("Fallo al obtener datos de la mano");
+          }
 
           if (handData && handData.joints) {
             const thumbTip = handData.joints[4];  // Punta del pulgar
