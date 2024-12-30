@@ -1,105 +1,90 @@
 <!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>A-Frame Hand Tracking - Pinch Gesture</title>
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/aframe-webxr-hand-tracking/dist/aframe-webxr-hand-tracking.min.js"></script>
-    <script>
-      AFRAME.registerComponent('detect-pinch-between-digits', {
-        tick: function () {
-          // Obtener los datos de la mano desde el componente hand-tracking-controls
-          this.updateText("Intentando obtener datos de la mano");
-          const handData = this.el.getAttribute('xr-hand-tracking');
-          this.updateText(JSON.stringify(handData, null, 2));
-          if(!handData){
-            this.updateText("Fallo al obtener datos de la mano");
-          }
+<html>
 
-          if (handData && handData.joints) {
-            const thumbTip = handData.joints[4];  // Punta del pulgar
-            const middleTip = handData.joints[12]; // Punta del dedo medio
+<head>
+    <title>Hand Input Module in A-Frame</title>
+     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+     <script src="https://cdn.jsdelivr.net/gh/c-frame/aframe-extras@7.6.0/dist/aframe-extras.min.js"></script>
+</head>
 
-            if (thumbTip && middleTip) {
-              const distance = this.calculateDistance(thumbTip, middleTip);
-              
-              // Detectar si están lo suficientemente cerca (esto depende del umbral)
-              if (distance < 0.05) { // Ajusta el umbral según el tamaño de tu escena
-                this.createPinchEffect(thumbTip);
-                this.updateText("Pinch detectado entre pulgar y dedo medio");
-              } else {
-                this.updateText("Pinch no detectado correctamente");
-              }
-            }
-          }
-        },
-
-        // Método para calcular la distancia entre dos puntos en el espacio 3D
-        calculateDistance: function (point1, point2) {
-          const dx = point2.x - point1.x;
-          const dy = point2.y - point1.y;
-          const dz = point2.z - point1.z;
-          return Math.sqrt(dx * dx + dy * dy + dz * dz);
-        },
-
-        // Método para crear algún efecto cuando detectes el pinch
-        createPinchEffect: function (pinchPosition) {
-          // Crear un cubo en la posición del pinch
-          let pinchObject = document.createElement('a-box');
-          pinchObject.setAttribute('color', '#FF5733');
-          pinchObject.setAttribute('width', 0.1);
-          pinchObject.setAttribute('height', 0.1);
-          pinchObject.setAttribute('depth', 0.1);
-          pinchObject.setAttribute('position', `${pinchPosition.x} ${pinchPosition.y} ${pinchPosition.z}`);
-          
-          // Añadir el cubo a la escena
-          this.el.sceneEl.appendChild(pinchObject);
-        },
-
-        // Método para actualizar el texto en la escena
-        updateText: function (message) {
-          // Obtener la entidad de texto por su ID
-          const textEntity = document.getElementById('progress-text');
-          if (textEntity) {
-            textEntity.setAttribute('text', 'value', message);
-          }
-        }
-      });
-    </script>
-  </head>
-  <body>
-    <a-scene
-      background="color: #444444"
-      webxr="optionalFeatures: hand-tracking; requiredFeatures: hand-tracking"
-      renderer="antialias: true; shadow: true"
-    >
-      <a-camera position="0 1.6 3"></a-camera>
-
-      <!-- Luz Hemisférica -->
-      <a-entity
-        light="type: hemisphere; color: #bcbcbc; groundColor: #a5a5a5; intensity: 3"
-      ></a-entity>
-
-      <!-- Luz Direccional -->
-      <a-entity
-        light="type: directional; intensity: 3; castShadow: true"
-        position="0 6 0"
-      ></a-entity>
-
-      <!-- Entidad de texto que muestra el progreso -->
-      <a-entity
-        id="progress-text"
-        position="0 2 -3"
-        scale="2 2 2"
-        text="value: Esperando pinch...; color: #FFFFFF; align: center; width: 6"
-      ></a-entity>
-
-      <!-- Mano para detectar el pinch -->
-      <a-entity
-        xr-hand-tracking="hand: right"
-        detect-pinch-between-digits
-      ></a-entity>
+<body>
+    <a-scene xr-mode-ui="enabled: true; enterAREnabled: true; XRMode: ar;" webxr="optionalFeatures: hand-tracking">
+        <a-entity hand-skeleton></a-entity>
     </a-scene>
-  </body>
+
+    <script>
+        const orderedJoints = [
+            ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
+            ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
+            ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
+            ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
+            ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
+        ];
+
+        AFRAME.registerComponent('hand-skeleton', {
+            init: function () {
+                this.referenceSpace = null;
+                this.frame = null;
+                this.spheres = {}; // store spheres for each joint
+            },
+
+            tick: function () {
+                if (!this.frame) {
+                    this.frame = this.el.sceneEl.frame;
+                    this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
+                } else {
+                    this.renderHandSkeleton();
+                    // add interaction
+                    // perform gesture detection
+                }
+            },
+
+            renderHandSkeleton: function() {
+                const session = this.el.sceneEl.renderer.xr.getSession();
+                const inputSources = session.inputSources;
+                if (!this.frame || !this.referenceSpace) {
+                    return;
+                }
+                for (const inputSource of inputSources) {
+                    if (inputSource.hand) {
+                        const hand = inputSource.hand;
+                        const handedness = inputSource.handedness;
+                        for (const finger of orderedJoints) {
+                            for (const jointName of finger) {
+                                const joint = hand.get(jointName);
+                                if (joint) {
+                                    const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+                                    const position = jointPose.transform.position;
+                                    if (!this.spheres[handedness + '_' + jointName]) {
+                                        this.spheres[handedness + '_' + jointName] = this.drawSphere(jointPose.radius, position);
+                                    } else {
+                                        this.spheres[handedness + '_' + jointName].object3D.position.set(position.x, position.y, position.z);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+
+            remove: function () {
+                // clean up rendered spheres
+                for (const jointName in this.spheres) {
+                    this.spheres[jointName].parentNode.removeChild(this.spheres[jointName]);
+                }
+            },
+
+            drawSphere: function(radius, position) {
+                const sphere = document.createElement('a-sphere');
+                sphere.setAttribute('radius', radius);
+                sphere.setAttribute('color', 'red');
+                sphere.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+                this.el.appendChild(sphere);
+                return sphere;
+            },
+        });
+    </script>
+
+</body>
+
 </html>
