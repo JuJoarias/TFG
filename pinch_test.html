@@ -12,6 +12,7 @@
           // Asignar el evento para detectar cuando se hace pinch
           this.el.addEventListener('handtracking', (event) => {
             // Obtener las articulaciones de la mano
+            this.updateText("dentro del evento");
             const handData = event.detail;
             if (!handData) return;
 
