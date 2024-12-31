@@ -46,7 +46,6 @@
                this.leftPinching = false; // Estado del pinch de la mano izquierda
                this.selectedObject = null; // Objeto actualmente seleccionado para mover
                this.spheres = {}; // Almacén de las esferas que representan las articulaciones
-               this.renderHandSkeleton(); // Renderiza las manos al cargar
            },
 
            tick: function () {
@@ -167,15 +166,13 @@
                    const position = indexTip.transform.position;
 
                    let closestObject = null;
-                   let minDistance = Infinity;
 
                    // Busca el objeto más cercano dentro del rango permitido
                    this.el.sceneEl.querySelectorAll('.movable').forEach((box) => {
                        const boxPosition = box.object3D.position;
                        const distance = calculateDistance(position, boxPosition);
 
-                       if (distance < minDistance && distance < objectInteractionDistance) {
-                           minDistance = distance;
+                       if (distance < objectInteractionDistance) {
                            closestObject = box;
                        }
                    });
