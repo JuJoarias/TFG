@@ -166,13 +166,15 @@
                    const position = indexTip.transform.position;
 
                    let closestObject = null;
+                   let minDistance = Infinity;
 
                    // Busca el objeto más cercano dentro del rango permitido
                    this.el.sceneEl.querySelectorAll('.movable').forEach((box) => {
                        const boxPosition = box.object3D.position;
                        const distance = calculateDistance(position, boxPosition);
 
-                       if (distance < objectInteractionDistance) {
+                       if (distance < minDistance && distance < objectInteractionDistance) {
+                           minDistance = distance;
                            closestObject = box;
                        }
                    });
