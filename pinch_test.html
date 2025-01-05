@@ -7,200 +7,199 @@
 </head>
 
 <body>
-   <a-scene 
-      xr-mode-ui="enabled: true; enterVRDisabled: false;" 
-      webxr="optionalFeatures: hand-tracking" 
-      background="color: #444444">
-      
-      <!-- Componente que gestiona la interacción de manos -->
-      <a-entity hand-skeleton></a-entity>
-   </a-scene>
-
-   <script>
-       // Distancia máxima para detectar un gesto de pinch
-       const pinchDistance = 0.02;
-       // Distancia máxima para seleccionar o mover un objeto
-       const objectInteractionDistance = 0.15;
-
-       // Orden de las articulaciones de la mano, utilizado para renderizar las esferas
-       const orderedJoints = [
-           ["wrist"],
-           ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
-           ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
-           ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
-           ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
-           ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"],
-       ];
-
-       // Función para calcular la distancia entre dos puntos 3D
-       function calculateDistance(point1, point2) {
-           return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2 + (point1.z - point2.z) ** 2);
-       }
-
-       // Componente de A-Frame para la interacción con manos
-       AFRAME.registerComponent('hand-skeleton', {
-           init: function () {
-               this.frame = null; // Frame actual del WebXR
-               this.referenceSpace = null; // Espacio de referencia de la escena
-               this.rightPinching = false; // Estado del pinch de la mano derecha
-               this.leftPinching = false; // Estado del pinch de la mano izquierda
-               this.selectedObject = null; // Objeto actualmente seleccionado para mover
-               this.spheres = {}; // Almacén de las esferas que representan las articulaciones
-           },
-
-           tick: function () {
-               // Obtiene el frame y el espacio de referencia si aún no están definidos
-               if (!this.frame) {
-                   this.frame = this.el.sceneEl.frame;
-                   this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
-               } else {
-                   this.renderHandSkeleton(); // Actualiza las posiciones de las articulaciones
-                   this.detectGestures(); // Detecta gestos como pinch
-                   if (this.leftPinching && this.selectedObject) {
-                       this.moveSelectedObject(); // Mueve el objeto seleccionado si hay un pinch izquierdo
-                   }
-               }
-           },
-
-           // Dibuja una esfera en la posición indicada (representación de articulaciones)
-           drawSphere: function (radius, position) {
-               const sphere = document.createElement('a-sphere');
-               sphere.setAttribute('radius', radius || 0.008);
-               sphere.setAttribute('color', 'white');
-               sphere.object3D.position.set(position.x, position.y, position.z);
-               this.el.sceneEl.appendChild(sphere);
-               return sphere;
-           },
-
-           // Renderiza las articulaciones de las manos como esferas
-           renderHandSkeleton: function () {
-               const session = this.el.sceneEl.renderer.xr.getSession();
-               if (!session || !this.frame || !this.referenceSpace) {
-                   return;
-               }
-
-               const inputSources = session.inputSources;
-               for (const inputSource of inputSources) {
-                   if (inputSource.hand) {
-                       const hand = inputSource.hand;
-                       const handedness = inputSource.handedness; // Determina si es la mano derecha o izquierda
-                       for (const finger of orderedJoints) {
-                           for (const jointName of finger) {
-                               const joint = hand.get(jointName);
-                               if (joint) {
-                                   const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
-                                   if (jointPose) {
-                                       const position = jointPose.transform.position;
-                                       if (!this.spheres[handedness + '_' + jointName]) {
-                                           this.spheres[handedness + '_' + jointName] = this.drawSphere(jointPose.radius, position);
-                                       } else {
-                                           this.spheres[handedness + '_' + jointName].object3D.position.set(position.x, position.y, position.z);
-                                       }
-                                   }
-                               }
-                           }
-                       }
-                   }
-               }
-           },
-
-           // Detecta gestos como pinch en ambas manos
-           detectGestures: function () {
-               const session = this.el.sceneEl.renderer.xr.getSession();
-               const inputSources = session.inputSources;
-
-               let rightPinching = false;
-               let leftPinching = false;
-
-               for (const inputSource of inputSources) {
-                   if (inputSource.hand) {
-                       const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
-                       const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
-
-                       if (thumbTip && indexTip) {
-                           const distance = calculateDistance(thumbTip.transform.position, indexTip.transform.position);
-
-                           if (distance < pinchDistance) {
-                               if (inputSource.handedness === 'right') {
-                                   rightPinching = true;
-                                   if (!this.rightPinching) {
-                                       this.createBoxAtHand(inputSource.hand); // Crea un cubo en la posición de la mano derecha
-                                   }
-                               } else if (inputSource.handedness === 'left') {
-                                   leftPinching = true;
-                                   if (!this.leftPinching) {
-                                       this.selectObjectAtHand(inputSource.hand); // Selecciona un objeto cercano para mover
-                                   }
-                               }
-                           }
-                       }
-                   }
-               }
-
-               this.rightPinching = rightPinching;
-               this.leftPinching = leftPinching;
-           },
-
-           // Crea un cubo en la posición de la punta del dedo índice de la mano derecha
-           createBoxAtHand: function (hand) {
-               const indexTip = this.frame.getJointPose(hand.get("index-finger-tip"), this.referenceSpace);
-
-               if (indexTip) {
-                   const position = indexTip.transform.position;
-                   const box = document.createElement('a-box');
-                   box.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
-                   box.setAttribute('width', '0.1');
-                   box.setAttribute('height', '0.1');
-                   box.setAttribute('depth', '0.1');
-                   box.setAttribute('color', 'green');
-                   box.classList.add('movable'); // Marca el cubo como movible
-                   this.el.sceneEl.appendChild(box);
-               }
-           },
-
-           // Selecciona un objeto cercano a la punta del dedo índice de la mano izquierda
-           selectObjectAtHand: function (hand) {
-               const indexTip = this.frame.getJointPose(hand.get("index-finger-tip"), this.referenceSpace);
-
-               if (indexTip) {
-                   const position = indexTip.transform.position;
-
-                   let closestObject = null;
-                   let minDistance = Infinity;
-
-                   // Busca el objeto más cercano dentro del rango permitido
-                   this.el.sceneEl.querySelectorAll('.movable').forEach((box) => {
-                       const boxPosition = box.object3D.position;
-                       const distance = calculateDistance(position, boxPosition);
-
-                       if (distance < minDistance && distance < objectInteractionDistance) {
-                           minDistance = distance;
-                           closestObject = box;
-                       }
-                   });
-
-                   // Selecciona el objeto más cercano o limpia la selección si no hay ninguno en rango
-                   if (closestObject) {
-                       this.selectedObject = closestObject;
-                   } else {
-                       this.selectedObject = null;
-                   }
-               }
-           },
-
-           // Mueve el objeto seleccionado a la posición de la punta del dedo índice de la mano izquierda
-           moveSelectedObject: function () {
-               const session = this.el.sceneEl.renderer.xr.getSession();
-               const leftHand = Array.from(session.inputSources).find(input => input.handedness === 'left');
-               const indexTip = this.frame.getJointPose(leftHand.hand.get("index-finger-tip"), this.referenceSpace);
-
-               if (indexTip && this.selectedObject) {
-                   const position = indexTip.transform.position;
-                   this.selectedObject.object3D.position.set(position.x, position.y, position.z);
-               }
-           },
-       });
-   </script>
-</body>
-
-</html>
+    <button id="changeColorButton" style="position: absolute; top: 10px; left: 10px; z-index: 100;">Cambiar Color</button>
+ 
+    <a-scene 
+       xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+       webxr="optionalFeatures: hand-tracking" 
+       background="color: #444444">
+       
+       <!-- Componente que gestiona la interacción de manos -->
+       <a-entity hand-skeleton></a-entity>
+    </a-scene>
+ 
+    <script>
+        // Distancia máxima para detectar un gesto de pinch
+        const pinchDistance = 0.02;
+        // Distancia máxima para seleccionar o mover un objeto
+        const objectInteractionDistance = 0.15;
+ 
+        const orderedJoints = [
+            ["wrist"],
+            ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
+            ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
+            ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
+            ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
+            ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"],
+        ];
+ 
+        function calculateDistance(point1, point2) {
+            return Math.sqrt((point1.x - point2.x) ** 2 + (point1.y - point2.y) ** 2 + (point1.z - point2.z) ** 2);
+        }
+ 
+        AFRAME.registerComponent('hand-skeleton', {
+            init: function () {
+                this.frame = null;
+                this.referenceSpace = null;
+                this.rightPinching = false;
+                this.leftPinching = false;
+                this.selectedObject = null;
+                this.spheres = {};
+            },
+ 
+            tick: function () {
+                if (!this.frame) {
+                    this.frame = this.el.sceneEl.frame;
+                    this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
+                } else {
+                    this.renderHandSkeleton();
+                    this.detectGestures();
+                    if (this.leftPinching && this.selectedObject) {
+                        this.moveSelectedObject();
+                    }
+                }
+            },
+ 
+            drawSphere: function (radius, position) {
+                const sphere = document.createElement('a-sphere');
+                sphere.setAttribute('radius', radius || 0.008);
+                sphere.setAttribute('color', 'white');
+                sphere.object3D.position.set(position.x, position.y, position.z);
+                this.el.sceneEl.appendChild(sphere);
+                return sphere;
+            },
+ 
+            renderHandSkeleton: function () {
+                const session = this.el.sceneEl.renderer.xr.getSession();
+                if (!session || !this.frame || !this.referenceSpace) {
+                    return;
+                }
+ 
+                const inputSources = session.inputSources;
+                for (const inputSource of inputSources) {
+                    if (inputSource.hand) {
+                        const hand = inputSource.hand;
+                        const handedness = inputSource.handedness;
+                        for (const finger of orderedJoints) {
+                            for (const jointName of finger) {
+                                const joint = hand.get(jointName);
+                                if (joint) {
+                                    const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+                                    if (jointPose) {
+                                        const position = jointPose.transform.position;
+                                        if (!this.spheres[handedness + '_' + jointName]) {
+                                            this.spheres[handedness + '_' + jointName] = this.drawSphere(jointPose.radius, position);
+                                        } else {
+                                            this.spheres[handedness + '_' + jointName].object3D.position.set(position.x, position.y, position.z);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+ 
+            detectGestures: function () {
+                const session = this.el.sceneEl.renderer.xr.getSession();
+                const inputSources = session.inputSources;
+ 
+                let rightPinching = false;
+                let leftPinching = false;
+ 
+                for (const inputSource of inputSources) {
+                    if (inputSource.hand) {
+                        const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
+                        const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
+ 
+                        if (thumbTip && indexTip) {
+                            const distance = calculateDistance(thumbTip.transform.position, indexTip.transform.position);
+ 
+                            if (distance < pinchDistance) {
+                                if (inputSource.handedness === 'right') {
+                                    rightPinching = true;
+                                    if (!this.rightPinching) {
+                                        this.createBoxAtHand(inputSource.hand);
+                                    }
+                                } else if (inputSource.handedness === 'left') {
+                                    leftPinching = true;
+                                    if (!this.leftPinching) {
+                                        this.selectObjectAtHand(inputSource.hand);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+ 
+                this.rightPinching = rightPinching;
+                this.leftPinching = leftPinching;
+            },
+ 
+            createBoxAtHand: function (hand) {
+                const indexTip = this.frame.getJointPose(hand.get("index-finger-tip"), this.referenceSpace);
+ 
+                if (indexTip) {
+                    const position = indexTip.transform.position;
+                    const box = document.createElement('a-box');
+                    box.setAttribute('position', `${position.x} ${position.y} ${position.z}`);
+                    box.setAttribute('width', '0.1');
+                    box.setAttribute('height', '0.1');
+                    box.setAttribute('depth', '0.1');
+                    box.setAttribute('color', 'green');
+                    box.classList.add('movable');  // Asignar clase 'movable' a los bloques creados con pinch
+                    this.el.sceneEl.appendChild(box);
+                }
+            },
+ 
+            selectObjectAtHand: function (hand) {
+                const indexTip = this.frame.getJointPose(hand.get("index-finger-tip"), this.referenceSpace);
+ 
+                if (indexTip) {
+                    const position = indexTip.transform.position;
+ 
+                    let closestObject = null;
+                    let minDistance = Infinity;
+ 
+                    this.el.sceneEl.querySelectorAll('.movable').forEach((box) => {
+                        const boxPosition = box.object3D.position;
+                        const distance = calculateDistance(position, boxPosition);
+ 
+                        if (distance < minDistance && distance < objectInteractionDistance) {
+                            minDistance = distance;
+                            closestObject = box;
+                        }
+                    });
+ 
+                    if (closestObject) {
+                        this.selectedObject = closestObject;
+                    } else {
+                        this.selectedObject = null;
+                    }
+                }
+            },
+ 
+            moveSelectedObject: function () {
+                const session = this.el.sceneEl.renderer.xr.getSession();
+                const leftHand = Array.from(session.inputSources).find(input => input.handedness === 'left');
+                const indexTip = this.frame.getJointPose(leftHand.hand.get("index-finger-tip"), this.referenceSpace);
+ 
+                if (indexTip && this.selectedObject) {
+                    const position = indexTip.transform.position;
+                    this.selectedObject.object3D.position.set(position.x, position.y, position.z);
+                }
+            },
+        });
+ 
+        // Lógica del botón para cambiar el color de los bloques creados con el gesto de pinch
+        document.getElementById('changeColorButton').addEventListener('click', () => {
+            const boxes = document.querySelectorAll('.movable');  // Solo los bloques con clase 'movable'
+            boxes.forEach(box => {
+                const randomColor = `#${Math.floor(Math.random() * 16777215).toString(16)}`;
+                box.setAttribute('color', randomColor);
+            });
+        });
+    </script>
+ </body>
+ 
+ </html>
