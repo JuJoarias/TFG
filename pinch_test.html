@@ -7,16 +7,21 @@
 </head>
 
 <body>
-    <button id="changeColorButton" style="position: absolute; top: 10px; left: 10px; z-index: 100;">Cambiar Color</button>
- 
     <a-scene 
-       xr-mode-ui="enabled: true; enterVRDisabled: false;" 
-       webxr="optionalFeatures: hand-tracking" 
-       background="color: #444444">
-       
-       <!-- Componente que gestiona la interacción de manos -->
-       <a-entity hand-skeleton></a-entity>
-    </a-scene>
+      xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+      webxr="optionalFeatures: hand-tracking"
+      background="color: #444444">
+      
+      <!-- Componente que gestiona la interacción de manos -->
+      <a-entity hand-skeleton></a-entity>
+
+      <!-- Botón 3D en la escena VR -->
+      <a-box id="changeColorButton" position="0 1.5 -2" depth="0.2" height="0.5" width="1" color="#4CC3D9" 
+             text="value: Cambiar Color; color: white; align: center; width: 4;"
+             class="clickable-button">
+      </a-box>
+
+   </a-scene>
  
     <script>
         // Distancia máxima para detectar un gesto de pinch
