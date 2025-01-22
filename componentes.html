@@ -50,8 +50,8 @@
             // Crear entidades para las articulaciones
             orderedJoints.flat().forEach((jointName) => {
                const jointEntity = document.createElement('a-sphere');
-               jointEntity.setAttribute('radius', 0.005);
-               jointEntity.setAttribute('color', this.data.hand === 'left' ? 'blue' : 'green');
+               jointEntity.setAttribute('radius', 0.01);
+               jointEntity.setAttribute('color', 'white');
                this.el.appendChild(jointEntity);
                this.joints[jointName] = jointEntity;
             });
