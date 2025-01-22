@@ -77,12 +77,12 @@
             const inputSources = session.inputSources;
 
             // Obtener el cubo (el objeto con el que queremos detectar la colisión)
-            const cube = document.querySelector('#cube');  // Asegúrate de que el cubo tenga el ID correcto
+            // const cube = document.querySelector('#cube');  // Asegúrate de que el cubo tenga el ID correcto
 
             // Asegurarte de que el cubo tenga un collider
-            if (!cube.hasAttribute('dynamic-body')) {
-                cube.setAttribute('dynamic-body', 'shape: box; mass: 1'); // Agregar un collider al cubo
-            }
+            // if (!cube.hasAttribute('dynamic-body')) {
+            //     cube.setAttribute('dynamic-body', 'shape: box; mass: 1'); // Agregar un collider al cubo
+            // }
 
             for (const inputSource of inputSources) {
                 if (inputSource.handedness === this.data.hand && inputSource.hand) {
@@ -99,12 +99,12 @@
                             jointEntity.setAttribute('radius', radius || 0.008); // Usar el radio o un valor predeterminado
 
                             // Asegurarte de que cada articulación tenga un collider
-                            if (!jointEntity.hasAttribute('dynamic-body')) {
-                                jointEntity.setAttribute('dynamic-body', 'shape: sphere; mass: 0.1'); // Agregar un collider a la articulación
-                            }
-                            if (!jointEntity.hasAttribute('obb-collider')) {
-                                jointEntity.setAttribute('obb-collider', 'target: #cube;'); // Colisionador con el cubo
-                            }
+                            // if (!jointEntity.hasAttribute('dynamic-body')) {
+                            //     jointEntity.setAttribute('dynamic-body', 'shape: sphere; mass: 0.1'); // Agregar un collider a la articulación
+                            // }
+                            // if (!jointEntity.hasAttribute('obb-collider')) {
+                            //     jointEntity.setAttribute('obb-collider', 'target: #cube;'); // Colisionador con el cubo
+                            // }
                         } else {
                             jointEntity.setAttribute('position', '0 0 0'); // Esconder si no hay datos
                         }
