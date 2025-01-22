@@ -1,161 +1,168 @@
-<a-scene 
-   xr-mode-ui="enabled: true; enterVRDisabled: false;" 
-   webxr="optionalFeatures: hand-tracking" 
-   background="color: #444444"
-   physics="gravity: -9.8">
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Hand Components with Gesture Events and Skeleton</title>
+   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-obb-collider/dist/obb-collider.min.js"></script> <!-- Agrega el script del OBB Collider -->
+</head>
+<body>
+   <a-scene 
+      xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+      webxr="optionalFeatures: hand-tracking" 
+      background="color: #444444"
+      physics="gravity: -9.8">
+      
+      <!-- Componente cubo más pequeño con static-body -->
+      <a-box id="cube" position="0 1 -0.5" depth="0.2" height="0.2" width="0.2" color="red" static-body></a-box>
 
-   <!-- Componente cubo con cuerpo estático -->
-   <a-box id="cube" position="0 1 0.5" depth="0.2" height="0.2" width="0.2" color="red" static-body></a-box>
+      <!-- Componentes de manos con dynamic-body y obb-collider -->
+      <a-entity id="left-hand" manos="hand: left" dynamic-body="mass: 1" obb-collider="target: #cube"></a-entity>
+      <a-entity id="right-hand" manos="hand: right" dynamic-body="mass: 1" obb-collider="target: #cube"></a-entity>
 
-   <!-- Componentes de manos con un solo body dinámico para cada mano -->
-   <a-entity id="left-hand" manos="hand: left" dynamic-body="mass: 1" position="0 0 0">
-      <!-- Aquí solo representamos las articulaciones con esferas -->
-   </a-entity>
-   <a-entity id="right-hand" manos="hand: right" dynamic-body="mass: 1" position="0 0 0">
-      <!-- Aquí solo representamos las articulaciones con esferas -->
-   </a-entity>
+      <!-- Componentes detectores -->
+      <a-entity detector="target: #left-text; hand: left"></a-entity>
+      <a-entity detector="target: #right-text; hand: right"></a-entity>
 
-   <!-- Componentes detectores -->
-   <a-entity detector="target: #left-text; hand: left"></a-entity>
-   <a-entity detector="target: #right-text; hand: right"></a-entity>
+      <!-- Entidades de texto -->
+      <a-entity id="left-text" position="-1 1 -3" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
+      <a-entity id="right-text" position="1 1 -3" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
+   </a-scene>
 
-   <!-- Entidades de texto -->
-   <a-entity id="left-text" position="-1 1 -3" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
-   <a-entity id="right-text" position="1 1 -3" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
-</a-scene>
+   <script>
+      const pinchDistance = 0.02;
 
-<script>
-   const pinchDistance = 0.02;
+      const orderedJoints = [
+         ["wrist"],
+         ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
+         ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
+         ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
+         ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
+         ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
+      ];
 
-   const orderedJoints = [
-      ["wrist"],
-      ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
-      ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
-      ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
-      ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
-      ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
-   ];
+      // Componente `manos` con renderizado del esqueleto
+      AFRAME.registerComponent('manos', {
+         schema: {
+            hand: { type: 'string', default: 'left' } // izquierda o derecha
+         },
 
-   // Componente `manos` con renderizado del esqueleto
-   AFRAME.registerComponent('manos', {
-      schema: {
-         hand: { type: 'string', default: 'left' } // izquierda o derecha
-      },
+         init: function () {
+            this.frame = null;
+            this.referenceSpace = null;
+            this.joints = {};
+            this.pinchState = false;
 
-      init: function () {
-         this.frame = null;
-         this.referenceSpace = null;
-         this.joints = {};
-         this.pinchState = false;
+            // Crear entidades para las articulaciones
+            orderedJoints.flat().forEach((jointName) => {
+               const jointEntity = document.createElement('a-sphere');
+               jointEntity.setAttribute('color', 'white'); // Ambas manos serán blancas
+               this.el.appendChild(jointEntity);
+               this.joints[jointName] = jointEntity;
+            });
+         },
 
-         // Crear entidades para las articulaciones como esferas pero sin colisiones físicas
-         orderedJoints.flat().forEach((jointName) => {
-            const jointEntity = document.createElement('a-sphere');
-            jointEntity.setAttribute('color', 'white'); // Ambas manos serán blancas
-            this.el.appendChild(jointEntity);
-            this.joints[jointName] = jointEntity;
-         });
-      },
+         tick: function () {
+            if (!this.frame) {
+               this.frame = this.el.sceneEl.frame;
+               this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
+            } else {
+               this.updateSkeleton();
+               this.detectGesture();
+            }
+         },
 
-      tick: function () {
-         if (!this.frame) {
-            this.frame = this.el.sceneEl.frame;
-            this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
-         } else {
-            this.updateSkeleton();
-            this.detectGesture();
-         }
-      },
+         updateSkeleton: function () {
+            const session = this.el.sceneEl.renderer.xr.getSession();
+            const inputSources = session.inputSources;
 
-      updateSkeleton: function () {
-         const session = this.el.sceneEl.renderer.xr.getSession();
-         const inputSources = session.inputSources;
-
-         for (const inputSource of inputSources) {
-            if (inputSource.handedness === this.data.hand && inputSource.hand) {
-               for (const [jointName, jointEntity] of Object.entries(this.joints)) {
-                  const joint = inputSource.hand.get(jointName);
-                  const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
-                  if (jointPose) {
-                     const { x, y, z } = jointPose.transform.position;
-                     const radius = jointPose.radius; // Obtener el radio dinámicamente
-                     jointEntity.setAttribute('position', { x, y, z });
-                     jointEntity.setAttribute('radius', radius || 0.008); // Usar el radio o un valor predeterminado
-                  } else {
-                     jointEntity.setAttribute('position', '0 0 0'); // Esconder si no hay datos
+            for (const inputSource of inputSources) {
+               if (inputSource.handedness === this.data.hand && inputSource.hand) {
+                  for (const [jointName, jointEntity] of Object.entries(this.joints)) {
+                     const joint = inputSource.hand.get(jointName);
+                     const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+                     if (jointPose) {
+                        const { x, y, z } = jointPose.transform.position;
+                        const radius = jointPose.radius; // Obtener el radio dinámicamente
+                        jointEntity.setAttribute('position', { x, y, z });
+                        jointEntity.setAttribute('radius', radius || 0.008); // Usar el radio o un valor predeterminado
+                     } else {
+                        jointEntity.setAttribute('position', '0 0 0'); // Esconder si no hay datos
+                     }
                   }
                }
             }
-         }
-      },
+         },
 
-      detectGesture: function () {
-         const session = this.el.sceneEl.renderer.xr.getSession();
-         const inputSources = session.inputSources;
+         detectGesture: function () {
+            const session = this.el.sceneEl.renderer.xr.getSession();
+            const inputSources = session.inputSources;
 
-         for (const inputSource of inputSources) {
-            if (inputSource.handedness === this.data.hand && inputSource.hand) {
-               const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
-               const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
+            for (const inputSource of inputSources) {
+               if (inputSource.handedness === this.data.hand && inputSource.hand) {
+                  const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
+                  const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
 
-               if (thumbTip && indexTip) {
-                  const distance = Math.sqrt(
-                     Math.pow(thumbTip.transform.position.x - indexTip.transform.position.x, 2) +
-                     Math.pow(thumbTip.transform.position.y - indexTip.transform.position.y, 2) +
-                     Math.pow(thumbTip.transform.position.z - indexTip.transform.position.z, 2)
-                  );
+                  if (thumbTip && indexTip) {
+                     const distance = Math.sqrt(
+                        Math.pow(thumbTip.transform.position.x - indexTip.transform.position.x, 2) +
+                        Math.pow(thumbTip.transform.position.y - indexTip.transform.position.y, 2) +
+                        Math.pow(thumbTip.transform.position.z - indexTip.transform.position.z, 2)
+                     );
 
-                  if (distance < pinchDistance && !this.pinchState) {
-                     this.pinchState = true;
-                     this.el.emit('pinchstart', { hand: this.data.hand });
-                  } else if (distance >= pinchDistance && this.pinchState) {
-                     this.pinchState = false;
-                     this.el.emit('pinchend', { hand: this.data.hand });
+                     if (distance < pinchDistance && !this.pinchState) {
+                        this.pinchState = true;
+                        this.el.emit('pinchstart', { hand: this.data.hand });
+                     } else if (distance >= pinchDistance && this.pinchState) {
+                        this.pinchState = false;
+                        this.el.emit('pinchend', { hand: this.data.hand });
+                     }
                   }
                }
             }
+
+            // Escuchar el evento 'collide' y emitir 'collide-start'
+            this.el.sceneEl.addEventListener('collide', (evt) => {
+               if (evt.detail.body.el.id === (this.data.hand === 'left' ? 'left-hand' : 'right-hand')) {
+                  this.el.emit('collide-start', { hand: this.data.hand });
+               }
+            });
          }
+      });
 
-         // Escuchar el evento 'collide' y emitir 'collide-start'
-         this.el.sceneEl.addEventListener('collide', (evt) => {
-            if (evt.detail.body.el.id === (this.data.hand === 'left' ? 'left-hand' : 'right-hand')) {
-               this.el.emit('collide-start', { hand: this.data.hand });
+      // Componente `detector`
+      AFRAME.registerComponent('detector', {
+         schema: {
+            target: { type: 'selector' },
+            hand: { type: 'string', default: 'left' } // Mano a escuchar
+         },
+
+         init: function () {
+            this.el.sceneEl.addEventListener('pinchstart', (evt) => {
+               if (evt.detail.hand === this.data.hand) {
+                  this.updateText("¡Inicio de gesto " + this.data.hand + "!");
+               }
+            });
+
+            this.el.sceneEl.addEventListener('pinchend', (evt) => {
+               if (evt.detail.hand === this.data.hand) {
+                  this.updateText("¡Fin de gesto " + this.data.hand + "!");
+               }
+            });
+
+            this.el.sceneEl.addEventListener('collide-start', (evt) => {
+               if (evt.detail.hand === this.data.hand) {
+                  this.updateText(`¡Colisión iniciada con la mano ${this.data.hand}!`);
+               }
+            });
+         },
+
+         updateText: function (message) {
+            if (this.data.target) {
+               this.data.target.setAttribute('text', `value: ${message}; color: #FFF`);
             }
-         });
-      }
-   });
-
-   // Componente `detector`
-   AFRAME.registerComponent('detector', {
-      schema: {
-         target: { type: 'selector' },
-         hand: { type: 'string', default: 'left' } // Mano a escuchar
-      },
-
-      init: function () {
-         this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-            if (evt.detail.hand === this.data.hand) {
-               this.updateText("¡Inicio de gesto " + this.data.hand + "!");
-            }
-         });
-
-         this.el.sceneEl.addEventListener('pinchend', (evt) => {
-            if (evt.detail.hand === this.data.hand) {
-               this.updateText("¡Fin de gesto " + this.data.hand + "!");
-            }
-         });
-
-         this.el.sceneEl.addEventListener('collide-start', (evt) => {
-            if (evt.detail.hand === this.data.hand) {
-               this.updateText(`¡Colisión iniciada con la mano ${this.data.hand}!`);
-            }
-         });
-      },
-
-      updateText: function (message) {
-         if (this.data.target) {
-            this.data.target.setAttribute('text', `value: ${message}; color: #FFF`);
          }
-      }
-   });
-</script>
+      });
+   </script>
+</body>
+</html>
