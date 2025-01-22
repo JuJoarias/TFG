@@ -3,6 +3,7 @@
 <head>
    <title>Hand Components with Gesture Events and Skeleton</title>
    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
 </head>
 <body>
    <a-scene 
@@ -10,9 +11,12 @@
       webxr="optionalFeatures: hand-tracking" 
       background="color: #444444">
       
-      <!-- Componentes de manos -->
-      <a-entity manos="hand: left"></a-entity>
-      <a-entity manos="hand: right"></a-entity>
+      <!-- Componente cubo con static-body -->
+      <a-box id="cube" position="0 1 -2" color="red" static-body></a-box>
+
+      <!-- Componentes de manos con dynamic-body -->
+      <a-entity id="left-hand" manos="hand: left" dynamic-body></a-entity>
+      <a-entity id="right-hand" manos="hand: right" dynamic-body></a-entity>
 
       <!-- Componentes detectores -->
       <a-entity detector="target: #left-text; hand: left"></a-entity>
@@ -114,6 +118,13 @@
                   }
                }
             }
+
+            // Escuchar el evento 'collide' y emitir 'collide-start'
+            this.el.sceneEl.addEventListener('collide', (evt) => {
+               if (evt.detail.body.el.id === (this.data.hand === 'left' ? 'left-hand' : 'right-hand')) {
+                  this.el.emit('collide-start', { hand: this.data.hand });
+               }
+            });
          }
       });
 
@@ -134,6 +145,12 @@
             this.el.sceneEl.addEventListener('pinchend', (evt) => {
                if (evt.detail.hand === this.data.hand) {
                   this.updateText("¡Fin de gesto " + this.data.hand + "!");
+               }
+            });
+
+            this.el.sceneEl.addEventListener('collide-start', (evt) => {
+               if (evt.detail.hand === this.data.hand) {
+                  this.updateText(`¡Colisión iniciada con la mano ${this.data.hand}!`);
                }
             });
          },
