@@ -1,41 +1,41 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-   <title>Hand Components with Gesture Events</title>
+   <title>Hand Components with Gesture Events and Skeleton</title>
    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
 </head>
-
 <body>
    <a-scene 
       xr-mode-ui="enabled: true; enterVRDisabled: false;" 
       webxr="optionalFeatures: hand-tracking" 
       background="color: #444444">
-
-      <!-- Entidades de texto -->
-      <a-entity id="left-text" position="-1 1 -1" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
-      <a-entity id="right-text" position="1 1 -1" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
       
       <!-- Componentes de manos -->
       <a-entity manos="hand: left"></a-entity>
       <a-entity manos="hand: right"></a-entity>
 
       <!-- Componentes detectores -->
-      <a-entity detector="target: #left-text"></a-entity>
-      <a-entity detector="target: #right-text"></a-entity>
+      <a-entity detector="target: #left-text; hand: left"></a-entity>
+      <a-entity detector="target: #right-text; hand: right"></a-entity>
+
+      <!-- Entidades de texto -->
+      <a-entity id="left-text" position="-1 1 -3" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
+      <a-entity id="right-text" position="1 1 -3" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
    </a-scene>
 
    <script>
       const pinchDistance = 0.02;
+
       const orderedJoints = [
-         ["thumb-tip", "thumb-phalanx-distal", "thumb-phalanx-proximal", "thumb-metacarpal"],
-         ["index-finger-tip", "index-finger-phalanx-distal", "index-finger-phalanx-proximal", "index-finger-metacarpal"],
-         ["middle-finger-tip", "middle-finger-phalanx-distal", "middle-finger-phalanx-proximal", "middle-finger-metacarpal"],
-         ["ring-finger-tip", "ring-finger-phalanx-distal", "ring-finger-phalanx-proximal", "ring-finger-metacarpal"],
-         ["pinky-finger-tip", "pinky-finger-phalanx-distal", "pinky-finger-phalanx-proximal", "pinky-finger-metacarpal"]
+         ["wrist"],
+         ["thumb-metacarpal", "thumb-phalanx-proximal", "thumb-phalanx-distal", "thumb-tip"],
+         ["index-finger-metacarpal", "index-finger-phalanx-proximal", "index-finger-phalanx-intermediate", "index-finger-phalanx-distal", "index-finger-tip"],
+         ["middle-finger-metacarpal", "middle-finger-phalanx-proximal", "middle-finger-phalanx-intermediate", "middle-finger-phalanx-distal", "middle-finger-tip"],
+         ["ring-finger-metacarpal", "ring-finger-phalanx-proximal", "ring-finger-phalanx-intermediate", "ring-finger-phalanx-distal", "ring-finger-tip"],
+         ["pinky-finger-metacarpal", "pinky-finger-phalanx-proximal", "pinky-finger-phalanx-intermediate", "pinky-finger-phalanx-distal", "pinky-finger-tip"]
       ];
 
-      // Componente `manos`
+      // Componente `manos` con renderizado del esqueleto
       AFRAME.registerComponent('manos', {
          schema: {
             hand: { type: 'string', default: 'left' } // izquierda o derecha
@@ -44,8 +44,17 @@
          init: function () {
             this.frame = null;
             this.referenceSpace = null;
-            this.pinchState = false; // Estado del pinch actual
-            this.spheres = {}; // Almacena las esferas de las articulaciones
+            this.joints = {};
+            this.pinchState = false;
+
+            // Crear entidades para las articulaciones
+            orderedJoints.flat().forEach((jointName) => {
+               const jointEntity = document.createElement('a-sphere');
+               jointEntity.setAttribute('radius', 0.005);
+               jointEntity.setAttribute('color', this.data.hand === 'left' ? 'blue' : 'green');
+               this.el.appendChild(jointEntity);
+               this.joints[jointName] = jointEntity;
+            });
          },
 
          tick: function () {
@@ -53,8 +62,27 @@
                this.frame = this.el.sceneEl.frame;
                this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
             } else {
+               this.updateSkeleton();
                this.detectGesture();
-               this.renderHandSkeleton();
+            }
+         },
+
+         updateSkeleton: function () {
+            const session = this.el.sceneEl.renderer.xr.getSession();
+            const inputSources = session.inputSources;
+
+            for (const inputSource of inputSources) {
+               if (inputSource.handedness === this.data.hand && inputSource.hand) {
+                  for (const [jointName, jointEntity] of Object.entries(this.joints)) {
+                     const jointPose = this.frame.getJointPose(inputSource.hand.get(jointName), this.referenceSpace);
+                     if (jointPose) {
+                        const { x, y, z } = jointPose.transform.position;
+                        jointEntity.setAttribute('position', { x, y, z });
+                     } else {
+                        jointEntity.setAttribute('position', '0 0 0'); // Esconder si no hay datos
+                     }
+                  }
+               }
             }
          },
 
@@ -74,55 +102,12 @@
                         Math.pow(thumbTip.transform.position.z - indexTip.transform.position.z, 2)
                      );
 
-                     // Evento de inicio del gesto
                      if (distance < pinchDistance && !this.pinchState) {
                         this.pinchState = true;
-                        this.el.emit('pinchstart', { hand: this.data.hand }); // Emite evento de inicio
-                     } 
-                     // Evento de fin del gesto
-                     else if (distance >= pinchDistance && this.pinchState) {
+                        this.el.emit('pinchstart', { hand: this.data.hand });
+                     } else if (distance >= pinchDistance && this.pinchState) {
                         this.pinchState = false;
-                        this.el.emit('pinchend', { hand: this.data.hand }); // Emite evento de fin
-                     }
-                  }
-               }
-            }
-         },
-
-         drawSphere: function (radius, position) {
-            const sphere = document.createElement('a-sphere');
-            sphere.setAttribute('radius', radius || 0.008);
-            sphere.setAttribute('color', 'white');
-            sphere.object3D.position.set(position.x, position.y, position.z);
-            this.el.sceneEl.appendChild(sphere);
-            return sphere;
-         },
-
-         renderHandSkeleton: function () {
-            const session = this.el.sceneEl.renderer.xr.getSession();
-            if (!session || !this.frame || !this.referenceSpace) {
-               return;
-            }
-
-            const inputSources = session.inputSources;
-            for (const inputSource of inputSources) {
-               if (inputSource.hand) {
-                  const hand = inputSource.hand;
-                  const handedness = inputSource.handedness; // Mano derecha o izquierda
-                  for (const finger of orderedJoints) {
-                     for (const jointName of finger) {
-                        const joint = hand.get(jointName);
-                        if (joint) {
-                           const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
-                           if (jointPose) {
-                              const position = jointPose.transform.position;
-                              if (!this.spheres[handedness + '_' + jointName]) {
-                                 this.spheres[handedness + '_' + jointName] = this.drawSphere(jointPose.radius, position);
-                              } else {
-                                 this.spheres[handedness + '_' + jointName].object3D.position.set(position.x, position.y, position.z);
-                              }
-                           }
-                        }
+                        this.el.emit('pinchend', { hand: this.data.hand });
                      }
                   }
                }
@@ -133,34 +118,30 @@
       // Componente `detector`
       AFRAME.registerComponent('detector', {
          schema: {
-            target: { type: 'selector' } // Selección del texto a actualizar
+            target: { type: 'selector' },
+            hand: { type: 'string', default: 'left' } // Mano a escuchar
          },
 
          init: function () {
             this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-               if (evt.detail.hand === 'left') {
-                  this.updateText(this.data.target, "¡Inicio de gesto izquierdo!");
-               } else if (evt.detail.hand === 'right') {
-                  this.updateText(this.data.target, "¡Inicio de gesto derecho!");
+               if (evt.detail.hand === this.data.hand) {
+                  this.updateText("¡Inicio de gesto " + this.data.hand + "!");
                }
             });
 
             this.el.sceneEl.addEventListener('pinchend', (evt) => {
-               if (evt.detail.hand === 'left') {
-                  this.updateText(this.data.target, "¡Fin de gesto izquierdo!");
-               } else if (evt.detail.hand === 'right') {
-                  this.updateText(this.data.target, "¡Fin de gesto derecho!");
+               if (evt.detail.hand === this.data.hand) {
+                  this.updateText("¡Fin de gesto " + this.data.hand + "!");
                }
             });
          },
 
-         updateText: function (target, message) {
-            if (target) {
-               target.setAttribute('text', `value: ${message}; color: #FFF`);
+         updateText: function (message) {
+            if (this.data.target) {
+               this.data.target.setAttribute('text', `value: ${message}; color: #FFF`);
             }
          }
       });
    </script>
 </body>
-
 </html>
