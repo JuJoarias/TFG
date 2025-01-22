@@ -3,16 +3,16 @@
 <head>
    <title>Hand Components with Gesture Events and Skeleton</title>
    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
-   <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-obb-collider/dist/obb-collider.min.js"></script> <!-- Agrega el script del OBB Collider -->
+   <!-- <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-physics-system@master/dist/aframe-physics-system.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/deltaluca/aframe-obb-collider/dist/obb-collider.min.js"></script> Agrega el script del OBB Collider -->
 </head>
 <body>
    <a-scene 
       xr-mode-ui="enabled: true; enterVRDisabled: false;" 
       webxr="optionalFeatures: hand-tracking" 
       background="color: #444444"
-      physics="gravity: -9.8">
-      
+      >
+      <!-- physics="gravity: -9.8" -->
       <!-- Componente cubo más pequeño con static-body -->
       <!-- <a-box id="cube" position="0 1 -0.5" depth="0.2" height="0.2" width="0.2" color="red" static-body></a-box> -->
 
@@ -142,11 +142,11 @@
             }
 
             // Escuchar el evento 'collide' y emitir 'collide-start'
-            this.el.sceneEl.addEventListener('collide', (evt) => {
-               if (evt.detail.body.el.id === (this.data.hand === 'left' ? 'left-hand' : 'right-hand')) {
-                  this.el.emit('collide-start', { hand: this.data.hand });
-               }
-            });
+            // this.el.sceneEl.addEventListener('collide', (evt) => {
+            //    if (evt.detail.body.el.id === (this.data.hand === 'left' ? 'left-hand' : 'right-hand')) {
+            //       this.el.emit('collide-start', { hand: this.data.hand });
+            //    }
+            // });
          }
       });
 
@@ -170,11 +170,11 @@
                }
             });
 
-            this.el.sceneEl.addEventListener('collide-start', (evt) => {
-               if (evt.detail.hand === this.data.hand) {
-                  this.updateText(`¡Colisión iniciada con la mano ${this.data.hand}!`);
-               }
-            });
+            // this.el.sceneEl.addEventListener('collide-start', (evt) => {
+            //    if (evt.detail.hand === this.data.hand) {
+            //       this.updateText(`¡Colisión iniciada con la mano ${this.data.hand}!`);
+            //    }
+            // });
          },
 
          updateText: function (message) {
