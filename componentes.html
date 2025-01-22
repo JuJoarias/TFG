@@ -11,6 +11,10 @@
       xr-mode-ui="enabled: true; enterVRDisabled: false;" 
       webxr="optionalFeatures: hand-tracking" 
       background="color: #444444">
+
+      <!-- Entidades de texto -->
+      <a-entity id="left-text" position="-1 1 -1" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
+      <a-entity id="right-text" position="1 1 -1" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
       
       <!-- Componentes de manos -->
       <a-entity manos="hand: left"></a-entity>
@@ -19,14 +23,17 @@
       <!-- Componentes detectores -->
       <a-entity detector="target: #left-text"></a-entity>
       <a-entity detector="target: #right-text"></a-entity>
-
-      <!-- Entidades de texto -->
-      <a-entity id="left-text" position="-1 1 -3" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
-      <a-entity id="right-text" position="1 1 -3" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
    </a-scene>
 
    <script>
       const pinchDistance = 0.02;
+      const orderedJoints = [
+         ["thumb-tip", "thumb-phalanx-distal", "thumb-phalanx-proximal", "thumb-metacarpal"],
+         ["index-finger-tip", "index-finger-phalanx-distal", "index-finger-phalanx-proximal", "index-finger-metacarpal"],
+         ["middle-finger-tip", "middle-finger-phalanx-distal", "middle-finger-phalanx-proximal", "middle-finger-metacarpal"],
+         ["ring-finger-tip", "ring-finger-phalanx-distal", "ring-finger-phalanx-proximal", "ring-finger-metacarpal"],
+         ["pinky-finger-tip", "pinky-finger-phalanx-distal", "pinky-finger-phalanx-proximal", "pinky-finger-metacarpal"]
+      ];
 
       // Componente `manos`
       AFRAME.registerComponent('manos', {
@@ -38,6 +45,7 @@
             this.frame = null;
             this.referenceSpace = null;
             this.pinchState = false; // Estado del pinch actual
+            this.spheres = {}; // Almacena las esferas de las articulaciones
          },
 
          tick: function () {
@@ -46,6 +54,7 @@
                this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
             } else {
                this.detectGesture();
+               this.renderHandSkeleton();
             }
          },
 
@@ -74,6 +83,46 @@
                      else if (distance >= pinchDistance && this.pinchState) {
                         this.pinchState = false;
                         this.el.emit('pinchend', { hand: this.data.hand }); // Emite evento de fin
+                     }
+                  }
+               }
+            }
+         },
+
+         drawSphere: function (radius, position) {
+            const sphere = document.createElement('a-sphere');
+            sphere.setAttribute('radius', radius || 0.008);
+            sphere.setAttribute('color', 'white');
+            sphere.object3D.position.set(position.x, position.y, position.z);
+            this.el.sceneEl.appendChild(sphere);
+            return sphere;
+         },
+
+         renderHandSkeleton: function () {
+            const session = this.el.sceneEl.renderer.xr.getSession();
+            if (!session || !this.frame || !this.referenceSpace) {
+               return;
+            }
+
+            const inputSources = session.inputSources;
+            for (const inputSource of inputSources) {
+               if (inputSource.hand) {
+                  const hand = inputSource.hand;
+                  const handedness = inputSource.handedness; // Mano derecha o izquierda
+                  for (const finger of orderedJoints) {
+                     for (const jointName of finger) {
+                        const joint = hand.get(jointName);
+                        if (joint) {
+                           const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+                           if (jointPose) {
+                              const position = jointPose.transform.position;
+                              if (!this.spheres[handedness + '_' + jointName]) {
+                                 this.spheres[handedness + '_' + jointName] = this.drawSphere(jointPose.radius, position);
+                              } else {
+                                 this.spheres[handedness + '_' + jointName].object3D.position.set(position.x, position.y, position.z);
+                              }
+                           }
+                        }
                      }
                   }
                }
