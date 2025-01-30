@@ -29,6 +29,31 @@ AFRAME.registerComponent('manos', {
        this.updateSkeleton();
        this.detectGestures();
     },
+
+    updateSkeleton: function () {
+        const session = this.el.sceneEl.renderer.xr.getSession();
+        const inputSources = session.inputSources;
+
+        for (const inputSource of inputSources) {
+            if (inputSource.handedness === this.data.hand && inputSource.hand) {
+                for (const [jointName, jointEntity] of Object.entries(this.joints)) {
+                    const joint = inputSource.hand.get(jointName);
+                    const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+
+                    if (jointPose) {
+                        const { x, y, z } = jointPose.transform.position;
+                        const radius = jointPose.radius; // Obtener el radio dinámicamente
+
+                        // Actualizar la posición de la articulación de la mano
+                        jointEntity.setAttribute('position', { x, y, z });
+                        jointEntity.setAttribute('radius', radius || 0.008); // Usar el radio o un valor predeterminado
+                    } else {
+                        jointEntity.setAttribute('position', '0 0 0'); // Esconder si no hay datos
+                    }
+                }
+            }
+        }
+    },
  
     detectGestures: function () {
        const thumbTip = this.getJointPosition('thumb-tip');
