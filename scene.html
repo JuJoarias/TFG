@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+   <title>Hand Components with Gesture Events and Skeleton</title>
+   <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+   <script src="hands.js"></script>
+</head>
+<body>
+   <a-scene 
+      xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+      webxr="optionalFeatures: hand-tracking" 
+      background="color: #444444">
+
+      <!-- Componentes de manos con dynamic-body y obb-collider -->
+      <a-entity id="left-hand" manos="hand: left"></a-entity>
+      <a-entity id="right-hand" manos="hand: right"></a-entity>
+
+      <!-- Componentes detectores -->
+      <a-entity detector="target: #left-text; hand: left"></a-entity>
+      <a-entity detector="target: #right-text; hand: right"></a-entity>
+
+      <!-- Entidades de texto -->
+      <a-entity id="left-text" position="0 1 -2" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
+      <a-entity id="right-text" position="1 1 -2" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
+   </a-scene>
+</body>
+</html>
