@@ -45,8 +45,9 @@ AFRAME.registerComponent('manos', {
         return;
       }
       const inputSources = session.inputSources;
+      this.updateDebugText(inputSources);
       if (inputSources.length === 0) {
-         this.updateDebugText("No input sources");
+         this.updateDebugText(session.inputSources);
          return;
       }
 
