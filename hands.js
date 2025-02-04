@@ -92,13 +92,16 @@ AFRAME.registerComponent('manos', {
                   Math.pow(indexTip.transform.position.y - wrist.transform.position.y, 2) +
                   Math.pow(indexTip.transform.position.z - wrist.transform.position.z, 2)
                );
-               // Llamar a la función que actualiza el texto
-               this.updateDistanceText(distance);
 
-               const isIndexExtended = this.isFingerExtended(indexTip, wrist);
-               const isMiddleBent = !this.isFingerExtended(middleTip, wrist);
-               const isRingBent = !this.isFingerExtended(ringTip, wrist);
-               const isPinkyBent = !this.isFingerExtended(pinkyTip, wrist);
+               const isIndexBent = this.isFingerBended(indexTip, wrist);
+               const isMiddleBent = this.isFingerBended(middleTip, wrist);
+               const isRingBent = this.isFingerBended(ringTip, wrist);
+               const isPinkyBent = this.isFingerBended(pinkyTip, wrist);
+               // Llamar a la función que actualiza el texto
+               this.updateDistanceText(isIndexBent);
+               this.updateDistanceText(isMiddleBent);
+               this.updateDistanceText(isRingBent);
+               this.updateDistanceText(isPinkyBent);
 
                // Fist (Puño cerrado)
                if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
@@ -132,13 +135,16 @@ AFRAME.registerComponent('manos', {
    },
 
    updateDistanceText: function (distance) {
-      const distanceText = document.getElementById('distancia');
-      if (distanceText) {
-         distanceText.setAttribute('text', `value: Distancia: ${distance.toFixed(3)}m; color: #FFF`);
+      const dedos = ["index", "midle", "ring", "pinky"]
+      for (const dedo in dedos){
+         const distanceText = document.getElementById(dedo);
+         if (distanceText) {
+            distanceText.setAttribute('text', `value: ${dedo}: ${distance.toFixed(3)}m; color: #FFF`);
+         }
       }
    },
 
-   isFingerExtended: function (fingerTip, wrist) {
+   isFingerBended: function (fingerTip, wrist) {
       return Math.abs(fingerTip.transform.position.y - wrist.transform.position.y) > curlThreshold;
    }
 });
