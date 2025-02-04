@@ -134,28 +134,28 @@ AFRAME.registerComponent('manos', {
       }
    },
 
-   updateIndexText: function (distance) {
+   updateIndexText: function (text) {
       const distanceText = document.getElementById("index");
       if (distanceText) {
-         distanceText.setAttribute('text', `value: Index bend: ${distance}; color: #FFF`);
+         distanceText.setAttribute('text', `value: Index bend: ${text}; color: #FFF`);
       }
    },
-   updateMidleText: function (distance) {
+   updateMidleText: function (text) {
       const distanceText = document.getElementById("midle");
       if (distanceText) {
-         distanceText.setAttribute('text', `value: midle bend: ${distance}; color: #FFF`);
+         distanceText.setAttribute('text', `value: midle bend: ${text}; color: #FFF`);
       }
    },
-   updateRingText: function (distance) {
+   updateRingText: function (text) {
       const distanceText = document.getElementById("ring");
       if (distanceText) {
-         distanceText.setAttribute('text', `value: ring bend: ${distance}; color: #FFF`);
+         distanceText.setAttribute('text', `value: ring bend: ${text}; color: #FFF`);
       }
    },
-   updatePinkyText: function (distance) {
+   updatePinkyText: function (text) {
       const distanceText = document.getElementById("pinky");
       if (distanceText) {
-         distanceText.setAttribute('text', `value: pinky bend: ${distance}; color: #FFF`);
+         distanceText.setAttribute('text', `value: pinky bend: ${text}; color: #FFF`);
       }
    },
 
