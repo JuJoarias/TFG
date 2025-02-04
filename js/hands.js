@@ -30,12 +30,25 @@ AFRAME.registerComponent('manos', {
       this.detectGestures();
    },
 
+   updateDebugText: function (message) {
+      const debugText = document.getElementById('debugText');
+      if (debugText) {
+          debugText.setAttribute('text', 'value', message);
+      }
+   },
+  
+
    updateSkeleton: function () {
       const session = this.el.sceneEl.renderer.xr.getSession();
       if (!session) {
-         return; // Si no hay sesión, salimos de la función
+        this.updateDebugText("No XR session");
+        return;
       }
       const inputSources = session.inputSources;
+      if (inputSources.length === 0) {
+         this.updateDebugText("No input sources");
+         return;
+      }
 
       for (const inputSource of inputSources) {
          if (inputSource.handedness === this.data.hand && inputSource.hand) {
