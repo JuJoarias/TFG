@@ -1,5 +1,5 @@
 const pinchDistance = 0.02;
-const curlThreshold = 1; // Umbral de curvatura para detectar si un dedo está doblado
+const curlThreshold = 0.3; // Umbral de curvatura para detectar si un dedo está doblado
 
 const orderedJoints = [
    ["wrist"],
