@@ -92,40 +92,37 @@ AFRAME.registerComponent('manos', {
                   Math.pow(indexTip.transform.position.y - wrist.transform.position.y, 2) +
                   Math.pow(indexTip.transform.position.z - wrist.transform.position.z, 2)
                );
-
-               const isIndexBent = this.isFingerBended(indexTip, wrist);
-               const isMiddleBent = this.isFingerBended(middleTip, wrist);
-               const isRingBent = this.isFingerBended(ringTip, wrist);
-               const isPinkyBent = this.isFingerBended(pinkyTip, wrist);
                // Llamar a la función que actualiza el texto
-               // this.updateIndexText(isIndexBent);
-               // this.updateMidleText(isMiddleBent);
-               // this.updateRingText(isRingBent);
-               // this.updatePinkyText(isPinkyBent);
+               this.updateDistanceText(distance);
+
+               const isIndexExtended = this.isFingerExtended(indexTip, wrist);
+               const isMiddleBent = !this.isFingerExtended(middleTip, wrist);
+               const isRingBent = !this.isFingerExtended(ringTip, wrist);
+               const isPinkyBent = !this.isFingerExtended(pinkyTip, wrist);
 
                // Fist (Puño cerrado)
-               if (isIndexBent && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
+               if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
                   this.fistState = true;
                   this.el.emit('fiststart', { hand: this.data.hand });
-               } else if ((!isIndexBent || !isMiddleBent || !isRingBent || !isPinkyBent) && this.fistState) {
+               } else if ((isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.fistState) {
                   this.fistState = false;
                   this.el.emit('fistend', { hand: this.data.hand });
                }
 
                // Point (Apuntar con el índice)
-               if (!isIndexBent && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
+               if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
                   this.pointState = true;
                   this.el.emit('pointstart', { hand: this.data.hand });
-               } else if ((isIndexBent || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
+               } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
                   this.pointState = false;
                   this.el.emit('pointend', { hand: this.data.hand });
                }
 
                // Open Hand (Mano abierta)
-               if (!isIndexBent && !isMiddleBent && !isRingBent && !isPinkyBent && !this.openHandState) {
+               if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !this.openHandState) {
                   this.openHandState = true;
                   this.el.emit('openhandstart', { hand: this.data.hand });
-               } else if ((isIndexBent || isMiddleBent || isRingBent || isPinkyBent) && this.openHandState) {
+               } else if ((!isIndexExtended || isMiddleBent || isRingBent || isPinkyBent) && this.openHandState) {
                   this.openHandState = false;
                   this.el.emit('openhandend', { hand: this.data.hand });
                }
@@ -134,32 +131,14 @@ AFRAME.registerComponent('manos', {
       }
    },
 
-   // updateIndexText: function (text) {
-   //    const distanceText = document.getElementById("index");
-   //    if (distanceText) {
-   //       distanceText.setAttribute('text', `value: Index bend: ${text}; color: #FFF`);
-   //    }
-   // },
-   // updateMidleText: function (text) {
-   //    const distanceText = document.getElementById("midle");
-   //    if (distanceText) {
-   //       distanceText.setAttribute('text', `value: midle bend: ${text}; color: #FFF`);
-   //    }
-   // },
-   // updateRingText: function (text) {
-   //    const distanceText = document.getElementById("ring");
-   //    if (distanceText) {
-   //       distanceText.setAttribute('text', `value: ring bend: ${text}; color: #FFF`);
-   //    }
-   // },
-   // updatePinkyText: function (text) {
-   //    const distanceText = document.getElementById("pinky");
-   //    if (distanceText) {
-   //       distanceText.setAttribute('text', `value: pinky bend: ${text}; color: #FFF`);
-   //    }
-   // },
+   updateDistanceText: function (distance) {
+      const distanceText = document.getElementById('distancia');
+      if (distanceText) {
+         distanceText.setAttribute('text', `value: Distancia: ${distance.toFixed(3)}m; color: #FFF`);
+      }
+   },
 
-   isFingerBended: function (fingerTip, wrist) {
+   isFingerExtended: function (fingerTip, wrist) {
       return Math.abs(fingerTip.transform.position.y - wrist.transform.position.y) > curlThreshold;
    }
 });
