@@ -139,7 +139,11 @@ AFRAME.registerComponent('manos', {
    },
 
    isFingerExtended: function (fingerTip, wrist) {
-      return Math.abs(fingerTip.transform.position.y - wrist.transform.position.y) > curlThreshold;
+      return Math.sqrt(
+         Math.pow(thumbTip.transform.position.x - indexTip.transform.position.x, 2) +
+         Math.pow(thumbTip.transform.position.y - indexTip.transform.position.y, 2) +
+         Math.pow(thumbTip.transform.position.z - indexTip.transform.position.z, 2)
+      ) > curlThreshold;
    }
 });
 
