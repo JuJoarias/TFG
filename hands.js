@@ -87,6 +87,14 @@ AFRAME.registerComponent('manos', {
 
             // Detectar si los dedos están doblados
             if (wrist && indexTip && middleTip && ringTip && pinkyTip) {
+               const distance = Math.sqrt(
+                  Math.pow(indexTip.transform.position.x - wrist.transform.position.x, 2) +
+                  Math.pow(indexTip.transform.position.y - wrist.transform.position.y, 2) +
+                  Math.pow(indexTip.transform.position.z - wrist.transform.position.z, 2)
+               );
+               // Llamar a la función que actualiza el texto
+               this.updateDistanceText(distance);
+               
                const isIndexExtended = this.isFingerExtended(indexTip, wrist);
                const isMiddleBent = !this.isFingerExtended(middleTip, wrist);
                const isRingBent = !this.isFingerExtended(ringTip, wrist);
@@ -122,6 +130,14 @@ AFRAME.registerComponent('manos', {
          }
       }
    },
+
+   updateDistanceText: function (distance) {
+      const distanceText = document.getElementById('distancia');
+      if (distanceText) {
+         distanceText.setAttribute('text', `value: Distancia: ${distance.toFixed(3)}m; color: #FFF`);
+      }
+   },
+
    isFingerExtended: function (fingerTip, wrist) {
       return Math.abs(fingerTip.transform.position.y - wrist.transform.position.y) > curlThreshold;
    }
