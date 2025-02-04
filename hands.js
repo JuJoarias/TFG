@@ -1,5 +1,5 @@
 const pinchDistance = 0.02;
-const curlThreshold = 0.3; // Umbral de curvatura para detectar si un dedo está doblado
+const curlThreshold = 0.09; // Umbral de curvatura para detectar si un dedo está doblado
 
 const orderedJoints = [
    ["wrist"],
@@ -94,7 +94,7 @@ AFRAME.registerComponent('manos', {
                );
                // Llamar a la función que actualiza el texto
                this.updateDistanceText(distance);
-               
+
                const isIndexExtended = this.isFingerExtended(indexTip, wrist);
                const isMiddleBent = !this.isFingerExtended(middleTip, wrist);
                const isRingBent = !this.isFingerExtended(ringTip, wrist);
