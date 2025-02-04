@@ -98,10 +98,10 @@ AFRAME.registerComponent('manos', {
                const isRingBent = this.isFingerBended(ringTip, wrist);
                const isPinkyBent = this.isFingerBended(pinkyTip, wrist);
                // Llamar a la función que actualiza el texto
-               this.updateDistanceText(isIndexBent);
-               this.updateDistanceText(isMiddleBent);
-               this.updateDistanceText(isRingBent);
-               this.updateDistanceText(isPinkyBent);
+               this.updateIndexText(isIndexBent);
+               this.updateMidleText(isMiddleBent);
+               this.updateRingText(isRingBent);
+               this.updatePinkyText(isPinkyBent);
 
                // Fist (Puño cerrado)
                if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
@@ -134,13 +134,28 @@ AFRAME.registerComponent('manos', {
       }
    },
 
-   updateDistanceText: function (distance) {
-      const dedos = ["index", "midle", "ring", "pinky"]
-      for (const dedo in dedos){
-         const distanceText = document.getElementById(dedo);
-         if (distanceText) {
-            distanceText.setAttribute('text', `value: ${dedo}: ${distance.toFixed(3)}m; color: #FFF`);
-         }
+   updateIndexText: function (distance) {
+      const distanceText = document.getElementById("index");
+      if (distanceText) {
+         distanceText.setAttribute('text', `value: Index bend: ${distance}; color: #FFF`);
+      }
+   },
+   updateMidleText: function (distance) {
+      const distanceText = document.getElementById("midle");
+      if (distanceText) {
+         distanceText.setAttribute('text', `value: midle bend: ${distance}; color: #FFF`);
+      }
+   },
+   updateRingText: function (distance) {
+      const distanceText = document.getElementById("ring");
+      if (distanceText) {
+         distanceText.setAttribute('text', `value: ring bend: ${distance}; color: #FFF`);
+      }
+   },
+   updatePinkyText: function (distance) {
+      const distanceText = document.getElementById("pinky");
+      if (distanceText) {
+         distanceText.setAttribute('text', `value: pinky bend: ${distance}; color: #FFF`);
       }
    },
 
