@@ -40,28 +40,32 @@ AFRAME.registerComponent('manos', {
    updateSkeleton: function () {
       const session = this.el.sceneEl.renderer.xr.getSession();
       const inputSources = session.inputSources;
+  
       for (const inputSource of inputSources) {
-         if (inputSource.handedness === this.data.hand && inputSource.hand) {
-            for (const [jointName, jointEntity] of Object.entries(this.joints)) {
-               const joint = inputSource.hand.get(jointName);
-               const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
-               if (jointPose) {
-                  const { x, y, z } = jointPose.transform.position;
-                  const radius = jointPose.radius || 0.008; // Asegurar que siempre tenga un valor
-   
-                  // Asignar la posición y el radio al jointEntity
-                  jointEntity.setAttribute('position', { x, y, z });
-                  jointEntity.setAttribute('radius', radius);
-   
-                  // Asignar el mismo tamaño al collider
-                  jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
-               } else {
-                  jointEntity.setAttribute('position', '0 0 0');
-               }
-            }
-         }
+          if (inputSource.handedness === this.data.hand && inputSource.hand) {
+              for (const [jointName, jointEntity] of Object.entries(this.joints)) {
+                  const joint = inputSource.hand.get(jointName);
+                  const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+  
+                  if (jointPose) {
+                      const { x, y, z } = jointPose.transform.position;
+                      const radius = jointPose.radius || 0.008;  // Radio del joint
+  
+                      jointEntity.setAttribute('position', { x, y, z });
+                      jointEntity.setAttribute('radius', radius);
+  
+                      // Definir `obb-collider` con el mismo tamaño que el joint
+                      if (!jointEntity.hasAttribute('obb-collider')) {
+                          jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
+                      }
+                  } else {
+                      jointEntity.setAttribute('position', '0 0 0');
+                  }
+              }
+          }
       }
-   },
+  }
+  ,
    detectGesture: function () {
       const session = this.el.sceneEl.renderer.xr.getSession();
       const inputSources = session.inputSources;
