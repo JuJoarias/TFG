@@ -47,10 +47,14 @@ AFRAME.registerComponent('manos', {
                const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
                if (jointPose) {
                   const { x, y, z } = jointPose.transform.position;
-                  const radius = jointPose.radius;
+                  const radius = jointPose.radius || 0.008; // Asegurar que siempre tenga un valor
+   
+                  // Asignar la posición y el radio al jointEntity
                   jointEntity.setAttribute('position', { x, y, z });
-                  jointEntity.setAttribute('radius', radius || 0.008);
-                  // jointEntity.setAttribute('obb-collider', '');
+                  jointEntity.setAttribute('radius', radius);
+   
+                  // Asignar el mismo tamaño al collider
+                  jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
                } else {
                   jointEntity.setAttribute('position', '0 0 0');
                }
