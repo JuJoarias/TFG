@@ -159,11 +159,11 @@ AFRAME.registerComponent('detector', {
        var cube = document.querySelector("#cube");
  
        cube.addEventListener('obbcollisionstarted', function  (event) {
-          cube.setAttribute('color', '#00F'); // Cambiar color a azul cuando inicia la colisión
+          cube.setAttribute('color', 'yellow'); // Cambiar color a azul cuando inicia la colisión
        });
  
        cube.addEventListener('obbcollisionended', function  (event) {
-          cube.setAttribute('color', '#F00'); // Volver a color rojo cuando termina la colisión
+          cube.setAttribute('color', 'red'); // Volver a color rojo cuando termina la colisión
        });
     },
  
