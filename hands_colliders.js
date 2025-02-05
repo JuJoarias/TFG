@@ -24,7 +24,6 @@ AFRAME.registerComponent('manos', {
       orderedJoints.flat().forEach((jointName) => {
          const jointEntity = document.createElement('a-sphere');
          jointEntity.setAttribute('color', 'white');
-         jointEntity.setAttribute('obb-collider', '');
          this.el.appendChild(jointEntity);
          this.joints[jointName] = jointEntity;
       });
@@ -51,6 +50,7 @@ AFRAME.registerComponent('manos', {
                   const radius = jointPose.radius;
                   jointEntity.setAttribute('position', { x, y, z });
                   jointEntity.setAttribute('radius', radius || 0.008);
+                  jointEntity.setAttribute('obb-collider', '');
                } else {
                   jointEntity.setAttribute('position', '0 0 0');
                }

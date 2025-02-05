@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>A-Frame con OBB Collider</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <!-- <script src="https://unpkg.com/aframe-obb-collider/dist/aframe-obb-collider.min.js"></script> -->
+  </head>
+  <body>
+    <a-scene>
+      <!-- Cámara -->
+      <a-camera position="0 2 5"></a-camera>
+
+      <!-- Caja con OBB Collider y visualización de colisión -->
+      <a-box id="box" position="0 1 0" color="red" scale="0.25 0.25 0.25" obb-collider></a-box>
+
+
+      <!-- Esfera con OBB Collider y visualización de colisión -->
+      <a-sphere id="sphere" position="3 1 0" radius="0.5" color="blue"
+                animation="property: position; to: -3 1 0; dur: 2000; dir: alternate; loop: true;"
+                obb-collider>
+      </a-sphere>
+
+      <!-- Script para manejar los eventos de colisión -->
+      <script>
+        // Evento cuando comienza la colisión en la caja
+        document.querySelector('#box').addEventListener('obbcollisionstarted', function (event) {
+          console.log('Colisión iniciada con la esfera');
+          event.target.setAttribute('color', '#FFFF00'); // Cambia el color a amarillo
+        });
+
+        // Evento cuando termina la colisión en la caja
+        document.querySelector('#box').addEventListener('obbcollisionended', function (event) {
+          console.log('Colisión terminada con la esfera');
+          event.target.setAttribute('color', 'red'); // Vuelve al color original
+        });
+
+        // Evento cuando comienza la colisión en la esfera
+        document.querySelector('#sphere').addEventListener('obbcollisionstarted', function (event) {
+          console.log('Colisión iniciada con la caja');
+          event.target.setAttribute('color', '#00FF00'); // Cambia el color a verde
+        });
+
+        // Evento cuando termina la colisión en la esfera
+        document.querySelector('#sphere').addEventListener('obbcollisionended', function (event) {
+          console.log('Colisión terminada con la caja');
+          event.target.setAttribute('color', 'blue'); // Vuelve al color original
+        });
+      </script>
+    </a-scene>
+  </body>
+</html>
