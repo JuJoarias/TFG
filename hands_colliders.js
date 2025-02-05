@@ -50,7 +50,7 @@ AFRAME.registerComponent('manos', {
                   const radius = jointPose.radius;
                   jointEntity.setAttribute('position', { x, y, z });
                   jointEntity.setAttribute('radius', radius || 0.008);
-                  jointEntity.setAttribute('obb-collider', '');
+                  // jointEntity.setAttribute('obb-collider', '');
                } else {
                   jointEntity.setAttribute('position', '0 0 0');
                }
