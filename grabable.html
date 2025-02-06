@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test colliders</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="hands_grabable.js"></script> 
+</head>
+<body>
+    <a-scene 
+        xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+        webxr="optionalFeatures: hand-tracking"
+        background="color: #444444">
+        
+        <!-- Manos -->
+        <a-entity id="left-hand" manos="hand: left" ></a-entity>
+        <a-entity id="right-hand" manos="hand: right" ></a-entity>
+
+        <!-- Detectores -->
+        <a-entity detector="target: #left-text; hand: left"></a-entity>
+        <a-entity detector="target: #right-text; hand: right"></a-entity>
+
+        <!-- Texto -->
+        <a-entity id="left-text" position="-1 1 -2" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
+        <a-entity id="right-text" position="1 1 -2" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
+    
+        <!-- Cubo con OBB-collider -->
+        <a-box id="cube" position="0 1 -0.5" color="red" scale="0.25 0.25 0.25" grabable></a-box>
+    </a-scene>
+</body>
+</html>
