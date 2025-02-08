@@ -185,7 +185,7 @@ AFRAME.registerComponent('detector', {
 AFRAME.registerComponent('grabable', {
    init: function () {
       this.grabbing = false;
-      this.handEl = null;
+      const handEl = null;
       
       // Agregar el obb-collider automáticamente
       if (!this.el.hasAttribute('obb-collider')) {
@@ -195,8 +195,8 @@ AFRAME.registerComponent('grabable', {
       this.el.sceneEl.addEventListener('pinchstart', (evt) => {
           if (this.isColliding && evt.detail.hand === 'right') {
               this.grabbing = true;
-              this.handEl = evt.detail.hand;
-              document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
+              handEl = evt.detail.hand;
+              document.querySelector('#text').setAttribute('text', `value: Pinch con ${handEl} hand`);
               if (this.handEl) {
                cube.setAttribute('color', 'yellow');
               }else {cube.setAttribute('color', 'green');} 
@@ -205,7 +205,7 @@ AFRAME.registerComponent('grabable', {
       this.el.sceneEl.addEventListener('pinchend', (evt) => {
           if (this.grabbing && evt.detail.hand === 'right') {
               this.grabbing = false;
-              this.handEl = null;
+              handEl = null;
               cube.setAttribute('color', 'red');
           }
       });
@@ -217,11 +217,11 @@ AFRAME.registerComponent('grabable', {
       });
    },
    tick: function () {
-      if (this.grabbing && this.handEl) {
-          const indexTip = this.handEl.joints['index-finger-tip'];
-          if (indexTip) {
-              this.el.object3D.position.copy(indexTip.object3D.position);
-          }
-      }
+      // if (this.grabbing && handEl) {
+      //     const indexTip = handEl.joints['index-finger-tip'];
+      //     if (indexTip) {
+      //         this.el.object3D.position.copy(indexTip.object3D.position);
+      //     }
+      // }
    }
 });
