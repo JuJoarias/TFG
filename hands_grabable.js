@@ -164,15 +164,15 @@ AFRAME.registerComponent('detector', {
        });
  
        // Agregar eventos de colisión al cubo
-       var cube = document.querySelector("#cube");
+      //  var cube = document.querySelector("#cube");
  
-       cube.addEventListener('obbcollisionstarted', function  (event) {
-          cube.setAttribute('color', 'yellow'); // Cambiar color a azul cuando inicia la colisión
-       });
+      //  cube.addEventListener('obbcollisionstarted', function  (event) {
+      //     cube.setAttribute('color', 'yellow'); // Cambiar color a azul cuando inicia la colisión
+      //  });
  
-       cube.addEventListener('obbcollisionended', function  (event) {
-          cube.setAttribute('color', 'red'); // Volver a color rojo cuando termina la colisión
-       });
+      //  cube.addEventListener('obbcollisionended', function  (event) {
+      //     cube.setAttribute('color', 'red'); // Volver a color rojo cuando termina la colisión
+      //  });
     },
  
     updateText: function (message) {
@@ -183,39 +183,42 @@ AFRAME.registerComponent('detector', {
 });
  
 AFRAME.registerComponent('grabable', {
-    init: function () {
-        this.grabbing = false;
-        this.indexTipPosition = null;
-        this.colliding = false;
-
-        this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-            this.grabbing = true;
-        });
-
-        this.el.sceneEl.addEventListener('pinchend', (evt) => {
-            this.grabbing = false;
-        });
-
-        this.el.addEventListener('obbcollisionstarted', (evt) => {
-            if (evt.detail.collider.id === 'index-finger-tip') {
-                this.colliding = true;
-            }
-        });
-
-        this.el.addEventListener('obbcollisionended', (evt) => {
-            if (evt.detail.collider.id === 'index-finger-tip') {
-                this.colliding = false;
-            }
-        });
-    },
-
-    tick: function () {
-        if (this.grabbing && this.colliding) {
-            const indexTipEntity = document.querySelector('[manos]').joints['index-finger-tip'];
-            if (indexTipEntity) {
-                const newPos = indexTipEntity.getAttribute('position');
-                this.el.setAttribute('position', newPos);
-            }
-        }
-    }
+   init: function () {
+      this.grabbing = false;
+      this.handEl = null;
+      
+      // Agregar el obb-collider automáticamente
+      if (!this.el.hasAttribute('obb-collider')) {
+          this.el.setAttribute('obb-collider', 'size: auto');
+      }
+      var cube = document.querySelector("#cube");
+      this.el.sceneEl.addEventListener('pinchstart', (evt) => {
+          if (this.isColliding && evt.detail.hand === 'right') {
+              this.grabbing = true;
+              this.handEl = document.querySelector(`[manos][data-hand='${evt.detail.hand}']`);
+              cube.setAttribute('color', 'yellow');
+          }
+      });
+      this.el.sceneEl.addEventListener('pinchend', (evt) => {
+          if (this.grabbing && evt.detail.hand === 'right') {
+              this.grabbing = false;
+              this.handEl = null;
+              cube.setAttribute('color', 'red');
+          }
+      });
+      this.el.addEventListener('obbcollisionstarted', () => {
+          this.isColliding = true;
+      });
+      this.el.addEventListener('obbcollisionended', () => {
+          this.isColliding = false;
+      });
+   },
+   tick: function () {
+      if (this.grabbing && this.handEl) {
+          const indexTip = this.handEl.joints['index-finger-tip'];
+          if (indexTip) {
+              this.el.object3D.position.copy(indexTip.object3D.position);
+          }
+      }
+   }
 });
