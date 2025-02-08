@@ -199,15 +199,15 @@ AFRAME.registerComponent('grabable', {
          this.isColliding = false;
      });
 
-      var cube = document.querySelector("#cube");
+      // var cube = document.querySelector("#cube");
       this.el.sceneEl.addEventListener('pinchstart', (evt) => {
           if (this.isColliding && evt.detail.hand === 'right') {
               this.grabbing = true;
             //   handEl = evt.detail.hand;
               document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
               if (evt.detail.hand === 'right') {
-               cube.setAttribute('color', 'yellow');
-              }else {cube.setAttribute('color', 'green');} 
+               this.el.setAttribute('color', 'yellow');
+              }else {this.el.setAttribute('color', 'green');} 
           }
       });
       this.el.sceneEl.addEventListener(`pinchend`, (evt) => {
@@ -216,7 +216,7 @@ AFRAME.registerComponent('grabable', {
           if (this.grabbing && evt.detail.hand === 'right') {
               document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);
               this.grabbing = false;
-              cube.setAttribute('color', 'red');              
+              this.el.setAttribute('color', 'red');              
           }
       });
    },
