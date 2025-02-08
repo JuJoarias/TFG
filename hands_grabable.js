@@ -193,7 +193,8 @@ AFRAME.registerComponent('grabable', {
       }
       var cube = document.querySelector("#cube");
       this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-          if (this.isColliding && evt.detail.hand === 'right') {
+         right = evt.detail.hand === 'right'
+          if (this.isColliding && right) {
               this.grabbing = true;
               this.handEl = evt.detail.hand;
               if (this.handEl) {
