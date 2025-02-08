@@ -197,7 +197,7 @@ AFRAME.registerComponent('grabable', {
               this.grabbing = true;
               handEl = evt.detail.hand;
               document.querySelector('#text').setAttribute('text', `value: Pinch con ${handEl} hand`);
-              if (this.handEl) {
+              if (handEl) {
                cube.setAttribute('color', 'yellow');
               }else {cube.setAttribute('color', 'green');} 
           }
