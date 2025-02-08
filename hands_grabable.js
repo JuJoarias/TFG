@@ -201,7 +201,7 @@ AFRAME.registerComponent('grabable', {
 
       var cube = document.querySelector("#cube");
       this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-          if (this.isColliding && evt.detail.hand ) {
+          if (this.isColliding && evt.detail.hand === 'right') {
               this.grabbing = true;
             //   handEl = evt.detail.hand;
               document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
@@ -210,7 +210,9 @@ AFRAME.registerComponent('grabable', {
               }else {cube.setAttribute('color', 'green');} 
           }
       });
-      this.el.sceneEl.addEventListener('pinchend', (evt) => {
+      this.el.sceneEl.addEventListener(`pinchend`, (evt) => {
+         document.querySelector('#text').setAttribute('text', `value: Pinch intentando terminar con ${evt.detail.hand} hand`);
+
           if (this.grabbing && evt.detail.hand === 'right') {
               document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);
               this.grabbing = false;
