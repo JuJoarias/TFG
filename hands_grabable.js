@@ -213,11 +213,11 @@ AFRAME.registerComponent('grabable', {
       this.el.sceneEl.addEventListener(`pinchend`, (evt) => {
          document.querySelector('#text').setAttribute('text', `value: Pinch intentando terminar con ${evt.detail.hand} hand`);
 
-          if (this.grabbing && evt.detail.hand === 'right') {
-              document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);
-              this.el.setAttribute('color', 'red');              
-              this.grabbing = false;
-          }
+         if (this.grabbing && evt.detail.hand === 'right') {
+           this.el.setAttribute('color', 'red');
+           document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);            
+           this.grabbing = false;
+         }
       });
    },
    tick: function () {
