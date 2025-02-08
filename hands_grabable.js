@@ -198,8 +198,7 @@ AFRAME.registerComponent('grabable', {
               this.handEl = document.querySelector(`[manos][data-hand='${evt.detail.hand}']`);
               if (this.handEl) {
                cube.setAttribute('color', 'yellow');
-              }
-              cube.setAttribute('color', 'green');
+              }else {cube.setAttribute('color', 'green');} 
           }
       });
       this.el.sceneEl.addEventListener('pinchend', (evt) => {
