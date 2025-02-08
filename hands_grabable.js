@@ -191,13 +191,21 @@ AFRAME.registerComponent('grabable', {
       if (!this.el.hasAttribute('obb-collider')) {
           this.el.setAttribute('obb-collider', 'size: auto');
       }
+      
+      this.el.addEventListener('obbcollisionstarted', () => {
+         this.isColliding = true;
+     });
+     this.el.addEventListener('obbcollisionended', () => {
+         this.isColliding = false;
+     });
+
       var cube = document.querySelector("#cube");
       this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-          if (this.isColliding && evt.detail.hand === 'right') {
+          if (this.isColliding && evt.detail.hand ) {
               this.grabbing = true;
             //   handEl = evt.detail.hand;
               document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
-              if (handEl) {
+              if (evt.detail.hand === 'right') {
                cube.setAttribute('color', 'yellow');
               }else {cube.setAttribute('color', 'green');} 
           }
@@ -208,12 +216,6 @@ AFRAME.registerComponent('grabable', {
               handEl = null;
               cube.setAttribute('color', 'red');
           }
-      });
-      this.el.addEventListener('obbcollisionstarted', () => {
-          this.isColliding = true;
-      });
-      this.el.addEventListener('obbcollisionended', () => {
-          this.isColliding = false;
       });
    },
    tick: function () {
