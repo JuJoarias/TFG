@@ -215,8 +215,8 @@ AFRAME.registerComponent('grabable', {
 
           if (this.grabbing && evt.detail.hand === 'right') {
               document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);
-              this.grabbing = false;
               this.el.setAttribute('color', 'red');              
+              this.grabbing = false;
           }
       });
    },
