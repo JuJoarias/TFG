@@ -195,7 +195,7 @@ AFRAME.registerComponent('grabable', {
       this.el.sceneEl.addEventListener('pinchstart', (evt) => {
           if (this.isColliding && evt.detail.hand === 'right') {
               this.grabbing = true;
-              this.handEl = document.querySelector(`[manos][data-hand='${evt.detail.hand}']`);
+              this.handEl = evt.detail.hand;
               if (this.handEl) {
                cube.setAttribute('color', 'yellow');
               }else {cube.setAttribute('color', 'green');} 
