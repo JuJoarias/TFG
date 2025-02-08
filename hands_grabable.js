@@ -191,7 +191,7 @@ AFRAME.registerComponent('grabable', {
       if (!this.el.hasAttribute('obb-collider')) {
           this.el.setAttribute('obb-collider', 'size: auto');
       }
-      
+
       this.el.addEventListener('obbcollisionstarted', () => {
          this.isColliding = true;
      });
@@ -212,6 +212,7 @@ AFRAME.registerComponent('grabable', {
       });
       this.el.sceneEl.addEventListener('pinchend', (evt) => {
           if (this.grabbing && evt.detail.hand === 'right') {
+              document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);
               this.grabbing = false;
               handEl = null;
               cube.setAttribute('color', 'red');
