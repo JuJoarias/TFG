@@ -149,6 +149,9 @@ AFRAME.registerComponent('detector', {
     },
  
     init: function () {
+
+      this.isGrabbed = false;
+      
        // Escuchar gestos de la mano
        ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
           this.el.sceneEl.addEventListener(`${gesture}start`, (evt) => {
@@ -184,9 +187,6 @@ AFRAME.registerComponent('detector', {
  
 AFRAME.registerComponent('grabable', {
    init: function () {
-      this.grabbing = false;
-      const handEl = null;
-      
       // Agregar el obb-collider automáticamente
       if (!this.el.hasAttribute('obb-collider')) {
           this.el.setAttribute('obb-collider', 'size: auto');
