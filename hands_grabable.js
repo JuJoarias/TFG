@@ -187,65 +187,50 @@ AFRAME.registerComponent('detector', {
  
 AFRAME.registerComponent('grabable', {
    init: function () {
-      // Agregar el obb-collider automáticamente
-      if (!this.el.hasAttribute('obb-collider')) {
-          this.el.setAttribute('obb-collider', 'size: auto');
-      }
+       if (!this.el.hasAttribute('obb-collider')) {
+           this.el.setAttribute('obb-collider', 'size: auto');
+       }
 
-      let leftHandEntity = document.querySelector('#left-hand');
-      let rightHandEntity = document.querySelector('#right-hand');
-      let leftDetector = document.querySelector('#left-detector');
-      let rightDetector = document.querySelector('#right-detector');
-      
-      
+       this.leftHandEntity = document.querySelector('#left-hand');
+       this.rightHandEntity = document.querySelector('#right-hand');
+       this.leftDetector = document.querySelector('#left-detector');
+       this.rightDetector = document.querySelector('#right-detector');
 
-      // var cube = document.querySelector("#cube");
-      // this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-      //     if (this.isColliding && evt.detail.hand === 'right') {
-      //         this.grabbing = true;
-      //       //   handEl = evt.detail.hand;
-      //         document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
-      //         if (evt.detail.hand === 'right') {
-      //          this.el.setAttribute('color', 'yellow');
-      //         }else {this.el.setAttribute('color', 'green');} 
-      //     }
-      // });
-      // this.el.sceneEl.addEventListener(`pinchend`, (evt) => {
-      //    document.querySelector('#text').setAttribute('text', `value: Pinch intentando terminar con ${evt.detail.hand} hand`);
-
-      //    if (this.grabbing && evt.detail.hand === 'right') {
-      //      this.el.setAttribute('color', 'red');
-      //      document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);            
-      //      this.grabbing = false;
-      //    }
-      // });
+       this.lastPinchState = null;
+       this.lastGrabState = null;
    },
+
    tick: function () {
-      
-      this.check();
+       this.check();
    },
 
-   check: function(){
-      if (rightHandEntity && rightHandEntity.components.manos) {
-         // Acceder al pinchState de la mano derecha
-         document.querySelector('#text').setAttribute('text', `value: La mano derecha se detecta correctamente`);
-     
-         // Verificar que rightDetector tiene el componente detector antes de acceder a isGrabbed
-         if (rightDetector && rightDetector.components.detector) {
-             const rightPinchState = rightHandEntity.components.manos.pinchState;
-             const rightColide = rightDetector.components.detector.isGrabbed;
-     
-             if (rightColide && rightPinchState) {
-                 document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
-                 this.el.setAttribute('color', 'green');  // Asegúrate de que "this.el" es correcto
-             } else {
-                 document.querySelector('#text').setAttribute('text', `value: El pinch o grab están en false`);
-             }
-         } else {
-             document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano derecha`);
-         }
-     } else {
-         document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
-     }
+   check: function () {
+       if (!this.rightHandEntity || !this.rightHandEntity.components.manos) {
+           document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
+           return;
+       }
+
+       if (!this.rightDetector || !this.rightDetector.components.detector) {
+           document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano derecha`);
+           return;
+       }
+
+       const rightPinchState = this.rightHandEntity.components.manos.pinchState;
+       const rightColide = this.rightDetector.components.detector.isGrabbed;
+
+       if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState) {
+           this.lastPinchState = rightPinchState;
+           this.lastGrabState = rightColide;
+           this.updateState(rightPinchState, rightColide);
+       }
+   },
+
+   updateState: function (pinch, grab) {
+       if (grab && pinch) {
+           this.el.setAttribute('material', 'color', 'green');
+           document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
+       } else {
+           document.querySelector('#text').setAttribute('text', `value: El pinch o grab están en false`);
+       }
    }
 });
