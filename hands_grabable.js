@@ -164,15 +164,15 @@ AFRAME.registerComponent('detector', {
        });
  
        // Agregar eventos de colisión al cubo
-      //  var cube = document.querySelector("#cube");
+       var cube = document.querySelector('[grabable]');
  
-      //  cube.addEventListener('obbcollisionstarted', function  (event) {
-      //     cube.setAttribute('color', 'yellow'); // Cambiar color a azul cuando inicia la colisión
-      //  });
+       cube.addEventListener('obbcollisionstarted', function  (event) {
+         this.isGrabbed = true;
+       });
  
-      //  cube.addEventListener('obbcollisionended', function  (event) {
-      //     cube.setAttribute('color', 'red'); // Volver a color rojo cuando termina la colisión
-      //  });
+       cube.addEventListener('obbcollisionended', function  (event) {
+         this.isGrabbed = false;
+       });
     },
  
     updateText: function (message) {
@@ -192,33 +192,49 @@ AFRAME.registerComponent('grabable', {
           this.el.setAttribute('obb-collider', 'size: auto');
       }
 
-      this.el.addEventListener('obbcollisionstarted', () => {
-         this.isColliding = true;
-     });
-     this.el.addEventListener('obbcollisionended', () => {
-         this.isColliding = false;
-     });
+     let leftHandEntity = document.querySelector('#left-hand');
+     let rightHandEntity = document.querySelector('#right-hand');
+     let leftDetector = document.querySelector('#left-detector');
+     let rightDetector = document.querySelector('#right-detector');
+
+
+     if (rightHandEntity && rightHandEntity.components.manos) {
+      // Acceder al pinchState de la mano derecha
+      document.querySelector('#text').setAttribute('text', `value: La mano derecha se detecta correctamente`);
+
+      const rightPinchState = rightHandEntity.components.manos.pinchState;
+      const rightColide = rightDetector.components.detector.isGrabbed;
+      if(rightColide && rightPinchState){
+         this.el.setAttribute('color', 'green');
+      } else {
+         document.querySelector('#text').setAttribute('text', `value: El pinch o grab no se detectan bien`);
+
+      }
+     } else{
+      document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
+
+     }
 
       // var cube = document.querySelector("#cube");
-      this.el.sceneEl.addEventListener('pinchstart', (evt) => {
-          if (this.isColliding && evt.detail.hand === 'right') {
-              this.grabbing = true;
-            //   handEl = evt.detail.hand;
-              document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
-              if (evt.detail.hand === 'right') {
-               this.el.setAttribute('color', 'yellow');
-              }else {this.el.setAttribute('color', 'green');} 
-          }
-      });
-      this.el.sceneEl.addEventListener(`pinchend`, (evt) => {
-         document.querySelector('#text').setAttribute('text', `value: Pinch intentando terminar con ${evt.detail.hand} hand`);
+      // this.el.sceneEl.addEventListener('pinchstart', (evt) => {
+      //     if (this.isColliding && evt.detail.hand === 'right') {
+      //         this.grabbing = true;
+      //       //   handEl = evt.detail.hand;
+      //         document.querySelector('#text').setAttribute('text', `value: Pinch con ${evt.detail.hand} hand`);
+      //         if (evt.detail.hand === 'right') {
+      //          this.el.setAttribute('color', 'yellow');
+      //         }else {this.el.setAttribute('color', 'green');} 
+      //     }
+      // });
+      // this.el.sceneEl.addEventListener(`pinchend`, (evt) => {
+      //    document.querySelector('#text').setAttribute('text', `value: Pinch intentando terminar con ${evt.detail.hand} hand`);
 
-         if (this.grabbing && evt.detail.hand === 'right') {
-           this.el.setAttribute('color', 'red');
-           document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);            
-           this.grabbing = false;
-         }
-      });
+      //    if (this.grabbing && evt.detail.hand === 'right') {
+      //      this.el.setAttribute('color', 'red');
+      //      document.querySelector('#text').setAttribute('text', `value: Pinch terminado con ${evt.detail.hand} hand`);            
+      //      this.grabbing = false;
+      //    }
+      // });
    },
    tick: function () {
       // if (this.grabbing && handEl) {

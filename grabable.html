@@ -18,15 +18,15 @@
         <a-entity id="right-hand" manos="hand: right" ></a-entity>
 
         <!-- Detectores -->
-        <a-entity detector="target: #left-text; hand: left"></a-entity>
-        <a-entity detector="target: #right-text; hand: right"></a-entity>
+        <a-entity id="left-detector" detector="target: #left-text; hand: left"></a-entity>
+        <a-entity id="right-detector" detector="target: #right-text; hand: right"></a-entity>
 
         <!-- Texto -->
         <a-entity id="left-text" position="-1 1 -2" text="value: Esperando gesto izquierdo...; color: #FFF"></a-entity>
         <a-entity id="right-text" position="1 1 -2" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
         <a-entity id="text" position="0 1.5 -2" text="value: Esperando gesto derecho...; color: #FFF"></a-entity>
         <!-- Cubo con OBB-collider -->
-        <a-box id="cube" position="0 1 -0.5" color="red" scale="0.25 0.25 0.25" grabable></a-box>
+        <a-box id="cube" position="0 1 -0.5" color="blue" scale="0.25 0.25 0.25" grabable></a-box>
     </a-scene>
 </body>
 </html>
