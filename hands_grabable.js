@@ -230,7 +230,7 @@ AFRAME.registerComponent('grabable', {
            this.el.setAttribute('material', 'color', 'green');
            document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
        } else {
-           document.querySelector('#text').setAttribute('text', `value: El pinch o grab están en false`);
+           document.querySelector('#text').setAttribute('text', `value: El pinch o grab estan en false`);
        }
    }
 });
