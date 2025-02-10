@@ -217,10 +217,10 @@ AFRAME.registerComponent('grabable', {
 
        const rightPinchState = this.rightHandEntity.components.manos.pinchState;
        const rightColide = this.rightDetector.components.detector.isGrabbed;
-       if (rightPinchState){
-         document.querySelector('#text').setAttribute('text', `value: Pinch esta activo`);
+       if (rightColide){
+         document.querySelector('#text').setAttribute('text', `value: colide esta activo`);
        } else{
-         document.querySelector('#text').setAttribute('text', `value: Pinch no esta activo`);
+         document.querySelector('#text').setAttribute('text', `value: colide no esta activo`);
        }
 
        if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState) {
