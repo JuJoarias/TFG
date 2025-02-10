@@ -167,7 +167,7 @@ AFRAME.registerComponent('detector', {
        });
  
        // Agregar eventos de colisión al cubo
-       var cube = document.querySelector('[grabable]');
+       var cube = document.querySelector('#cube');
  
        cube.addEventListener('obbcollisionstarted', function  (event) {
          this.isGrabbed = true;
