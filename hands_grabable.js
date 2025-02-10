@@ -208,7 +208,7 @@ AFRAME.registerComponent('grabable', {
       
               if (rightColide && rightPinchState) {
                   document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
-                  this.el.setAttribute('material', 'color', 'green');  // Asegúrate de que "this.el" es correcto
+                  this.el.setAttribute('color', 'green');  // Asegúrate de que "this.el" es correcto
               } else {
                   document.querySelector('#text').setAttribute('text', `value: El pinch o grab están en false`);
               }
