@@ -192,32 +192,32 @@ AFRAME.registerComponent('grabable', {
           this.el.setAttribute('obb-collider', 'size: auto');
       }
 
-     let leftHandEntity = document.querySelector('#left-hand');
-     let rightHandEntity = document.querySelector('#right-hand');
-     let leftDetector = document.querySelector('#left-detector');
-     let rightDetector = document.querySelector('#right-detector');
-
-
-     if (rightHandEntity && rightHandEntity.components.manos) {
-      // Acceder al pinchState de la mano derecha
-      document.querySelector('#text').setAttribute('text', `value: La mano derecha se detecta correctamente`);
-
-      const rightPinchState = rightHandEntity.components.manos.pinchState;
-      const rightColide = rightDetector.components.detector.isGrabbed;
-      if(rightColide && rightPinchState){
-         this.el.setAttribute('color', 'green');
+      let leftHandEntity = document.querySelector('#left-hand');
+      let rightHandEntity = document.querySelector('#right-hand');
+      let leftDetector = document.querySelector('#left-detector');
+      let rightDetector = document.querySelector('#right-detector');
+      
+      if (rightHandEntity && rightHandEntity.components.manos) {
+          // Acceder al pinchState de la mano derecha
+          document.querySelector('#text').setAttribute('text', `value: La mano derecha se detecta correctamente`);
+      
+          // Verificar que rightDetector tiene el componente detector antes de acceder a isGrabbed
+          if (rightDetector && rightDetector.components.detector) {
+              const rightPinchState = rightHandEntity.components.manos.pinchState;
+              const rightColide = rightDetector.components.detector.isGrabbed;
+      
+              if (rightColide && rightPinchState) {
+                  document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
+                  this.el.setAttribute('material', 'color', 'green');  // Asegúrate de que "this.el" es correcto
+              } else {
+                  document.querySelector('#text').setAttribute('text', `value: El pinch o grab están en false`);
+              }
+          } else {
+              document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano derecha`);
+          }
       } else {
-         if(!rightColide || !rightPinchState){
-            document.querySelector('#text').setAttribute('text', `value: El pinch o grab estan en false`);
-
-         }
-         document.querySelector('#text').setAttribute('text', `value: El pinch o grab no se detectan bien`);
-
+          document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
       }
-     } else{
-      document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
-
-     }
 
       // var cube = document.querySelector("#cube");
       // this.el.sceneEl.addEventListener('pinchstart', (evt) => {
