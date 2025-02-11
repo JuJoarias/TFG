@@ -89,7 +89,7 @@ AFRAME.registerComponent('manos', {
                   this.pinchState = true;
                   this.el.emit('pinchstart', { hand: this.data.hand });
                } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
-                  this.pinchState = false;
+                  this.pinchState = true;
                   this.el.emit('pinchend', { hand: this.data.hand });
                }
             }
@@ -226,7 +226,7 @@ AFRAME.registerComponent('grabable', {
        if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState) {
            this.lastPinchState = rightPinchState;
            this.lastGrabState = rightColide;
-         //   this.updateState(rightPinchState, rightColide);
+           this.updateState(rightPinchState, rightColide);
        }
    },
 
