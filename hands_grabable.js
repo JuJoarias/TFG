@@ -16,7 +16,7 @@ AFRAME.registerComponent('manos', {
       this.frame = null;
       this.referenceSpace = null;
       this.joints = {};
-      this.pinchState = true;
+      this.pinchState = false;
       this.fistState = false;
       this.pointState = false;
       this.openHandState = false;
@@ -150,7 +150,7 @@ AFRAME.registerComponent('detector', {
  
     init: function () {
 
-      this.isGrabbed = true;
+      this.isGrabbed = false;
       
        // Escuchar gestos de la mano
        ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
@@ -205,39 +205,64 @@ AFRAME.registerComponent('grabable', {
    },
 
    check: function () {
-       if (!this.rightHandEntity || !this.rightHandEntity.components.manos) {
+       const manoDerecha = this.rightHandEntity.components.manos;
+       const detectorDerecho = this.rightDetector.components.detector;
+       const manoIzquierda = this.leftHandEntity.components.manos;
+       const detectorIzquierdo = this.leftDetector.components.detector;
+
+       if (!this.rightHandEntity || !manoDerecha) {
            document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
            return;
        }
 
-       if (!this.rightDetector || !this.rightDetector.components.detector) {
+       if (!this.rightDetector || !detectorDerecho) {
            document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano derecha`);
            return;
        }
 
-       const rightPinchState = this.rightHandEntity.components.manos.pinchState;
-       const rightColide = this.rightDetector.components.detector.isGrabbed;
-      //  if (rightColide){
-      //    document.querySelector('#text').setAttribute('text', `value: Colide esta activo`);
-      //  } else{
-      //    document.querySelector('#text').setAttribute('text', `value: Colide esta en: ${rightColide}`);
-      //  }
+       if (!this.leftHandEntity || !manoIzquierda) {
+           document.querySelector('#text').setAttribute('text', `value: La mano izquierda no se detecta correctamente`);
+           return;
+       }
 
-       if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState) {
-           document.querySelector('#text').setAttribute('text', `value: Colide esta en: ${rightColide} y Pinch en: ${rightPinchState}`);
+       if (!this.leftDetector || !detectorIzquierdo) {
+           document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano izquierda`);
+           return;
+       }
+
+       const rightPinchState = manoDerecha.pinchState;
+       const rightColide = detectorDerecho.isGrabbed;
+       const leftPinchState = manoIzquierda.pinchState;
+       const leftColide = detectorIzquierdo.isGrabbed;
+
+       if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState || leftPinchState !== this.lastPinchState || leftColide !== this.lastGrabState) {
+           document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}`);
            this.lastPinchState = rightPinchState;
            this.lastGrabState = rightColide;
-           this.updateState(rightPinchState, rightColide);
+           this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
        }
    },
 
-   updateState: function (pinch, grab) {
-       if (grab && pinch) {
+   updateState: function (rightPinch, rightGrab, leftPinch, leftGrab, manoDerecha, manoIzquierda) {
+       if (rightGrab && rightPinch) {
+           const indexTipRight = manoDerecha.joints["index-finger-tip"];
            this.el.setAttribute('material', 'color', 'green');
-         //   document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
+           this.el.setAttribute('position', indexTipRight.object3D.position);
+       } else if (leftGrab && leftPinch) {
+           const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
+           this.el.setAttribute('material', 'color', 'blue'); // Cambia el color para diferenciar
+           
+           // Obtener la posición de la punta del dedo índice de la mano izquierda
+           const newPosition = indexTipLeft.object3D.position;
+           
+           // Modificar solo la componente 'x' de la posición, manteniendo 'y' y 'z'
+           this.el.setAttribute('position', {
+               x: newPosition.x, // Solo cambiar la posición X
+               y: this.el.getAttribute('position').y, // Mantener la Y
+               z: this.el.getAttribute('position').z  // Mantener la Z
+           });
        } else {
            this.el.setAttribute('material', 'color', 'red');
-         //   document.querySelector('#text').setAttribute('text', `value: El pinch o grab estan en false`);
        }
    }
 });
