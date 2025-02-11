@@ -150,7 +150,7 @@ AFRAME.registerComponent('detector', {
  
     init: function () {
 
-      this.isGrabbed = false;
+      this.isGrabbed = true;
       
        // Escuchar gestos de la mano
        ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
@@ -174,7 +174,7 @@ AFRAME.registerComponent('detector', {
        });
  
        cube.addEventListener('obbcollisionended', function  (event) {
-         this.isGrabbed = true;
+         this.isGrabbed = false;
        });
     },
  
