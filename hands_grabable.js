@@ -220,7 +220,7 @@ AFRAME.registerComponent('grabable', {
        if (rightColide){
          document.querySelector('#text').setAttribute('text', `value: Colide esta activo`);
        } else{
-         document.querySelector('#text').setAttribute('text', `value: Colide no esta activo`);
+         document.querySelector('#text').setAttribute('text', `value: Colide esta en: ${rightColide}`);
        }
 
        if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState) {
