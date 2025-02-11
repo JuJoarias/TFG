@@ -234,10 +234,10 @@ AFRAME.registerComponent('grabable', {
    updateState: function (pinch, grab) {
        if (grab && pinch) {
            this.el.setAttribute('material', 'color', 'green');
-           document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
+         //   document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
        } else {
            this.el.setAttribute('material', 'color', 'red');
-           document.querySelector('#text').setAttribute('text', `value: El pinch o grab estan en false`);
+         //   document.querySelector('#text').setAttribute('text', `value: El pinch o grab estan en false`);
        }
    }
 });
