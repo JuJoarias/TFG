@@ -16,7 +16,7 @@ AFRAME.registerComponent('manos', {
       this.frame = null;
       this.referenceSpace = null;
       this.joints = {};
-      this.pinchState = false;
+      this.pinchState = true;
       this.fistState = false;
       this.pointState = false;
       this.openHandState = false;
