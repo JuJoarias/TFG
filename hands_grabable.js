@@ -89,7 +89,7 @@ AFRAME.registerComponent('manos', {
                   this.pinchState = true;
                   this.el.emit('pinchstart', { hand: this.data.hand });
                } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
-                  this.pinchState = true;
+                  this.pinchState = false;
                   this.el.emit('pinchend', { hand: this.data.hand });
                }
             }
@@ -150,7 +150,7 @@ AFRAME.registerComponent('detector', {
  
     init: function () {
 
-      this.isGrabbed = true;
+      this.isGrabbed = false;
       
        // Escuchar gestos de la mano
        ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
@@ -174,7 +174,7 @@ AFRAME.registerComponent('detector', {
        });
  
        cube.addEventListener('obbcollisionended', function  (event) {
-         this.isGrabbed = true;
+         this.isGrabbed = false;
        });
     },
  
@@ -217,13 +217,14 @@ AFRAME.registerComponent('grabable', {
 
        const rightPinchState = this.rightHandEntity.components.manos.pinchState;
        const rightColide = this.rightDetector.components.detector.isGrabbed;
-       if (rightColide){
-         document.querySelector('#text').setAttribute('text', `value: Colide esta activo`);
-       } else{
-         document.querySelector('#text').setAttribute('text', `value: Colide esta en: ${rightColide}`);
-       }
+      //  if (rightColide){
+      //    document.querySelector('#text').setAttribute('text', `value: Colide esta activo`);
+      //  } else{
+      //    document.querySelector('#text').setAttribute('text', `value: Colide esta en: ${rightColide}`);
+      //  }
 
        if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState) {
+           document.querySelector('#text').setAttribute('text', `value: Colide esta en: ${rightColide} y Pinch en: ${rightPinchState}`);
            this.lastPinchState = rightPinchState;
            this.lastGrabState = rightColide;
            this.updateState(rightPinchState, rightColide);
@@ -235,6 +236,7 @@ AFRAME.registerComponent('grabable', {
            this.el.setAttribute('material', 'color', 'green');
            document.querySelector('#text').setAttribute('text', `value: Ambos (pinch y grab) están activos`);
        } else {
+           this.el.setAttribute('material', 'color', 'red');
            document.querySelector('#text').setAttribute('text', `value: El pinch o grab estan en false`);
        }
    }
