@@ -89,7 +89,7 @@ AFRAME.registerComponent('manos', {
                   this.pinchState = true;
                   this.el.emit('pinchstart', { hand: this.data.hand });
                } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
-                  this.pinchState = true;
+                  this.pinchState = false;
                   this.el.emit('pinchend', { hand: this.data.hand });
                }
             }
@@ -174,7 +174,7 @@ AFRAME.registerComponent('detector', {
        });
  
        cube.addEventListener('obbcollisionended', function  (event) {
-         this.isGrabbed = false;
+         this.isGrabbed = true;
        });
     },
  
