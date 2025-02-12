@@ -173,6 +173,7 @@ AFRAME.registerComponent('detector', {
       var cube = document.querySelector('#cube');
 
       cube.addEventListener('obbcollisionstarted', function(event) {
+         this.updateText(`Se detecta colision con la mano ${this.data.hand}`);
 
          if (event.detail.otherEl.hasAttribute('id')) {
             this.isGrabbed = true;
@@ -184,6 +185,7 @@ AFRAME.registerComponent('detector', {
       });
 
       cube.addEventListener('obbcollisionended', function(event) {
+         this.updateText(`Fin de colision con la mano ${this.data.hand}`);
          this.otherElement = null;
          this.isGrabbed = false;
       });
