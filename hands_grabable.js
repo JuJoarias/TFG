@@ -153,7 +153,6 @@ AFRAME.registerComponent('detector', {
 
    init: function () {
      this.isGrabbed = false;
-     this.otherElement = null;
      
       // Escuchar gestos de la mano
       ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
@@ -174,18 +173,11 @@ AFRAME.registerComponent('detector', {
       cube.addEventListener('obbcollisionstarted', function  (event) {
          this.updateText(`Se detecta colision con la mano ${this.data.hand}`);
    
-         if (event.detail.otherEl.hasAttribute('id')) {
-            this.isGrabbed = true;
-            this.otherElement = event.detail.otherEl.getAttribute('id');
-         }else {
-            this.isGrabbed = true;
-            this.otherElement = event.detail.el.getAttribute('id');
-         }
+         this.isGrabbed = true;
       });
    
       cube.addEventListener('obbcollisionended', function (event) {
          this.updateText(`Fin de colision con la mano ${this.data.hand}`);
-         this.otherElement = null;
          this.isGrabbed = false;
       });
    },
@@ -255,10 +247,9 @@ AFRAME.registerComponent('grabable', {
          document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}`);
          this.lastPinchState = rightPinchState;
          this.lastGrabState = rightColide;
-         if(elementIDright == this.el.getAttribute('id') || elementIDleft == this.el.getAttribute('id')){
             
-            this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
-         }
+         this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
+         
       }
    },
 
