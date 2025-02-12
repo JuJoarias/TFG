@@ -168,7 +168,9 @@ AFRAME.registerComponent('detector', {
             }
          });
       });
+   },
 
+   tick: function () {
       // Agregar eventos de colisión al cubo
       var cube = document.querySelector('#cube');
 
