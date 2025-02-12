@@ -250,7 +250,7 @@ AFRAME.registerComponent('grabable', {
    },
 
    updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
-      if (rightGrab && rightPinch && leftGrab && leftPinch) {
+      if (rightGrab && rightPinch && leftPinch) {
 
          // Ambas manos están haciendo pinch sobre el mismo objeto
          const indexTipRight = manoDerecha.joints["index-finger-tip"];
@@ -261,7 +261,7 @@ AFRAME.registerComponent('grabable', {
 
          // Si no hay una distancia inicial guardada, se guarda la actual
          if (this.initialDistance === null) {
-           this.initialDistance = distance;
+            this.initialDistance = distance;
          }
 
          // Calcular el factor de escala en función de la variación de distancia
@@ -271,9 +271,9 @@ AFRAME.registerComponent('grabable', {
          const currentScale = this.el.getAttribute('scale');
 
          this.el.setAttribute('scale', {
-           x: currentScale.x * scaleFactor,
-           y: currentScale.y * scaleFactor,
-           z: currentScale.z * scaleFactor
+            x: currentScale.x * scaleFactor,
+            y: currentScale.y * scaleFactor,
+            z: currentScale.z * scaleFactor
          });
 
          this.el.setAttribute('material', 'color', 'black');
@@ -284,7 +284,7 @@ AFRAME.registerComponent('grabable', {
          this.el.setAttribute('material', 'color', 'green');
          this.el.setAttribute('position', indexTipRight.object3D.position);
 
-      } else if (leftGrab && leftPinch) {
+      } else if (rightGrab && leftPinch) {
 
          const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'blue');
