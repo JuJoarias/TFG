@@ -268,13 +268,13 @@ AFRAME.registerComponent('grabable', {
          const scaleFactor = distance / this.initialDistance;
 
          // Aplicar el factor de escala al objeto
-         const currentScale = this.el.getAttribute('scale');
+         const currentScale = this.el.object3D.scale;
 
-         this.el.setAttribute('scale', {
-            x: currentScale.x * scaleFactor,
-            y: currentScale.y * scaleFactor,
-            z: currentScale.z * scaleFactor
-         });
+         this.el.object3D.scale.set(
+            currentScale.x * scaleFactor,
+            currentScale.y * scaleFactor,
+            currentScale.z * scaleFactor
+         );
 
          this.el.setAttribute('material', 'color', 'black');
 
