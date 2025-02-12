@@ -167,20 +167,7 @@ AFRAME.registerComponent('detector', {
             }
          });
       });
-      // Agregar eventos de colisión al cubo
-      var cube = document.querySelector("#cube");
-   
-      cube.addEventListener('obbcollisionstarted', function  (event) {
-         this.updateText(`Se detecta colision con la mano ${this.data.hand}`);
-         cube.setAttribute('material', 'color', 'purple');
-   
-         this.isGrabbed = true;
-      });
-   
-      cube.addEventListener('obbcollisionended', function (event) {
-         this.updateText(`Fin de colision con la mano ${this.data.hand}`);
-         this.isGrabbed = false;
-      });
+      
    },
 
    updateText: function (message) {
@@ -203,6 +190,7 @@ AFRAME.registerComponent('grabable', {
       this.lastPinchState = null;
       this.lastGrabState = null;
       this.initialDistance = null;
+      this.isGrabbed = false;
    },
 
    tick: function () {
@@ -215,6 +203,14 @@ AFRAME.registerComponent('grabable', {
       const detectorDerecho = this.rightDetector.components.detector;
       const manoIzquierda = this.leftHandEntity.components.manos;
       const detectorIzquierdo = this.leftDetector.components.detector;
+   
+      this.el.addEventListener('obbcollisionstarted',(evt) => {   
+         this.isGrabbed = true;
+      });
+   
+      this.el.addEventListener('obbcollisionended', (evt) => {
+         this.isGrabbed = false;
+      });
 
       if (!this.rightHandEntity || !manoDerecha) {
          document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
@@ -237,15 +233,14 @@ AFRAME.registerComponent('grabable', {
       }
 
       const rightPinchState = manoDerecha.pinchState;
-      const rightColide = detectorDerecho.isGrabbed;
       const leftPinchState = manoIzquierda.pinchState;
-      const leftColide = detectorIzquierdo.isGrabbed;
-      const elementIDright = detectorDerecho.otherElement;
-      const elementIDleft = detectorIzquierdo.otherElement;
-
-      if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState || leftPinchState !== this.lastPinchState || leftColide !== this.lastGrabState) {
+      // const elementIDright = detectorDerecho.otherElement;
+      // const elementIDleft = detectorIzquierdo.otherElement;
+      const Colide = this.isGrabbed;
+      
+      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState ) {
          
-         document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}`);
+         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
          this.lastPinchState = rightPinchState;
          this.lastGrabState = rightColide;
             
@@ -304,7 +299,7 @@ AFRAME.registerComponent('grabable', {
 
       } else {
 
-         this.el.setAttribute('material', 'color', 'yellow');
+         this.el.setAttribute('material', 'color', 'orange');
          this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
       }
    }
