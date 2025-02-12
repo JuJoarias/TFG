@@ -254,7 +254,7 @@ AFRAME.registerComponent('grabable', {
    },
 
    updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
-      if (rightGrab && rightPinch && leftPinch) {
+      if (rightGrab && rightPinch && leftPinch) { // trabajo en proceso
 
          // Ambas manos están haciendo pinch sobre el mismo objeto
          const indexTipRight = manoDerecha.joints["index-finger-tip"];
