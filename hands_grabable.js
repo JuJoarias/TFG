@@ -242,14 +242,14 @@ AFRAME.registerComponent('grabable', {
          
          document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
          this.lastPinchState = rightPinchState;
-         this.lastGrabState = rightColide;
+         this.lastGrabState = Colide;
             
-         this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
+         this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda);
          
       }
    },
 
-   updateState: function (rightPinch, rightGrab, leftPinch, leftGrab, manoDerecha, manoIzquierda) {
+   updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
       if (rightGrab && rightPinch && leftGrab && leftPinch) {
 
          // Ambas manos están haciendo pinch sobre el mismo objeto
