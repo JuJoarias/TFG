@@ -172,17 +172,18 @@ AFRAME.registerComponent('detector', {
       // Agregar eventos de colisión al cubo
       var cube = document.querySelector('#cube');
 
-      cube.addEventListener('obbcollisionstarted', (event) => {
+      cube.addEventListener('obbcollisionstarted', function(event) {
 
          if (event.detail.otherEl.hasAttribute('id')) {
+            this.isGrabbed = true;
             this.otherElement = event.detail.otherEl.getAttribute('id');
          }else {
+            this.isGrabbed = true;
             this.otherElement = event.detail.el.getAttribute('id');
          }
-         this.isGrabbed = true;
       });
 
-      cube.addEventListener('obbcollisionended', (event) => {
+      cube.addEventListener('obbcollisionended', function(event) {
          this.otherElement = null;
          this.isGrabbed = false;
       });
