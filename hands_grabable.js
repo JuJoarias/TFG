@@ -207,7 +207,7 @@ AFRAME.registerComponent('grabable', {
    
       this.el.addEventListener('obbcollisionstarted',(evt) => {   // mirar con que componente esta siendo la colision para poder distinguir mejor las cosas
          this.isGrabbed = true;
-         this.otherEl = evt.detail.otherEl;
+         this.otherEl = evt.detail;
       });
    
       this.el.addEventListener('obbcollisionended', (evt) => {
