@@ -172,7 +172,7 @@ AFRAME.registerComponent('detector', {
    
       cube.addEventListener('obbcollisionstarted', function  (event) {
          this.updateText(`Se detecta colision con la mano ${this.data.hand}`);
-         cube.setAttribute('material', 'color', 'green');
+         cube.setAttribute('material', 'color', 'purple');
    
          this.isGrabbed = true;
       });
