@@ -191,6 +191,7 @@ AFRAME.registerComponent('grabable', {
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
+      this.otherEl = null;
    },
 
    tick: function () {
@@ -204,12 +205,14 @@ AFRAME.registerComponent('grabable', {
       const manoIzquierda = this.leftHandEntity.components.manos;
       const detectorIzquierdo = this.leftDetector.components.detector;
    
-      this.el.addEventListener('obbcollisionstarted',(evt) => {   
+      this.el.addEventListener('obbcollisionstarted',(evt) => {   // mirar con que componente esta siendo la colision para poder distinguir mejor las cosas
          this.isGrabbed = true;
+         this.otherEl = evt.detail.otherEl;
       });
    
       this.el.addEventListener('obbcollisionended', (evt) => {
          this.isGrabbed = false;
+         this.otherEl = null;
       });
 
       if (!this.rightHandEntity || !manoDerecha) {
@@ -237,10 +240,11 @@ AFRAME.registerComponent('grabable', {
       // const elementIDright = detectorDerecho.otherElement;
       // const elementIDleft = detectorIzquierdo.otherElement;
       const Colide = this.isGrabbed;
+      const otherEl = this.otherEl
       
       if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState ) {
          
-         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
+         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}, Otro elemento: ${leftPinchState}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
          this.lastPinchState = rightPinchState;
          this.lastGrabState = Colide;
             
