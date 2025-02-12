@@ -281,7 +281,7 @@ AFRAME.registerComponent('grabable', {
            z: currentScale.z * scaleFactor
          });
 
-         this.el.setAttribute('material', 'color', 'purple');
+         this.el.setAttribute('material', 'color', 'black');
 
       } else if (rightGrab && rightPinch) {
 
