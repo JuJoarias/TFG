@@ -152,7 +152,7 @@ AFRAME.registerComponent('detector', {
    },
 
    init: function () {
-     this.isGrabbed = false;
+      this.isGrabbed = false;
      
       // Escuchar gestos de la mano
       ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
