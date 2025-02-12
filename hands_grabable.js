@@ -304,7 +304,7 @@ AFRAME.registerComponent('grabable', {
 
       } else {
 
-         this.el.setAttribute('material', 'color', 'red');
+         this.el.setAttribute('material', 'color', 'yellow');
          this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
       }
    }
