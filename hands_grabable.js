@@ -172,7 +172,7 @@ AFRAME.registerComponent('detector', {
       // Agregar eventos de colisión al cubo
       var cube = document.querySelector('#cube');
 
-      this.el.sceneEl.addEventListener('obbcollisionstarted', (event) => {
+      cube.addEventListener('obbcollisionstarted', (event) => {
 
          if (event.detail.otherEl.hasAttribute('id')) {
             this.otherElement = event.detail.otherEl.getAttribute('id');
@@ -182,7 +182,7 @@ AFRAME.registerComponent('detector', {
          this.isGrabbed = true;
       });
 
-      this.el.sceneEl.addEventListener('obbcollisionended', (event) => {
+      cube.addEventListener('obbcollisionended', (event) => {
          this.otherElement = null;
          this.isGrabbed = false;
       });
