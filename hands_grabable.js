@@ -11,7 +11,9 @@ const orderedJoints = [
 ];
 
 AFRAME.registerComponent('manos', {
+   
    schema: { hand: { type: 'string', default: 'left' } },
+
    init: function () {
       this.frame = null;
       this.referenceSpace = null;
@@ -28,6 +30,7 @@ AFRAME.registerComponent('manos', {
          this.joints[jointName] = jointEntity;
       });
    },
+
    tick: function () {
       if (!this.frame) {
          this.frame = this.el.sceneEl.frame;
@@ -37,38 +40,38 @@ AFRAME.registerComponent('manos', {
          this.detectGesture();
       }
    },
+
    updateSkeleton: function () {
       const session = this.el.sceneEl.renderer.xr.getSession();
       const inputSources = session.inputSources;
   
       for (const inputSource of inputSources) {
-          if (inputSource.handedness === this.data.hand && inputSource.hand) {
-              for (const [jointName, jointEntity] of Object.entries(this.joints)) {
-                  const joint = inputSource.hand.get(jointName);
-                  const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
+         if (inputSource.handedness === this.data.hand && inputSource.hand) {
+            for (const [jointName, jointEntity] of Object.entries(this.joints)) {
+               const joint = inputSource.hand.get(jointName);
+               const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
   
-                  if (jointPose) {
-                      const { x, y, z } = jointPose.transform.position;
-                      const radius = jointPose.radius || 0.008;  // Radio del joint
-  
-                      jointEntity.setAttribute('position', { x, y, z });
-                      jointEntity.setAttribute('radius', radius);
-  
-                      // Definir `obb-collider` con el mismo tamaño que el joint
-                      if (!jointEntity.hasAttribute('obb-collider')) {
-                          jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
-                      }
-                  } else {
-                      jointEntity.setAttribute('position', '0 0 0');
+               if (jointPose) {
+                  const { x, y, z } = jointPose.transform.position;
+                  const radius = jointPose.radius || 0.008;  // Radio del joint
+                  jointEntity.setAttribute('position', { x, y, z });
+                  jointEntity.setAttribute('radius', radius);
+                  // Definir `obb-collider` con el mismo tamaño que el joint
+                  if (!jointEntity.hasAttribute('obb-collider')) {
+                     jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
                   }
-              }
-          }
+               } else {
+                  jointEntity.setAttribute('position', '0 0 0');
+               }
+            }
+         }
       }
-  }
-  ,
+  },
+
    detectGesture: function () {
       const session = this.el.sceneEl.renderer.xr.getSession();
       const inputSources = session.inputSources;
+
       for (const inputSource of inputSources) {
          if (inputSource.handedness === this.data.hand && inputSource.hand) {
             const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
@@ -143,126 +146,159 @@ AFRAME.registerComponent('manos', {
 
 // Componente `detector`
 AFRAME.registerComponent('detector', {
-    schema: { 
-       target: { type: 'selector' }, 
-       hand: { type: 'string', default: 'left' } 
-    },
- 
-    init: function () {
+   schema: { 
+      target: { type: 'selector' }, 
+      hand: { type: 'string', default: 'left' } 
+   },
 
-      this.isGrabbed = false;
-      
-       // Escuchar gestos de la mano
-       ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
-          this.el.sceneEl.addEventListener(`${gesture}start`, (evt) => {
-             if (evt.detail.hand === this.data.hand) {
-                this.updateText(`¡Inicio de ${gesture} con ${this.data.hand}!`);
-             }
-          });
-          this.el.sceneEl.addEventListener(`${gesture}end`, (evt) => {
-             if (evt.detail.hand === this.data.hand) {
-                this.updateText(`¡Fin de ${gesture} con ${this.data.hand}!`);
-             }
-          });
-       });
- 
-       // Agregar eventos de colisión al cubo
-       var cube = document.querySelector('#cube');
- 
-       cube.addEventListener('obbcollisionstarted', function  (event) {
-         this.isGrabbed = true;
-       });
- 
-       cube.addEventListener('obbcollisionended', function  (event) {
-         this.isGrabbed = false;
-       });
-    },
- 
-    updateText: function (message) {
-       if (this.data.target) {
-          this.data.target.setAttribute('text', `value: ${message}; color: #FFF`);
-       }
-    }
+   init: function () {
+     this.isGrabbed = false;
+     
+      // Escuchar gestos de la mano
+      ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
+         this.el.sceneEl.addEventListener(`${gesture}start`, (evt) => {
+            if (evt.detail.hand === this.data.hand) {
+               this.updateText(`¡Inicio de ${gesture} con ${this.data.hand}!`);
+            }
+         });
+         this.el.sceneEl.addEventListener(`${gesture}end`, (evt) => {
+            if (evt.detail.hand === this.data.hand) {
+               this.updateText(`¡Fin de ${gesture} con ${this.data.hand}!`);
+            }
+         });
+      });
+
+      // Agregar eventos de colisión al cubo
+      var cube = document.querySelector('#cube');
+
+      cube.addEventListener('obbcollisionstarted', function  (event) {
+        this.isGrabbed = true;
+      });
+
+      cube.addEventListener('obbcollisionended', function  (event) {
+        this.isGrabbed = false;
+      });
+   },
+
+   updateText: function (message) {
+      if (this.data.target) {
+         this.data.target.setAttribute('text', `value: ${message}; color: #FFF`);
+      }
+   }
 });
  
 AFRAME.registerComponent('grabable', {
    init: function () {
-       if (!this.el.hasAttribute('obb-collider')) {
-           this.el.setAttribute('obb-collider', 'size: auto');
-       }
+      if (!this.el.hasAttribute('obb-collider')) {
+         this.el.setAttribute('obb-collider', 'size: auto');
+      }
 
-       this.leftHandEntity = document.querySelector('#left-hand');
-       this.rightHandEntity = document.querySelector('#right-hand');
-       this.leftDetector = document.querySelector('#left-detector');
-       this.rightDetector = document.querySelector('#right-detector');
-
-       this.lastPinchState = null;
-       this.lastGrabState = null;
+      this.leftHandEntity = document.querySelector('#left-hand');
+      this.rightHandEntity = document.querySelector('#right-hand');
+      this.leftDetector = document.querySelector('#left-detector');
+      this.rightDetector = document.querySelector('#right-detector');
+      this.lastPinchState = null;
+      this.lastGrabState = null;
+      this.initialDistance = null;
    },
 
    tick: function () {
-       this.check();
+      this.check();
    },
 
    check: function () {
-       const manoDerecha = this.rightHandEntity.components.manos;
-       const detectorDerecho = this.rightDetector.components.detector;
-       const manoIzquierda = this.leftHandEntity.components.manos;
-       const detectorIzquierdo = this.leftDetector.components.detector;
 
-       if (!this.rightHandEntity || !manoDerecha) {
-           document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
-           return;
-       }
+      const manoDerecha = this.rightHandEntity.components.manos;
+      const detectorDerecho = this.rightDetector.components.detector;
+      const manoIzquierda = this.leftHandEntity.components.manos;
+      const detectorIzquierdo = this.leftDetector.components.detector;
 
-       if (!this.rightDetector || !detectorDerecho) {
-           document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano derecha`);
-           return;
-       }
+      if (!this.rightHandEntity || !manoDerecha) {
+         document.querySelector('#text').setAttribute('text', `value: La mano derecha no se detecta correctamente`);
+         return;
+      }
 
-       if (!this.leftHandEntity || !manoIzquierda) {
-           document.querySelector('#text').setAttribute('text', `value: La mano izquierda no se detecta correctamente`);
-           return;
-       }
+      if (!this.rightDetector || !detectorDerecho) {
+         document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano derecha`);
+         return;
+      }
 
-       if (!this.leftDetector || !detectorIzquierdo) {
-           document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano izquierda`);
-           return;
-       }
+      if (!this.leftHandEntity || !manoIzquierda) {
+         document.querySelector('#text').setAttribute('text', `value: La mano izquierda no se detecta correctamente`);
+         return;
+      }
 
-       const rightPinchState = manoDerecha.pinchState;
-       const rightColide = detectorDerecho.isGrabbed;
-       const leftPinchState = manoIzquierda.pinchState;
-       const leftColide = detectorIzquierdo.isGrabbed;
+      if (!this.leftDetector || !detectorIzquierdo) {
+         document.querySelector('#text').setAttribute('text', `value: No se detecta el detector de la mano izquierda`);
+         return;
+      }
 
-       if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState || leftPinchState !== this.lastPinchState || leftColide !== this.lastGrabState) {
-           document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}`);
-           this.lastPinchState = rightPinchState;
-           this.lastGrabState = rightColide;
-           this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
-       }
+      const rightPinchState = manoDerecha.pinchState;
+      const rightColide = detectorDerecho.isGrabbed;
+      const leftPinchState = manoIzquierda.pinchState;
+      const leftColide = detectorIzquierdo.isGrabbed;
+
+      if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState || leftPinchState !== this.lastPinchState || leftColide !== this.lastGrabState) {
+         
+         document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}`);
+         this.lastPinchState = rightPinchState;
+         this.lastGrabState = rightColide;
+         this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
+      }
    },
 
    updateState: function (rightPinch, rightGrab, leftPinch, leftGrab, manoDerecha, manoIzquierda) {
-       if (rightGrab && rightPinch) {
-           const indexTipRight = manoDerecha.joints["index-finger-tip"];
-           this.el.setAttribute('material', 'color', 'green');
-           this.el.setAttribute('position', indexTipRight.object3D.position);
-       } else if (leftGrab && leftPinch) {
-           const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
-           this.el.setAttribute('material', 'color', 'blue'); // Cambia el color para diferenciar
-           
-           // Obtener la posición de la punta del dedo índice de la mano izquierda
-           const newPosition = indexTipLeft.object3D.position;
-           
-           // Modificar solo la componente 'x' de la posición, manteniendo 'y' y 'z'
-           this.el.setAttribute('position', {
-               x: newPosition.x, // Solo cambiar la posición X
-               y: this.el.getAttribute('position').y, // Mantener la Y
-               z: this.el.getAttribute('position').z  // Mantener la Z
-           });
-       } else {
-           this.el.setAttribute('material', 'color', 'red');
-       }
+      if (rightGrab && rightPinch && leftGrab && leftPinch) {
+
+         // Ambas manos están haciendo pinch sobre el mismo objeto
+         const indexTipRight = manoDerecha.joints["index-finger-tip"];
+         const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
+
+         // Calcular distancia actual entre las puntas de los dedos índices
+         const distance = indexTipRight.object3D.position.distanceTo(indexTipLeft.object3D.position);
+
+         // Si no hay una distancia inicial guardada, se guarda la actual
+         if (this.initialDistance === null) {
+           this.initialDistance = distance;
+         }
+
+         // Calcular el factor de escala en función de la variación de distancia
+         const scaleFactor = distance / this.initialDistance;
+
+         // Aplicar el factor de escala al objeto
+         const currentScale = this.el.getAttribute('scale');
+
+         this.el.setAttribute('scale', {
+           x: currentScale.x * scaleFactor,
+           y: currentScale.y * scaleFactor,
+           z: currentScale.z * scaleFactor
+         });
+
+         this.el.setAttribute('material', 'color', 'purple');
+
+      } else if (rightGrab && rightPinch) {
+
+         const indexTipRight = manoDerecha.joints["index-finger-tip"];
+         this.el.setAttribute('material', 'color', 'green');
+         this.el.setAttribute('position', indexTipRight.object3D.position);
+
+      } else if (leftGrab && leftPinch) {
+
+         const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
+         this.el.setAttribute('material', 'color', 'blue');
+
+         const newPosition = indexTipLeft.object3D.position;
+
+         this.el.setAttribute('position', {
+            x: newPosition.x, 
+            y: this.el.getAttribute('position').y, 
+            z: this.el.getAttribute('position').z  
+         });
+
+      } else {
+
+         this.el.setAttribute('material', 'color', 'red');
+         this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
+      }
    }
 });
