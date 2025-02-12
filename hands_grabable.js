@@ -153,6 +153,7 @@ AFRAME.registerComponent('detector', {
 
    init: function () {
      this.isGrabbed = false;
+     this.otherElement = null;
      
       // Escuchar gestos de la mano
       ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
@@ -171,12 +172,19 @@ AFRAME.registerComponent('detector', {
       // Agregar eventos de colisión al cubo
       var cube = document.querySelector('#cube');
 
-      cube.addEventListener('obbcollisionstarted', function  (event) {
-        this.isGrabbed = true;
+      this.el.sceneEl.addEventListener('obbcollisionstarted', (event) => {
+
+         if (event.detail.otherEl.hasAttribute('id')) {
+            this.otherElement = event.detail.otherEl.getAttribute('id');
+         }else {
+            this.otherElement = event.detail.el.getAttribute('id');
+         }
+         this.isGrabbed = true;
       });
 
-      cube.addEventListener('obbcollisionended', function  (event) {
-        this.isGrabbed = false;
+      this.el.sceneEl.addEventListener('obbcollisionended', (event) => {
+         this.otherElement = null;
+         this.isGrabbed = false;
       });
    },
 
@@ -237,13 +245,18 @@ AFRAME.registerComponent('grabable', {
       const rightColide = detectorDerecho.isGrabbed;
       const leftPinchState = manoIzquierda.pinchState;
       const leftColide = detectorIzquierdo.isGrabbed;
+      const elementIDright = detectorDerecho.otherElement;
+      const elementIDleft = detectorIzquierdo.otherElement;
 
       if (rightPinchState !== this.lastPinchState || rightColide !== this.lastGrabState || leftPinchState !== this.lastPinchState || leftColide !== this.lastGrabState) {
          
-         document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}`);
+         document.querySelector('#text').setAttribute('text', `value: Colide derecha: ${rightColide} y Pinch derecha: ${rightPinchState}, Colide izquierda: ${leftColide} y Pinch izquierda: ${leftPinchState}, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}`);
          this.lastPinchState = rightPinchState;
          this.lastGrabState = rightColide;
-         this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
+         if(elementIDright == this.el.getAttribute('id') || elementIDleft == this.el.getAttribute('id')){
+            
+            this.updateState(rightPinchState, rightColide, leftPinchState, leftColide, manoDerecha, manoIzquierda);
+         }
       }
    },
 
