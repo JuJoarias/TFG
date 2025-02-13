@@ -207,7 +207,7 @@ AFRAME.registerComponent('grabable', {
    
       this.el.addEventListener('obbcollisionstarted',(evt) => {   // mirar con que componente esta siendo la colision para poder distinguir mejor las cosas
          this.isGrabbed = true;
-         this.otherEl = evt.detail;
+         this.otherEl = evt.detail.withel;
       });
    
       this.el.addEventListener('obbcollisionended', (evt) => {
@@ -244,7 +244,7 @@ AFRAME.registerComponent('grabable', {
       
       if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState ) {
          
-         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}, Otro elemento: ${leftPinchState}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
+         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}, Otro elemento: ${otherEl}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
          this.lastPinchState = rightPinchState;
          this.lastGrabState = Colide;
             
@@ -254,35 +254,8 @@ AFRAME.registerComponent('grabable', {
    },
 
    updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
-      if (rightGrab && rightPinch && leftPinch) { // trabajo en proceso
-
-         // Ambas manos están haciendo pinch sobre el mismo objeto
-         const indexTipRight = manoDerecha.joints["index-finger-tip"];
-         const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
-
-         // Calcular distancia actual entre las puntas de los dedos índices
-         const distance = indexTipRight.object3D.position.distanceTo(indexTipLeft.object3D.position);
-
-         // Si no hay una distancia inicial guardada, se guarda la actual
-         if (this.initialDistance === null) {
-            this.initialDistance = distance;
-         }
-
-         // Calcular el factor de escala en función de la variación de distancia
-         const scaleFactor = distance / this.initialDistance;
-
-         // Aplicar el factor de escala al objeto
-         const currentScale = this.el.object3D.scale;
-
-         this.el.object3D.scale.set(
-            currentScale.x * scaleFactor,
-            currentScale.y * scaleFactor,
-            currentScale.z * scaleFactor
-         );
-
-         this.el.setAttribute('material', 'color', 'black');
-
-      } else if (rightGrab && rightPinch) {
+      
+      if (rightGrab && rightPinch) {
 
          const indexTipRight = manoDerecha.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'green');
