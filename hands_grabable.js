@@ -26,6 +26,7 @@ AFRAME.registerComponent('manos', {
       orderedJoints.flat().forEach((jointName) => {
          const jointEntity = document.createElement('a-sphere');
          jointEntity.setAttribute('color', 'white');
+         jointEntity.setAttribute('id', jointName);
          this.el.appendChild(jointEntity);
          this.joints[jointName] = jointEntity;
       });
@@ -207,7 +208,7 @@ AFRAME.registerComponent('grabable', {
    
       this.el.addEventListener('obbcollisionstarted',(evt) => {   // mirar con que componente esta siendo la colision para poder distinguir mejor las cosas
          this.isGrabbed = true;
-         this.otherEl = evt.detail.withel;
+         this.otherEl = evt.detail.withel.id;
       });
    
       this.el.addEventListener('obbcollisionended', (evt) => {
