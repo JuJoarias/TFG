@@ -192,7 +192,6 @@ AFRAME.registerComponent('grabable', {
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
-      this.otherEl = null;
    },
 
    tick: function () {
@@ -208,12 +207,10 @@ AFRAME.registerComponent('grabable', {
    
       this.el.addEventListener('obbcollisionstarted',(evt) => {   // mirar con que componente esta siendo la colision para poder distinguir mejor las cosas
          this.isGrabbed = true;
-         this.otherEl = evt.detail.withel.id;
       });
    
       this.el.addEventListener('obbcollisionended', (evt) => {
          this.isGrabbed = false;
-         this.otherEl = null;
       });
 
       if (!this.rightHandEntity || !manoDerecha) {
@@ -241,11 +238,10 @@ AFRAME.registerComponent('grabable', {
       // const elementIDright = detectorDerecho.otherElement;
       // const elementIDleft = detectorIzquierdo.otherElement;
       const Colide = this.isGrabbed;
-      const otherEl = this.otherEl
       
       if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState ) {
          
-         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}, Otro elemento: ${otherEl}`); //, Id de los elementos de cada mano: derecha: ${elementIDright} y izquierda: ${elementIDleft}
+         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`); 
          this.lastPinchState = rightPinchState;
          this.lastGrabState = Colide;
             
@@ -254,13 +250,61 @@ AFRAME.registerComponent('grabable', {
       }
    },
 
+   reparent: function (newParent) {
+      const el = this.el;
+      const parent = newParent;
+      // console.log('parent: ' ,parent)
+
+      // Si ya es hijo del nuevo padre, no hacer nada
+      if (el.parentElement === parent) return;
+
+      // Reparent, una vez que object3D esté listo
+      const reparent = function () {
+        // Adjuntamos el object3D al nuevo padre para obtener posición, rotación, escala
+        parent.object3D.attach(el.object3D);
+        const position = el.object3D.position.clone();
+        const rotation = el.object3D.rotation.clone();
+        const scale = el.object3D.scale.clone();
+
+        // Creamos un nuevo elemento y copiamos el contenido actual
+        const newEl = document.createElement(el.tagName);
+        if (el.hasAttributes()) {
+          const attrs = el.attributes;
+          for (let i = attrs.length - 1; i >= 0; i--) {
+            const attrName = attrs[i].name;
+            const attrVal = el.getAttribute(attrName);
+            newEl.setAttribute(attrName, attrVal);
+          }
+        }
+
+        // Listener para cuando el nuevo elemento esté cargado
+        const relocate = function () {
+          newEl.object3D.position.copy(position);
+          newEl.object3D.rotation.copy(rotation);
+          newEl.object3D.scale.copy(scale);
+        };
+
+        newEl.addEventListener('loaded', relocate, { 'once': true });
+        parent.appendChild(newEl);
+        el.parentElement.removeChild(el);
+      };
+
+      // Si el object3D está listo, reparentamos directamente
+      if (el.getObject3D('mesh')) {
+        reparent();
+      } else {
+        // Esperamos a que el object3D esté listo
+        el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
+      }
+    },
+
    updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
       
       if (rightGrab && rightPinch) {
 
          const indexTipRight = manoDerecha.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'green');
-         this.el.setAttribute('position', indexTipRight.object3D.position);
+         this.reparent(this.rightHandEntity);
 
       } else if (rightGrab && leftPinch) {
 
