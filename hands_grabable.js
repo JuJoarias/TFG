@@ -91,9 +91,7 @@ AFRAME.registerComponent('manos', {
 
                if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
                   this.pinchState = true;
-                  const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
                   this.el.emit('pinchstart', { hand: this.data.hand });
-                  this.el.emit('index-tip-update', indexTip.transform.position);
                } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
                   this.pinchState = false;
                   this.el.emit('pinchend', { hand: this.data.hand });
@@ -194,7 +192,6 @@ AFRAME.registerComponent('grabable', {
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
-      this.indexFingerTip = null;
    },
 
    tick: function () {
@@ -257,11 +254,9 @@ AFRAME.registerComponent('grabable', {
       
       if (rightGrab && rightPinch) {
 
-         this.el.addEventListener('index-tip-update', (event) => {
-            this.indexFingerTip = event.detail; // Guardamos la posición cuando la recibimos
-          });
+         const rightHandEntity = document.querySelector('#right-hand');
          this.el.setAttribute('material', 'color', 'green');
-         this.reparent(manoDerecha);
+         this.reparent(rightHandEntity);
 
       } else if (rightGrab && leftPinch) {
 
@@ -286,49 +281,110 @@ AFRAME.registerComponent('grabable', {
 
    reparent: function (newParent) {
       const el = this.el;
-      const parent = newParent;
-      // console.log('parent: ' ,parent)
 
-      // Si ya es hijo del nuevo padre, no hacer nada
-      if (el.parentElement === parent) return;
-
-      // Reparent, una vez que object3D esté listo
-      const reparent = function () {
-        // Adjuntamos el object3D al nuevo padre para obtener posición, rotación, escala
-        parent.object3D.attach(el.object3D);
-        const position = el.object3D.position.clone();
-        const rotation = el.object3D.rotation.clone();
-        const scale = el.object3D.scale.clone();
-
-        // Creamos un nuevo elemento y copiamos el contenido actual
-        const newEl = document.createElement(el.tagName);
-        if (el.hasAttributes()) {
-          const attrs = el.attributes;
-          for (let i = attrs.length - 1; i >= 0; i--) {
-            const attrName = attrs[i].name;
-            const attrVal = el.getAttribute(attrName);
-            newEl.setAttribute(attrName, attrVal);
-          }
+      // Verificar si el nuevo padre es un elemento DOM o un Object3D
+      if (!newParent) {
+        console.error('Nuevo padre no válido:', newParent);
+        return;
+      }
+      if (newParent !== this.el.sceneEl){
+        // Si el nuevo padre es un objeto DOM, tomamos su object3D
+        if (newParent instanceof HTMLElement) {
+          newParent = newParent.object3D;  // Convertimos el DOM a object3D
         }
 
-        // Listener para cuando el nuevo elemento esté cargado
-        const relocate = function () {
-          newEl.object3D.position.copy(position);
-          newEl.object3D.rotation.copy(rotation);
-          newEl.object3D.scale.copy(scale);
+        // Si el nuevo padre es un object3D, hacemos el reparenting
+        if (newParent instanceof THREE.Object3D) {
+          // Verificamos si ya es hijo del nuevo padre
+          if (el.object3D.parent === newParent) return;
+
+          // Reparent, una vez que object3D esté listo
+          const reparent = function () {
+            // Adjuntamos el object3D al nuevo padre para obtener posición, rotación, escala
+            newParent.attach(el.object3D);
+            const position = el.object3D.position.clone();
+            const rotation = el.object3D.rotation.clone();
+            const scale = el.object3D.scale.clone();
+
+            // Creamos un nuevo elemento y copiamos el contenido actual
+            const newEl = document.createElement(el.tagName);
+            if (el.hasAttributes()) {
+              const attrs = el.attributes;
+              for (let i = attrs.length - 1; i >= 0; i--) {
+                const attrName = attrs[i].name;
+                const attrVal = el.getAttribute(attrName);
+                newEl.setAttribute(attrName, attrVal);
+              }
+            }
+
+            // Listener para cuando el nuevo elemento esté cargado
+            const relocate = function () {
+              newEl.object3D.position.copy(position);
+              newEl.object3D.rotation.copy(rotation);
+              newEl.object3D.scale.copy(scale);
+            };
+
+            newEl.addEventListener('loaded', relocate, { 'once': true });
+            newParent.el.appendChild(newEl); // Aseguramos que el nuevo elemento se añada al padre en el DOM
+            el.parentElement.removeChild(el); // Eliminamos el elemento original
+          };
+
+          // Si el object3D está listo, reparentamos directamente
+          if (el.getObject3D('mesh')) {
+            reparent();
+          } else {
+            // Esperamos a que el object3D esté listo
+            el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
+          }
+        } else {
+          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
+        }
+      }else {
+        const el = this.el;
+        const parent = newParent;
+        // console.log('parent: ' ,parent)
+
+        // Si ya es hijo del nuevo padre, no hacer nada
+        if (el.parentElement === parent) return;
+
+        // Reparent, una vez que object3D esté listo
+        const reparent = function () {
+          // Adjuntamos el object3D al nuevo padre para obtener posición, rotación, escala
+          parent.object3D.attach(el.object3D);
+          const position = el.object3D.position.clone();
+          const rotation = el.object3D.rotation.clone();
+          const scale = el.object3D.scale.clone();
+
+          // Creamos un nuevo elemento y copiamos el contenido actual
+          const newEl = document.createElement(el.tagName);
+          if (el.hasAttributes()) {
+            const attrs = el.attributes;
+            for (let i = attrs.length - 1; i >= 0; i--) {
+              const attrName = attrs[i].name;
+              const attrVal = el.getAttribute(attrName);
+              newEl.setAttribute(attrName, attrVal);
+            }
+          }
+
+          // Listener para cuando el nuevo elemento esté cargado
+          const relocate = function () {
+            newEl.object3D.position.copy(position);
+            newEl.object3D.rotation.copy(rotation);
+            newEl.object3D.scale.copy(scale);
+          };
+
+          newEl.addEventListener('loaded', relocate, { 'once': true });
+          parent.appendChild(newEl);
+          el.parentElement.removeChild(el);
         };
 
-        newEl.addEventListener('loaded', relocate, { 'once': true });
-        parent.appendChild(newEl);
-        el.parentElement.removeChild(el);
-      };
-
-      // Si el object3D está listo, reparentamos directamente
-      if (el.getObject3D('mesh')) {
-        reparent();
-      } else {
-        // Esperamos a que el object3D esté listo
-        el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
+        // Si el object3D está listo, reparentamos directamente
+        if (el.getObject3D('mesh')) {
+          reparent();
+        } else {
+          // Esperamos a que el object3D esté listo
+          el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
+        }
       }
     },
 });
