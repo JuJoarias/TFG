@@ -250,6 +250,35 @@ AFRAME.registerComponent('grabable', {
       }
    },
 
+   updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
+      
+      if (rightGrab && rightPinch) {
+
+         const rightHandEntity = document.querySelector('#right-hand');
+         this.el.setAttribute('material', 'color', 'green');
+         this.reparent(rightHandEntity);
+
+      } else if (rightGrab && leftPinch) {
+
+         const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
+         this.el.setAttribute('material', 'color', 'blue');
+
+         const newPosition = indexTipLeft.object3D.position;
+
+         this.el.setAttribute('position', {
+            x: newPosition.x, 
+            y: this.el.getAttribute('position').y, 
+            z: this.el.getAttribute('position').z  
+         });
+
+      } else {
+
+         this.el.setAttribute('material', 'color', 'orange');
+         this.reparent(this.el.sceneEl);
+         this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
+      }
+   },
+
    reparent: function (newParent) {
       const el = this.el;
       const parent = newParent;
@@ -297,33 +326,4 @@ AFRAME.registerComponent('grabable', {
         el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
       }
     },
-
-   updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
-      
-      if (rightGrab && rightPinch) {
-
-         const rightHandEntity = document.querySelector('#right-hand');
-         this.el.setAttribute('material', 'color', 'green');
-         this.reparent(rightHandEntity);
-
-      } else if (rightGrab && leftPinch) {
-
-         const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
-         this.el.setAttribute('material', 'color', 'blue');
-
-         const newPosition = indexTipLeft.object3D.position;
-
-         this.el.setAttribute('position', {
-            x: newPosition.x, 
-            y: this.el.getAttribute('position').y, 
-            z: this.el.getAttribute('position').z  
-         });
-
-      } else {
-
-         this.el.setAttribute('material', 'color', 'orange');
-         this.reparent(this.el.sceneEl);
-         this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
-      }
-   }
 });
