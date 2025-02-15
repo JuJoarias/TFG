@@ -304,7 +304,7 @@ AFRAME.registerComponent('grabable', {
 
          const indexTipRight = manoDerecha.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'green');
-         this.reparent(manoDerecha);
+         this.reparent(this.rightHandEntity);
 
       } else if (rightGrab && leftPinch) {
 
@@ -322,6 +322,7 @@ AFRAME.registerComponent('grabable', {
       } else {
 
          this.el.setAttribute('material', 'color', 'orange');
+         this.reparent(this.el.sceneEl);
          this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
       }
    }
