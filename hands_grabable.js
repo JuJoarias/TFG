@@ -302,9 +302,9 @@ AFRAME.registerComponent('grabable', {
       
       if (rightGrab && rightPinch) {
 
-         const indexTipRight = manoDerecha.joints["index-finger-tip"];
+         const rightHandEntity = document.querySelector('#right-hand');
          this.el.setAttribute('material', 'color', 'green');
-         this.reparent(this.rightHandEntity);
+         this.reparent(rightHandEntity);
 
       } else if (rightGrab && leftPinch) {
 
