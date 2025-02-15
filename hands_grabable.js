@@ -91,7 +91,9 @@ AFRAME.registerComponent('manos', {
 
                if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
                   this.pinchState = true;
+                  const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
                   this.el.emit('pinchstart', { hand: this.data.hand });
+                  this.el.emit('index-tip-update', indexTip.transform.position);
                } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
                   this.pinchState = false;
                   this.el.emit('pinchend', { hand: this.data.hand });
@@ -192,6 +194,7 @@ AFRAME.registerComponent('grabable', {
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
+      this.indexFingerTip = null;
    },
 
    tick: function () {
@@ -254,9 +257,11 @@ AFRAME.registerComponent('grabable', {
       
       if (rightGrab && rightPinch) {
 
-         const rightHandEntity = document.querySelector('#right-hand');
+         this.el.addEventListener('index-tip-update', (event) => {
+            this.indexFingerTip = event.detail; // Guardamos la posición cuando la recibimos
+          });
          this.el.setAttribute('material', 'color', 'green');
-         this.reparent(rightHandEntity);
+         this.reparent(this.indexFingerTip);
 
       } else if (rightGrab && leftPinch) {
 
