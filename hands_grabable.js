@@ -261,7 +261,7 @@ AFRAME.registerComponent('grabable', {
             this.indexFingerTip = event.detail; // Guardamos la posición cuando la recibimos
           });
          this.el.setAttribute('material', 'color', 'green');
-         this.reparent(this.indexFingerTip);
+         this.reparent(manoDerecha);
 
       } else if (rightGrab && leftPinch) {
 
