@@ -251,10 +251,15 @@ AFRAME.registerComponent('grabable', {
    },
 
    updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
+      const indexTipRight = manoDerecha.joints["index-finger-tip"];
+      const distance = Math.sqrt(
+         Math.pow(this.el.transform.position.x - indexTipRight.object3D.position.x, 2) +
+         Math.pow(this.e.transform.position.y - indexTipRight.object3D.position.y, 2) +
+         Math.pow(this.e.transform.position.z - indexTipRight.object3D.position.z, 2)
+      );
       
-      if (rightGrab && rightPinch) {
+      if ((distance < 0.5 ) && rightPinch) {
 
-         const indexTipRight = manoDerecha.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'green');
          this.reparent(indexTipRight.object3D);
 
