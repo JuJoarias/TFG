@@ -255,8 +255,8 @@ AFRAME.registerComponent('grabable', {
 
       if ((distance < 0.2) && rightPinch) {
          this.el.setAttribute('material', 'color', 'green');
-         this.reparent(manoDerecha.object3D);
-         
+         this.reparent(indexTipRight.object3D);
+
       } else if (rightGrab && leftPinch) {
          const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'blue');
