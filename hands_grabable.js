@@ -146,38 +146,6 @@ AFRAME.registerComponent('manos', {
 });
 
 // Componente `detector`
-AFRAME.registerComponent('detector', {
-   schema: { 
-      target: { type: 'selector' }, 
-      hand: { type: 'string', default: 'left' } 
-   },
-
-   init: function () {
-      this.isGrabbed = false;
-     
-      // Escuchar gestos de la mano
-      ['pinch', 'fist', 'point', 'openhand'].forEach((gesture) => {
-         this.el.sceneEl.addEventListener(`${gesture}start`, (evt) => {
-            if (evt.detail.hand === this.data.hand) {
-               this.updateText(`¡Inicio de ${gesture} con ${this.data.hand}!`);
-            }
-         });
-         this.el.sceneEl.addEventListener(`${gesture}end`, (evt) => {
-            if (evt.detail.hand === this.data.hand) {
-               this.updateText(`¡Fin de ${gesture} con ${this.data.hand}!`);
-            }
-         });
-      });
-      
-   },
-
-   updateText: function (message) {
-      if (this.data.target) {
-         this.data.target.setAttribute('text', `value: ${message}; color: #FFF`);
-      }
-   }
-});
- 
 AFRAME.registerComponent('grabable', {
    init: function () {
       if (!this.el.hasAttribute('obb-collider')) {
