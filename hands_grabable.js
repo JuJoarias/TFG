@@ -199,16 +199,15 @@ AFRAME.registerComponent('grabable', {
    },
 
    check: function () {
-
       const manoDerecha = this.rightHandEntity.components.manos;
       const detectorDerecho = this.rightDetector.components.detector;
       const manoIzquierda = this.leftHandEntity.components.manos;
       const detectorIzquierdo = this.leftDetector.components.detector;
-   
-      this.el.addEventListener('obbcollisionstarted',(evt) => {   // mirar con que componente esta siendo la colision para poder distinguir mejor las cosas
+
+      this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
       });
-   
+
       this.el.addEventListener('obbcollisionended', (evt) => {
          this.isGrabbed = false;
       });
@@ -235,18 +234,14 @@ AFRAME.registerComponent('grabable', {
 
       const rightPinchState = manoDerecha.pinchState;
       const leftPinchState = manoIzquierda.pinchState;
-      // const elementIDright = detectorDerecho.otherElement;
-      // const elementIDleft = detectorIzquierdo.otherElement;
       const Colide = this.isGrabbed;
-      
-      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState ) {
-         
-         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`); 
+
+      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState) {
+         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
          this.lastPinchState = rightPinchState;
          this.lastGrabState = Colide;
-            
+
          this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda);
-         
       }
    },
 
@@ -257,27 +252,22 @@ AFRAME.registerComponent('grabable', {
          Math.pow(this.el.object3D.position.y - indexTipRight.object3D.position.y, 2) +
          Math.pow(this.el.object3D.position.z - indexTipRight.object3D.position.z, 2)
       );
-      
-      if ((distance < 0.5 ) && rightPinch) {
 
+      if ((distance < 0.2) && rightPinch) {
          this.el.setAttribute('material', 'color', 'green');
          this.reparent(indexTipRight.object3D);
-
       } else if (rightGrab && leftPinch) {
-
          const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
          this.el.setAttribute('material', 'color', 'blue');
 
          const newPosition = indexTipLeft.object3D.position;
 
          this.el.setAttribute('position', {
-            x: newPosition.x, 
-            y: this.el.getAttribute('position').y, 
-            z: this.el.getAttribute('position').z  
+            x: newPosition.x,
+            y: this.el.getAttribute('position').y,
+            z: this.el.getAttribute('position').z
          });
-
       } else {
-
          this.el.setAttribute('material', 'color', 'orange');
          this.reparent(this.el.sceneEl);
          this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
@@ -289,107 +279,39 @@ AFRAME.registerComponent('grabable', {
 
       // Verificar si el nuevo padre es un elemento DOM o un Object3D
       if (!newParent) {
-        console.error('Nuevo padre no válido:', newParent);
-        return;
+         console.error('Nuevo padre no válido:', newParent);
+         return;
       }
-      if (newParent !== this.el.sceneEl){
-        // Si el nuevo padre es un objeto DOM, tomamos su object3D
-        if (newParent instanceof HTMLElement) {
-          newParent = newParent.object3D;  // Convertimos el DOM a object3D
-        }
 
-        // Si el nuevo padre es un object3D, hacemos el reparenting
-        if (newParent instanceof THREE.Object3D) {
-          // Verificamos si ya es hijo del nuevo padre
-          if (el.object3D.parent === newParent) return;
-
-          // Reparent, una vez que object3D esté listo
-          const reparent = function () {
-            // Adjuntamos el object3D al nuevo padre para obtener posición, rotación, escala
-            newParent.attach(el.object3D);
-            const position = el.object3D.position.clone();
-            const rotation = el.object3D.rotation.clone();
-            const scale = el.object3D.scale.clone();
-
-            // Creamos un nuevo elemento y copiamos el contenido actual
-            const newEl = document.createElement(el.tagName);
-            if (el.hasAttributes()) {
-              const attrs = el.attributes;
-              for (let i = attrs.length - 1; i >= 0; i--) {
-                const attrName = attrs[i].name;
-                const attrVal = el.getAttribute(attrName);
-                newEl.setAttribute(attrName, attrVal);
-              }
-            }
-
-            // Listener para cuando el nuevo elemento esté cargado
-            const relocate = function () {
-              newEl.object3D.position.copy(position);
-              newEl.object3D.rotation.copy(rotation);
-              newEl.object3D.scale.copy(scale);
-            };
-
-            newEl.addEventListener('loaded', relocate, { 'once': true });
-            newParent.el.appendChild(newEl); // Aseguramos que el nuevo elemento se añada al padre en el DOM
-            el.parentElement.removeChild(el); // Eliminamos el elemento original
-          };
-
-          // Si el object3D está listo, reparentamos directamente
-          if (el.getObject3D('mesh')) {
-            reparent();
-          } else {
-            // Esperamos a que el object3D esté listo
-            el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
-          }
-        } else {
-          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
-        }
-      }else {
-        const el = this.el;
-        const parent = newParent;
-        // console.log('parent: ' ,parent)
-
-        // Si ya es hijo del nuevo padre, no hacer nada
-        if (el.parentElement === parent) return;
-
-        // Reparent, una vez que object3D esté listo
-        const reparent = function () {
-          // Adjuntamos el object3D al nuevo padre para obtener posición, rotación, escala
-          parent.object3D.attach(el.object3D);
-          const position = el.object3D.position.clone();
-          const rotation = el.object3D.rotation.clone();
-          const scale = el.object3D.scale.clone();
-
-          // Creamos un nuevo elemento y copiamos el contenido actual
-          const newEl = document.createElement(el.tagName);
-          if (el.hasAttributes()) {
-            const attrs = el.attributes;
-            for (let i = attrs.length - 1; i >= 0; i--) {
-              const attrName = attrs[i].name;
-              const attrVal = el.getAttribute(attrName);
-              newEl.setAttribute(attrName, attrVal);
-            }
-          }
-
-          // Listener para cuando el nuevo elemento esté cargado
-          const relocate = function () {
-            newEl.object3D.position.copy(position);
-            newEl.object3D.rotation.copy(rotation);
-            newEl.object3D.scale.copy(scale);
-          };
-
-          newEl.addEventListener('loaded', relocate, { 'once': true });
-          parent.appendChild(newEl);
-          el.parentElement.removeChild(el);
-        };
-
-        // Si el object3D está listo, reparentamos directamente
-        if (el.getObject3D('mesh')) {
-          reparent();
-        } else {
-          // Esperamos a que el object3D esté listo
-          el.sceneEl.addEventListener('object3dset', reparent, { 'once': true });
-        }
+      // Si el nuevo padre es un objeto DOM, tomamos su object3D
+      if (newParent instanceof HTMLElement) {
+         newParent = newParent.object3D;  // Convertimos el DOM a object3D
       }
-    },
+
+      // Si el nuevo padre es un object3D, hacemos el reparenting
+      if (newParent instanceof THREE.Object3D) {
+         // Verificamos si ya es hijo del nuevo padre
+         if (el.object3D.parent === newParent) return;
+
+         // Guardar la posición global del cubo estático
+         const worldPosition = new THREE.Vector3();
+         worldPosition.setFromMatrixPosition(el.object3D.matrixWorld);
+
+         // Mover el object3D al nuevo padre
+         newParent.attach(el.object3D);
+
+         // Si el nuevo padre no es la escena, ajustar la posición local
+         if (newParent !== this.el.sceneEl.object3D) {
+            const localPosition = new THREE.Vector3();
+            localPosition.setFromMatrixPosition(newParent.matrixWorld).negate();
+            localPosition.add(worldPosition);
+            el.object3D.position.copy(localPosition);
+         } else {
+            // Si el nuevo padre es la escena, restaurar la posición original
+            el.object3D.position.copy(worldPosition);
+         }
+      } else {
+         console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
+      }
+   },
 });
