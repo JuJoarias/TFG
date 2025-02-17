@@ -236,13 +236,9 @@ AFRAME.registerComponent('grabable', {
       const leftPinchState = manoIzquierda.pinchState;
       const Colide = this.isGrabbed;
 
-      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState) {
-         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
-         this.lastPinchState = rightPinchState;
-         this.lastGrabState = Colide;
-
-         this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda);
-      }
+      document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
+      this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda);
+      
    },
 
    updateState: function (rightPinch, rightGrab, leftPinch, manoDerecha, manoIzquierda) {
