@@ -216,6 +216,7 @@ AFRAME.registerComponent('grabable', {
       const detectorDerecho = this.rightDetector.components.detector;
       const manoIzquierda = this.leftHandEntity.components.manos;
       const detectorIzquierdo = this.leftDetector.components.detector;
+      this.imitateFakeCoords();
 
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
@@ -338,7 +339,6 @@ AFRAME.registerComponent('grabable', {
          // Guardar la posición global del cubo estático
          const worldPosition = new THREE.Vector3();
          worldPosition.setFromMatrixPosition(el.object3D.matrixWorld);
-         this.imitateFakeCoords();
 
          // Mover el object3D al nuevo padre
          newParent.attach(el.object3D);
