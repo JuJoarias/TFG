@@ -297,7 +297,6 @@ AFRAME.registerComponent('grabable', {
 
       if (Colide && rightPinch) {
          this.el.setAttribute('material', 'color', 'green');
-         this.imitateFakeCoords();
          this.reparent(indexTipRight.object3D);
 
       } else if (Colide && leftPinch) {
@@ -349,6 +348,7 @@ AFRAME.registerComponent('grabable', {
             localPosition.setFromMatrixPosition(newParent.matrixWorld).negate();
             localPosition.add(worldPosition);
             el.object3D.position.copy(localPosition);
+            this.imitateFakeCoords();
          }
       } else {
          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
