@@ -266,7 +266,7 @@ AFRAME.registerComponent('grabable', {
          Math.pow(this.el.object3D.position.z - indexTipRight.object3D.position.z, 2)
       );
 
-      if (Colide && rightPinch) {
+      if ((Colide || distance < 0.2) && rightPinch) {
          this.el.setAttribute('material', 'color', 'green');
          this.updateFakeCoords();
          this.reparent(indexTipRight.object3D);
