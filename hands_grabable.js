@@ -209,7 +209,6 @@ AFRAME.registerComponent('grabable', {
 
    tick: function () {
       this.check();
-      this.imitateFakeCoords();
    },
 
    check: function () {
@@ -339,6 +338,7 @@ AFRAME.registerComponent('grabable', {
          // Guardar la posición global del cubo estático
          const worldPosition = new THREE.Vector3();
          worldPosition.setFromMatrixPosition(el.object3D.matrixWorld);
+         this.imitateFakeCoords();
 
          // Mover el object3D al nuevo padre
          newParent.attach(el.object3D);
