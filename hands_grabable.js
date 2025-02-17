@@ -216,7 +216,6 @@ AFRAME.registerComponent('grabable', {
       const detectorDerecho = this.rightDetector.components.detector;
       const manoIzquierda = this.leftHandEntity.components.manos;
       const detectorIzquierdo = this.leftDetector.components.detector;
-      this.imitateFakeCoords();
 
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
@@ -298,6 +297,7 @@ AFRAME.registerComponent('grabable', {
 
       if (Colide && rightPinch) {
          this.el.setAttribute('material', 'color', 'green');
+         this.imitateFakeCoords();
          this.reparent(indexTipRight.object3D);
 
       } else if (Colide && leftPinch) {
