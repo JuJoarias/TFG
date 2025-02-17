@@ -190,12 +190,26 @@ AFRAME.registerComponent('grabable', {
       this.rightDetector = document.querySelector('#right-detector');
       this.lastPinchState = null;
       this.lastGrabState = null;
-      this.initialDistance = null;
       this.isGrabbed = false;
+
+      // Inicialización de las esferas
+      this.sphere1 = this.rightHandEntity.components.manos.joints["index-finger-metacarpal"];
+      this.sphere2 = this.rightHandEntity.components.manos.joints["index-finger-tip"];
+      this.sphere3 = this.rightHandEntity.components.manos.joints["pinky-finger-metacarpal"];
+
+      // Inicialización de los vectores
+      this.vectorX = new THREE.Vector3();
+      this.vectorZ = new THREE.Vector3();
+      this.vectorXZ = new THREE.Vector3();
+      this.fakeX = new THREE.Vector3();
+      this.fakeY = new THREE.Vector3();
+      this.fakeZ = new THREE.Vector3();
+      this.rotationMatrix = new THREE.Matrix4();
    },
 
    tick: function () {
       this.check();
+      this.imitateFakeCoords();
    },
 
    check: function () {
@@ -244,6 +258,36 @@ AFRAME.registerComponent('grabable', {
       }
    },
 
+   imitateFakeCoords: function () {
+      const pos1 = this.sphere1.object3D.position;
+      const pos2 = this.sphere2.object3D.position;
+      const pos3 = this.sphere3.object3D.position;
+
+      // Calcular el vector X (de esfera1 a esfera2)
+      this.vectorX.copy(pos2).sub(pos1).normalize();
+      this.fakeX.copy(this.vectorX);
+
+      // Calcular el vector Z (perpendicular al eje X, desde esfera3)
+      this.vectorXZ.copy(pos3).sub(pos1);
+      this.vectorZ.crossVectors(this.vectorX, this.vectorXZ).normalize();
+      this.fakeZ.copy(this.vectorZ);
+
+      // Calcular el eje Y como el producto cruzado entre X y Z
+      this.fakeY.crossVectors(this.fakeZ, this.fakeX).normalize();
+
+      // Asegurarnos de que el sistema sea ortonormal
+      if (this.fakeY.length() === 0) {
+         this.fakeZ.negate();
+         this.fakeY.crossVectors(this.fakeZ, this.fakeX).normalize();
+      }
+
+      // Definir la matriz de rotación usando los ejes falsos
+      this.rotationMatrix.makeBasis(this.fakeX, this.fakeY, this.fakeZ);
+
+      // Aplicar la rotación al cubo
+      this.el.object3D.setRotationFromMatrix(this.rotationMatrix);
+   },
+
    updateState: function (rightPinch, Colide, leftPinch, manoDerecha, manoIzquierda) {
       const indexTipRight = manoDerecha.joints["index-finger-tip"];
       const distance = Math.sqrt(
@@ -270,7 +314,6 @@ AFRAME.registerComponent('grabable', {
       } else {
          this.el.setAttribute('material', 'color', 'orange');
          this.reparent(this.el.sceneEl);
-         this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
       }
    },
 
@@ -300,15 +343,12 @@ AFRAME.registerComponent('grabable', {
          // Mover el object3D al nuevo padre
          newParent.attach(el.object3D);
 
-         // Si el nuevo padre no es la escena, ajustar la posición local
+         // Ajustar la posición local si no es la escena
          if (newParent !== this.el.sceneEl.object3D) {
             const localPosition = new THREE.Vector3();
             localPosition.setFromMatrixPosition(newParent.matrixWorld).negate();
             localPosition.add(worldPosition);
             el.object3D.position.copy(localPosition);
-         } else {
-            // Si el nuevo padre es la escena, restaurar la posición original
-            el.object3D.position.copy(worldPosition);
          }
       } else {
          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
