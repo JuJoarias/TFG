@@ -210,7 +210,6 @@ AFRAME.registerComponent('grabable', {
 
    tick: function () {
       this.check();
-      this.updateFakeCoords();
    },
 
    check: function () {
@@ -269,6 +268,7 @@ AFRAME.registerComponent('grabable', {
 
       if (Colide && rightPinch) {
          this.el.setAttribute('material', 'color', 'green');
+         this.updateFakeCoords();
          this.reparent(indexTipRight.object3D);
 
       } else if (Colide && leftPinch) {
