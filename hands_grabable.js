@@ -344,11 +344,11 @@ AFRAME.registerComponent('grabable', {
 
          // Ajustar la posición local si no es la escena
          if (newParent !== this.el.sceneEl.object3D) {
+            this.imitateFakeCoords();
             const localPosition = new THREE.Vector3();
             localPosition.setFromMatrixPosition(newParent.matrixWorld).negate();
             localPosition.add(worldPosition);
             el.object3D.position.copy(localPosition);
-            this.imitateFakeCoords();
          }
       } else {
          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
