@@ -295,7 +295,7 @@ AFRAME.registerComponent('grabable', {
       }
    },
    
-   Hoover: function(hoover){
+   hoover: function(hoover){
       if (hoover){
          this.el.setAttribute('material', 'opacity', '0.8');
       } else{
