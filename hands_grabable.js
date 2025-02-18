@@ -192,6 +192,7 @@ AFRAME.registerComponent('grabable', {
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
+      this.hooverState = false;
 
       // Inicialización de las esferas
       this.sphere1 = document.querySelector('#sphere1');
@@ -249,6 +250,7 @@ AFRAME.registerComponent('grabable', {
       const rightPinchState = manoDerecha.pinchState;
       const leftPinchState = manoIzquierda.pinchState;
       const Colide = this.isGrabbed;
+      this.hoover(this,hooverState);
 
       if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState) {
          document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
@@ -266,26 +268,38 @@ AFRAME.registerComponent('grabable', {
          Math.pow(this.el.object3D.position.z - indexTipRight.object3D.position.z, 2)
       );
 
-      if ((Colide || distance < 0.2) && rightPinch) {
-         this.el.setAttribute('material', 'color', 'green');
-         this.updateFakeCoords();
-         this.reparent(indexTipRight.object3D);
-
-      } else if (Colide && leftPinch) {
-         const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
-         this.el.setAttribute('material', 'color', 'blue');
-
-         const newPosition = indexTipLeft.object3D.position;
-
-         this.el.setAttribute('position', {
-            x: newPosition.x,
-            y: this.el.getAttribute('position').y,
-            z: this.el.getAttribute('position').z
-         });
+      if (Colide){
+         this.hooverState = true;
+         if (rightPinch) {
+            this.el.setAttribute('material', 'color', 'green');
+            this.updateFakeCoords();
+            this.reparent(indexTipRight.object3D);
+   
+         } else if (leftPinch) {
+            const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
+            this.el.setAttribute('material', 'color', 'blue');
+   
+            const newPosition = indexTipLeft.object3D.position;
+   
+            this.el.setAttribute('position', {
+               x: newPosition.x,
+               y: this.el.getAttribute('position').y,
+               z: this.el.getAttribute('position').z
+            });
+         }
       } else {
          this.el.setAttribute('material', 'color', 'orange');
+         this.hooverState = false;
          this.reparent(this.el.sceneEl);
          this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
+      }
+   },
+   
+   Hoover: function(hoover){
+      if (hoover){
+         this.el.setAttribute('material', 'opacity', '0.8');
+      } else{
+         this.el.setAttribute('material', 'opacity', '1');
       }
    },
 
