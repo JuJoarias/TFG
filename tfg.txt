@@ -1,0 +1,142 @@
+-11-10-24
+https://aframe.io/docs/1.6.0/introduction/
+https://babiaxr.gitlab.io/
+https://jgbarah.github.io/aframe-playground/
+Ideas para el TFG:
+	- Mejorar graficas
+	- Implementar cosas nuevas
+	- Trabajar implementacion
+
+-18-10-24
+.crear un par componentes: para crear el cubo y crear la pelota con componentes para darles como variables
+.Hacer una escena de datos con babyaxr a partir del enlace de babiaxr. Tomar datos de un json(por ejemplo) y visualizarlo (Ir pensando en que enfocar el TFG, mirar apuntes en la tablet)
+.Crear un index.html y crear una lista de enlaces a todos los trabajos que vaya haciendo. 
+-TFG de otra persona de la que me puedo inspirar=>https://andrescuichanflores.github.io/
+
+Para la próxima reunión, recordar lo del préstamo de gafas
+
+-25-10-24
+.Ir mirando los eventos, para empezar el evento click (hacer que las bolas cambien de color con el clock)
+
+https://jgbarah.github.io/aframe-playground/interaction-02/
+
+**** Ir mirando como mejorar la interacción del usuario 
+
+https://jabejarano.github.io/ (interacción con las manos)
+https://samuelcoboscorrea.github.io/final-project/ (Permite detectar las poses y figuras con las manos)
+
+*****Despacho 101, departamental 3, ir este lunes antes de las 11
+
+Teléfono de Jesús: 665606907
+
+-05-11-2024
+Enfocarme en detectar las manos siguiendo la línea del segundo TFG que me mando. Ej: poner un ladrillo de los dedos
+Mirar juegos que sigan las manos para tener ideas de acciones
+Este finde recordarle lo dela gafas para ver si me las dan de nuevo el miércoles. 
+
+
+-19-11-2024
+Enlace para ayudarme a ver mejor todo el tema de la mano
+Revisar lo de githubpages
+** Aviarle cuando tenga avances para mostrarle**
+
+https://github.com/immersive-web/webxr-hand-input/blob/main/explainer.md
+
+https://www.w3.org/TR/webxr-hand-input-1/
+
+https://developers.meta.com/horizon/documentation/web/webxr-hands/
+
+
+Enlace que encontré yo :
+https://medium.com/samsung-internet-dev/how-to-use-the-hand-input-module-in-a-frame-part-1-e836c83fdc5e 
+https://medium.com/samsung-internet-dev/how-to-use-the-hand-input-module-in-a-frame-part-2-a5d26e2de37a
+https://medium.com/samsung-internet-dev/how-to-use-the-hand-input-module-in-a-frame-part-3-5b28db199b62
+
+
+08-1-25
+crear un componente que detecte gestos y que produzca un evento con el nombre del gesto y que ya sea ese evento el que haga cosas. 
+
+tener un componente para cada mano en la escena que detecte gestos y lance eventos(inicio y fin de gesto):
+<a-entity id="manos" gestos="hand: right">
+<a-entity id="manos" gestos="hand: left">
+
+tener otro componente que detecte los eventos que lance la entidad gestos:
+<a-entity detector="mano: mano1">
+<a-entity detector="mano: mano2">
+
+probar a poner texto y que los eventos cambien el texto acorde al evento
+Probar a detectar colisiones: colaiders!!
+
+recordar lo de las gafas
+
+23-1-25
+Convertir todo el js en ficheros aparte y simplemente importarlo en el HTML
+
+Crear un objeto donde el primer elemento (lista) donde hay 3 elementos ,nombre del gesto, nombre del evento que  se levanta y el nombre de la función que detecta el gesto. (ayuda a limpiar el código, prioridad baja) 
+
+Detectar mas gestos sencillos
+
+Usar obb-collider para hacer lo de los colliders:
+	-Poner colisionador a toda la mano y a un cubo que también tenga el colisionador
+	-Poner colisionador a cualquier elemento de la mano (para empezar probar la punta del índice) 
+Objeto 'colisionador_mano', 'colisionador_indice', 'colisionador_pinch'... 
+
+escenario mas complejo, un teclado con un colisionador en todos los dedos y todas las teclas
+
+característica de 'grabable' 
+
+para la próxima: 
+-mas gestos
+-colisionador de mano (como poco)
+-algún funcionamiento con los colisionadores
+
+6-2-25
+
+https://jgbarah.github.io/aframe-playground/seminar-01/
+(lo del final es lo interesante)
+
+TAREAS:
+.opciones aparte de lo que tengo (lo mio es una mezcla): 
+- la mano hace todo
+- la mano no hace casi nada y delega en otros componentes
+
+.medir ticks: 
+-meter un objeto contador, llamar al entrar y salir de un tick, guarda en memoria que elemento entra y sale de un tick
+
+.crear un componente 'grabable': si los dedos colisionan con el objeto y hago 'pinch' poder moverlo (otra opcion es 'slider' que solo se mueva en un eje)
+
+centrarme en una de las opciones y seguir por ahi
+Grabar un video del funcionamiento
+
+13-2-25
+
+para mover el cubo mejor:
+	mirar la diferencia de distancia entre el dedo y el centro 	del cubo y mantener esa relación y también calcular el giro. 
+
+	cuando agarro el cubo lo hago hijo de la mano, con lo cual al mover la mano el cubo lo sigue. y al soltar lo quito de como hijo de la mano
+
+coordenadas globales y locales:
+locales: referentes al elemento 
+globales: referentes a la escena
+
+para cambiar de coordenadas usar la función que ya viene en three.js 
+
+cambiar las coordenadas globales del cubo a locales de la mano (reparenting)
+Change parent of component and keep position
+I am using AR.js and have a sphere positioned in the marker component.
+
+https://stackoverflow.com/questions/52318200/change-parent-of-component-and-keep-position
+    
+https://stackoverflow.com/questions/65538916/aframe-reparenting-an-element-keeping-its-world-position-rotation
+
+https://diarmidmackenzie.github.io/aframe-components/components/object-parent/
+
+de cara a la memoria explicar todo el tema de por que las poses y ahora lo del tema de reparenting!!!!!!!!!
+
+componentes drag and drop, strech, hoover
+
+estudiar si es posible integrar mis cosas con el componente superhands
+
+de cara a presentar en junio. 
+Memoria a finales de mayo; 
+empezar a princpios de abril. 
