@@ -1,5 +1,9 @@
 const pinchDistance = 0.02;
-const curlThreshold = 0.09; // Umbral de curvatura para detectar si un dedo está doblado
+const curlThreshold = 0.09;
+const openThreshold = 0.15;
+const pointThreshold = 0.13;
+const debounceTime = 100;
+const smoothFactor = 0.8;
 
 const orderedJoints = [
    ["wrist"],
@@ -11,7 +15,6 @@ const orderedJoints = [
 ];
 
 AFRAME.registerComponent('manos', {
-   
    schema: { hand: { type: 'string', default: 'left' } },
 
    init: function () {
@@ -22,13 +25,18 @@ AFRAME.registerComponent('manos', {
       this.fistState = false;
       this.pointState = false;
       this.openHandState = false;
+      this.lastGestureChange = 0;
 
       orderedJoints.flat().forEach((jointName) => {
          const jointEntity = document.createElement('a-sphere');
          jointEntity.setAttribute('color', 'white');
          jointEntity.setAttribute('id', jointName);
          this.el.appendChild(jointEntity);
-         this.joints[jointName] = jointEntity;
+         this.joints[jointName] = {
+            entity: jointEntity,
+            lastPosition: new THREE.Vector3(),
+            smoothedPosition: new THREE.Vector3()
+         };
       });
    },
 
@@ -45,104 +53,123 @@ AFRAME.registerComponent('manos', {
    updateSkeleton: function () {
       const session = this.el.sceneEl.renderer.xr.getSession();
       const inputSources = session.inputSources;
-  
+
       for (const inputSource of inputSources) {
          if (inputSource.handedness === this.data.hand && inputSource.hand) {
-            for (const [jointName, jointEntity] of Object.entries(this.joints)) {
+            for (const [jointName, jointData] of Object.entries(this.joints)) {
                const joint = inputSource.hand.get(jointName);
                const jointPose = this.frame.getJointPose(joint, this.referenceSpace);
-  
+
                if (jointPose) {
                   const { x, y, z } = jointPose.transform.position;
-                  const radius = jointPose.radius || 0.008;  // Radio del joint
-                  jointEntity.setAttribute('position', { x, y, z });
-                  jointEntity.setAttribute('radius', radius);
-                  // Definir `obb-collider` con el mismo tamaño que el joint
-                  if (!jointEntity.hasAttribute('obb-collider')) {
-                     jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
-                  }
-               } else {
-                  jointEntity.setAttribute('position', '0 0 0');
-               }
-            }
-         }
-      }
-  },
+                  jointData.lastPosition.set(x, y, z);
 
-   detectGesture: function () {
-      const session = this.el.sceneEl.renderer.xr.getSession();
-      const inputSources = session.inputSources;
+                  jointData.smoothedPosition.lerpVectors(
+                     jointData.smoothedPosition,
+                     jointData.lastPosition,
+                     1 - smoothFactor
+                  );
 
-      for (const inputSource of inputSources) {
-         if (inputSource.handedness === this.data.hand && inputSource.hand) {
-            const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
-            const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
-            const middleTip = this.frame.getJointPose(inputSource.hand.get("middle-finger-tip"), this.referenceSpace);
-            const ringTip = this.frame.getJointPose(inputSource.hand.get("ring-finger-tip"), this.referenceSpace);
-            const pinkyTip = this.frame.getJointPose(inputSource.hand.get("pinky-finger-tip"), this.referenceSpace);
-            const wrist = this.frame.getJointPose(inputSource.hand.get("wrist"), this.referenceSpace);
-
-            if (thumbTip && indexTip) {
-               const pinchDistanceCalc = Math.sqrt(
-                  Math.pow(thumbTip.transform.position.x - indexTip.transform.position.x, 2) +
-                  Math.pow(thumbTip.transform.position.y - indexTip.transform.position.y, 2) +
-                  Math.pow(thumbTip.transform.position.z - indexTip.transform.position.z, 2)
-               );
-
-               if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
-                  this.pinchState = true;
-                  this.el.emit('pinchstart', { hand: this.data.hand });
-               } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
-                  this.pinchState = false;
-                  this.el.emit('pinchend', { hand: this.data.hand });
-               }
-            }
-
-            // Detectar si los dedos están doblados
-            if (wrist && indexTip && middleTip && ringTip && pinkyTip) {
-
-               const isIndexExtended = this.isFingerExtended(indexTip, wrist);
-               const isMiddleBent = !this.isFingerExtended(middleTip, wrist);
-               const isRingBent = !this.isFingerExtended(ringTip, wrist);
-               const isPinkyBent = !this.isFingerExtended(pinkyTip, wrist);
-
-               // Fist (Puño cerrado)
-               if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
-                  this.fistState = true;
-                  this.el.emit('fiststart', { hand: this.data.hand });
-               } else if ((isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.fistState) {
-                  this.fistState = false;
-                  this.el.emit('fistend', { hand: this.data.hand });
-               }
-
-               // Point (Apuntar con el índice)
-               if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
-                  this.pointState = true;
-                  this.el.emit('pointstart', { hand: this.data.hand });
-               } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
-                  this.pointState = false;
-                  this.el.emit('pointend', { hand: this.data.hand });
-               }
-
-               // Open Hand (Mano abierta)
-               if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !this.openHandState) {
-                  this.openHandState = true;
-                  this.el.emit('openhandstart', { hand: this.data.hand });
-               } else if ((!isIndexExtended || isMiddleBent || isRingBent || isPinkyBent) && this.openHandState) {
-                  this.openHandState = false;
-                  this.el.emit('openhandend', { hand: this.data.hand });
+                  jointData.entity.setAttribute('position', jointData.smoothedPosition);
+                  jointData.entity.setAttribute('radius', jointPose.radius || 0.008);
                }
             }
          }
       }
    },
 
-   isFingerExtended: function (fingerTip, wrist) {
-      return Math.sqrt(
-         Math.pow(fingerTip.transform.position.x - wrist.transform.position.x, 2) +
-         Math.pow(fingerTip.transform.position.y - wrist.transform.position.y, 2) +
-         Math.pow(fingerTip.transform.position.z - wrist.transform.position.z, 2)
-      ) > curlThreshold;}  
+   detectGesture: function () {
+      const session = this.el.sceneEl.renderer.xr.getSession();
+      const inputSources = session.inputSources;
+      const currentTime = Date.now();
+
+      for (const inputSource of inputSources) {
+         if (inputSource.handedness === this.data.hand && inputSource.hand) {
+            const thumbTip = this.joints["thumb-tip"].smoothedPosition;
+            const indexTip = this.joints["index-finger-tip"].smoothedPosition;
+
+            // Pinch Detection
+            const pinchDistanceCalc = thumbTip.distanceTo(indexTip);
+
+            if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.pinchState = true;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('pinchstart', { hand: this.data.hand });
+               }
+            } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.pinchState = false;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('pinchend', { hand: this.data.hand });
+               }
+            }
+
+            // Fist Detection
+            const isFist = orderedJoints.slice(1).every(fingerJoints => {
+               const tip = this.joints[fingerJoints[fingerJoints.length - 1]].smoothedPosition;
+               const base = this.joints[fingerJoints[0]].smoothedPosition;
+               return tip.distanceTo(base) < curlThreshold;
+            });
+
+            if (isFist && !this.fistState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.fistState = true;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('fiststart', { hand: this.data.hand });
+               }
+            } else if (!isFist && this.fistState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.fistState = false;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('fistend', { hand: this.data.hand });
+               }
+            }
+
+            // Point Detection
+            const isPoint = orderedJoints.slice(2).every(fingerJoints => {
+               const tip = this.joints[fingerJoints[fingerJoints.length - 1]].smoothedPosition;
+               const base = this.joints[fingerJoints[0]].smoothedPosition;
+               return tip.distanceTo(base) < pointThreshold;
+            });
+
+            if (isPoint && !this.pointState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.pointState = true;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('pointstart', { hand: this.data.hand });
+               }
+            } else if (!isPoint && this.pointState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.pointState = false;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('pointend', { hand: this.data.hand });
+               }
+            }
+
+            // Open Hand Detection
+            const allFingersExtended = orderedJoints.slice(1).every(fingerJoints => {
+               const tip = this.joints[fingerJoints[fingerJoints.length - 1]].smoothedPosition;
+               const base = this.joints[fingerJoints[0]].smoothedPosition;
+               return tip.distanceTo(base) > openThreshold;
+            });
+
+            if (allFingersExtended && !this.openHandState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.openHandState = true;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('openhandstart', { hand: this.data.hand });
+               }
+            } else if (!allFingersExtended && this.openHandState) {
+               if (currentTime - this.lastGestureChange > debounceTime) {
+                  this.openHandState = false;
+                  this.lastGestureChange = currentTime;
+                  this.el.emit('openhandend', { hand: this.data.hand });
+               }
+            }
+         }
+      }
+   }
 });
 
 // Componente `detector`
