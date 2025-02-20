@@ -140,3 +140,20 @@ estudiar si es posible integrar mis cosas con el componente superhands
 de cara a presentar en junio. 
 Memoria a finales de mayo; 
 empezar a princpios de abril. 
+
+
+20-2-25
+Plugin para Chrome para simular: https://chromewebstore.google.com/detail/immersive-web-emulator/cgffilbpcibhmcfbgggfhfolhkfbhmik?hl=en&pli=1
+
+De cara a la memoria mencionar lo del falso eje de coordenadas
+Mirar un poco por que el reparenting fallaba sobre el elemento manos
+
+tratar de implementar los componetes de super hands, mirar hacerlo como lo tienen , lanzando eventos y tal (entender un poco el código de super hands)
+
+Separar mi código un pelin, separar lo del slider de la mano izquierda en un componente aparte (lo mismo que ahora pero siendo un nuevo componente)
+
+Componentes a realizar:
+slide
+Drag and drop
+stretch
+hoover
