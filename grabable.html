@@ -14,8 +14,11 @@
         background="color: #444444">
         
         <!-- Manos -->
-        <a-entity id="left-hand" manos="hand: left" ></a-entity>
-        <a-entity id="right-hand" manos="hand: right" ></a-entity>
+        <a-entity>
+            <a-camera></a-camera>
+            <a-entity id="left-hand" manos="hand: left" ></a-entity>
+            <a-entity id="right-hand" manos="hand: right" ></a-entity>
+        </a-entity>
 
         <!-- Detectores -->
         <a-entity id="left-detector" detector="target: #left-text; hand: left"></a-entity>
