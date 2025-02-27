@@ -283,7 +283,7 @@ AFRAME.registerComponent('grabable', {
       );
 
       if ((Colide && rightPinch) || (Colide && leftPinch)) {
-         if (colide){
+         if (Colide){
              this.hooverState = true;
          }
          if (rightPinch) {
