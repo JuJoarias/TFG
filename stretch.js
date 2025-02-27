@@ -59,7 +59,8 @@ AFRAME.registerComponent('manos', {
                   jointEntity.setAttribute('position', { x, y, z });
                   jointEntity.setAttribute('radius', radius);
                   if (!jointEntity.hasAttribute('id')) {
-                    jointEntity.setAttribute('id', `${handPrefix}${jointName}`);
+                    const name = handPrefix + jointName
+                    jointEntity.setAttribute('id', name);
                  }
                   // Definir `obb-collider` con el mismo tamaño que el joint
                   if (jointName == 'index-finger-tip' || jointName == 'wrist'){
