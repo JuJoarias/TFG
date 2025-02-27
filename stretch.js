@@ -229,14 +229,14 @@ AFRAME.registerComponent('grabable', {
          this.isGrabbed = true;
          const otro = evt.detail.withEl.id
          this.collidingEntities.add(evt.detail.withEl);
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities}`);
+         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities.size}`);
          
       });
 
       this.el.addEventListener('obbcollisionended', (evt) => {
          this.collidingEntities.delete(evt.detail.withEl);
          this.isGrabbed = false;
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities}`);
+         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities.size}`);
       });
 
       if (!this.rightHandEntity || !manoDerecha) {
