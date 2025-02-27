@@ -61,7 +61,7 @@ AFRAME.registerComponent('manos', {
                     jointEntity.setAttribute('id', jointName);
                  }
                   // Definir `obb-collider` con el mismo tamaño que el joint
-                  if (jointName == 'index-finger-tip' || jointName == 'middle-finger-metacarpal' || jointName == 'wrist'){
+                  if (jointName == 'index-finger-tip' || jointName == 'wrist'){
                       if (!jointEntity.hasAttribute('obb-collider')) {
                          jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
                       }
@@ -276,7 +276,7 @@ AFRAME.registerComponent('grabable', {
          Math.pow(this.el.object3D.position.z - indexTipRight.object3D.position.z, 2)
       );
 
-      if (Colide){
+      if ((Colide && rightPinch) || (Colide && leftPinch)) {
          this.hooverState = true;
          if (rightPinch) {
             this.el.setAttribute('material', 'color', 'green');
