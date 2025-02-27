@@ -223,16 +223,20 @@ AFRAME.registerComponent('grabable', {
       const detectorDerecho = this.rightDetector.components.detector;
       const manoIzquierda = this.leftHandEntity.components.manos;
       const detectorIzquierdo = this.leftDetector.components.detector;
+      this.collidingEntities = new Set();
 
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
          const otro = evt.detail.withEl.id
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${otro}`);
+         this.collidingEntities.add(evt.detail.withEl);
+         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities}`);
          
       });
 
       this.el.addEventListener('obbcollisionended', (evt) => {
+         this.collidingEntities.delete(evt.detail.withEl);
          this.isGrabbed = false;
+         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities}`);
       });
 
       if (!this.rightHandEntity || !manoDerecha) {
