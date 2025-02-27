@@ -47,6 +47,7 @@ AFRAME.registerComponent('manos', {
       const inputSources = session.inputSources;
   
       for (const inputSource of inputSources) {
+         const handPrefix = inputSource.handedness === "left" ? "left-" : "right-";
          if (inputSource.handedness === this.data.hand && inputSource.hand) {
             for (const [jointName, jointEntity] of Object.entries(this.joints)) {
                const joint = inputSource.hand.get(jointName);
@@ -58,7 +59,7 @@ AFRAME.registerComponent('manos', {
                   jointEntity.setAttribute('position', { x, y, z });
                   jointEntity.setAttribute('radius', radius);
                   if (!jointEntity.hasAttribute('id')) {
-                    jointEntity.setAttribute('id', jointName);
+                    jointEntity.setAttribute('id', `${handPrefix}${jointName}`);
                  }
                   // Definir `obb-collider` con el mismo tamaño que el joint
                   if (jointName == 'index-finger-tip' || jointName == 'wrist'){
@@ -228,15 +229,15 @@ AFRAME.registerComponent('grabable', {
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
          const otro = evt.detail.withEl.id
-         this.collidingEntities.add(evt.detail.withEl);
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities.size}`);
+         
+         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${otro}`);
          
       });
 
       this.el.addEventListener('obbcollisionended', (evt) => {
-         this.collidingEntities.delete(evt.detail.withEl);
+        const otro = evt.detail.withEl.id
          this.isGrabbed = false;
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${this.collidingEntities.size}`);
+         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${otro}`);
       });
 
       if (!this.rightHandEntity || !manoDerecha) {
@@ -281,7 +282,9 @@ AFRAME.registerComponent('grabable', {
       );
 
       if ((Colide && rightPinch) || (Colide && leftPinch)) {
-         this.hooverState = true;
+         if (colide){
+             this.hooverState = true;
+         }
          if (rightPinch) {
             this.el.setAttribute('material', 'color', 'green');
             this.updateFakeCoords();
