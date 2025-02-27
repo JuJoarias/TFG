@@ -61,8 +61,10 @@ AFRAME.registerComponent('manos', {
                     jointEntity.setAttribute('id', jointName);
                  }
                   // Definir `obb-collider` con el mismo tamaño que el joint
-                  if (!jointEntity.hasAttribute('obb-collider')) {
-                     jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
+                  if (jointName == 'index-finger-tip' || jointName == 'middle-finger-metacarpal' || jointName == 'wrist'){
+                      if (!jointEntity.hasAttribute('obb-collider')) {
+                         jointEntity.setAttribute('obb-collider', `size: ${radius * 2} ${radius * 2} ${radius * 2}`);
+                      }
                   }
                } else {
                   jointEntity.setAttribute('position', '0 0 0');
