@@ -224,7 +224,7 @@ AFRAME.registerComponent('grabable', {
 
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
-         const otro = evt.detail.withEl
+         const otro = evt.detail.withEl.id
          document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${otro}`);
          
       });
