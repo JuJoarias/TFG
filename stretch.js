@@ -61,13 +61,6 @@ AFRAME.registerComponent('manos', {
                   const radius = jointPose.radius || 0.008;  // Radio del joint
                   jointEntity.setAttribute('position', { x, y, z });
                   jointEntity.setAttribute('radius', radius);
-               //    if (!jointEntity.hasAttribute('id')) {
-               //       if (this.data.hand == 'left'){
-               //          jointEntity.setAttribute('id', 'Left'); 
-               //       } else {
-               //          jointEntity.setAttribute('id', 'Right'); 
-               //       }
-               //   }
                   // Definir `obb-collider` con el mismo tamaño que el joint
                   if (jointName == 'index-finger-tip' || jointName == 'wrist'){
                       if (!jointEntity.hasAttribute('obb-collider')) {
@@ -206,6 +199,8 @@ AFRAME.registerComponent('grabable', {
       this.initialDistance = null;
       this.isGrabbed = false;
       this.hooverState = false;
+      this.colideRight = null;
+      this.colideLeft = null;
 
       // Inicialización de las esferas
       this.sphere1 = document.querySelector('#sphere1');
@@ -236,15 +231,25 @@ AFRAME.registerComponent('grabable', {
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
          const otro = evt.detail.withEl.id
+         if (otro.startsWith('Right')){
+            this.colideRight = true;
+         } else{
+            this.colideLeft = true;
+         }
          
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${otro}`);
+         document.querySelector('#text2').setAttribute('text', `value: Colision con derecha: ${this.colideRight} Colision con izquierda: ${this.colideLeft}`);
          
       });
 
       this.el.addEventListener('obbcollisionended', (evt) => {
         const otro = evt.detail.withEl.id
+        if (otro.startsWith('Right')){
+            this.colideRight = false;
+         } else{
+            this.colideLeft = false;
+         }
          this.isGrabbed = false;
-         document.querySelector('#text2').setAttribute('text', `value: La colision se hace con ${otro}`);
+         document.querySelector('#text2').setAttribute('text', `value: Colision con derecha: ${this.colideRight} Colision con izquierda: ${this.colideLeft}`);
       });
 
       if (!this.rightHandEntity || !manoDerecha) {
