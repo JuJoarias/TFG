@@ -298,6 +298,8 @@ AFRAME.registerComponent('grabable', {
                y: this.el.getAttribute('position').y,
                z: this.el.getAttribute('position').z
             });
+         } else if (this.colideLeft && this.colideRight && rightPinch && leftPinch){
+            this.el.setAttribute('material', 'color', 'black');
          }
       
       } else {
