@@ -26,7 +26,11 @@ AFRAME.registerComponent('manos', {
       orderedJoints.flat().forEach((jointName) => {
          const jointEntity = document.createElement('a-sphere');
          jointEntity.setAttribute('color', 'white');
-         jointEntity.setAttribute('id', jointName);
+         if (this.data.hand == 'left'){
+            jointEntity.setAttribute('id', `Left_${jointName}`); 
+         } else {
+            jointEntity.setAttribute('id', `Right_${jointName}`); 
+         }
          this.el.appendChild(jointEntity);
          this.joints[jointName] = jointEntity;
       });
@@ -57,13 +61,13 @@ AFRAME.registerComponent('manos', {
                   const radius = jointPose.radius || 0.008;  // Radio del joint
                   jointEntity.setAttribute('position', { x, y, z });
                   jointEntity.setAttribute('radius', radius);
-                  if (!jointEntity.hasAttribute('id')) {
-                     if (this.data.hand == 'left'){
-                        jointEntity.setAttribute('id', 'Left'); 
-                     } else {
-                        jointEntity.setAttribute('id', 'Right'); 
-                     }
-                 }
+               //    if (!jointEntity.hasAttribute('id')) {
+               //       if (this.data.hand == 'left'){
+               //          jointEntity.setAttribute('id', 'Left'); 
+               //       } else {
+               //          jointEntity.setAttribute('id', 'Right'); 
+               //       }
+               //   }
                   // Definir `obb-collider` con el mismo tamaño que el joint
                   if (jointName == 'index-finger-tip' || jointName == 'wrist'){
                       if (!jointEntity.hasAttribute('obb-collider')) {
