@@ -281,13 +281,13 @@ AFRAME.registerComponent('grabable', {
    updateState: function (rightPinch, Colide, leftPinch, manoDerecha, manoIzquierda) {
       const indexTipRight = manoDerecha.joints["index-finger-tip"];
 
-      if ((this.colideRight && rightPinch) || (this.colideLeft && leftPinch)) {
-         if (rightPinch) {
+      if ((this.colideRight || this.colideLeft ) && (rightPinch || leftPinch)) {
+         if (this.colideRight && rightPinch) {
             this.el.setAttribute('material', 'color', 'green');
             this.updateFakeCoords();
             this.reparent(indexTipRight.object3D);
    
-         } else if (leftPinch) {
+         } else if (this.colideLeft && leftPinch) {
             const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
             this.el.setAttribute('material', 'color', 'blue');
    
@@ -299,8 +299,7 @@ AFRAME.registerComponent('grabable', {
                z: this.el.getAttribute('position').z
             });
          }
-      } else if (this.colideRight && rightPinch && this.colideLeft && leftPinch){
-         this.el.setAttribute('material', 'color', 'black');
+      
       } else {
          this.el.setAttribute('material', 'color', 'red');
          this.reparent(this.el.sceneEl);
