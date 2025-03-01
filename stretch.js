@@ -201,11 +201,6 @@ AFRAME.registerComponent('grabable', {
       this.colideRight = null;
       this.colideLeft = null;
 
-      // Inicialización de las esferas
-      this.sphere1 = document.querySelector('#sphere1');
-      this.sphere2 = document.querySelector('#sphere2');
-      this.sphere3 = document.querySelector('#sphere3');
-
       // Inicialización de los vectores
       this.vectorX = new THREE.Vector3();
       this.vectorZ = new THREE.Vector3();
@@ -229,6 +224,7 @@ AFRAME.registerComponent('grabable', {
 
       this.el.addEventListener('obbcollisionstarted', (evt) => {
          this.isGrabbed = true;
+         this.hooverState = true;
          const otro = evt.detail.withEl.id
          if (otro.startsWith('Right')){
             this.colideRight = true;
@@ -248,6 +244,7 @@ AFRAME.registerComponent('grabable', {
             this.colideLeft = false;
          }
          this.isGrabbed = false;
+         this.hooverState = false;
          document.querySelector('#text2').setAttribute('text', `value: Colision con derecha: ${this.colideRight} Colision con izquierda: ${this.colideLeft}`);
       });
 
@@ -291,9 +288,6 @@ AFRAME.registerComponent('grabable', {
          Math.pow(this.el.object3D.position.y - indexTipRight.object3D.position.y, 2) +
          Math.pow(this.el.object3D.position.z - indexTipRight.object3D.position.z, 2)
       );
-      if (Colide){
-         this.hooverState = true;
-      }
 
       if ((this.colideRight && rightPinch) || (this.colideLeft && leftPinch)) {
          if (rightPinch) {
@@ -315,7 +309,6 @@ AFRAME.registerComponent('grabable', {
          }
       } else {
          this.el.setAttribute('material', 'color', 'orange');
-         this.hooverState = false;
          this.reparent(this.el.sceneEl);
       }
    },
