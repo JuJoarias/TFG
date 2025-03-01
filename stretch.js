@@ -274,11 +274,11 @@ AFRAME.registerComponent('grabable', {
       this.hoover(this.hooverState);
 
       document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
-      this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda); 
+      this.updateState(rightPinchState, leftPinchState, manoDerecha, manoIzquierda); 
    
    },
 
-   updateState: function (rightPinch, Colide, leftPinch, manoDerecha, manoIzquierda) {
+   updateState: function (rightPinch, leftPinch, manoDerecha, manoIzquierda) {
       const indexTipRight = manoDerecha.joints["index-finger-tip"];
 
       if ((this.colideRight || this.colideLeft ) && (rightPinch || leftPinch)) {
@@ -298,7 +298,7 @@ AFRAME.registerComponent('grabable', {
                y: this.el.getAttribute('position').y,
                z: this.el.getAttribute('position').z
             });
-         } else if (this.colideLeft && this.colideRight && rightPinch && leftPinch){
+         } else if (this.colideLeft && this.colideRight && rightPinch && leftPinch){ // revisar por que no entra aqui
             this.el.setAttribute('material', 'color', 'black');
          }
       
