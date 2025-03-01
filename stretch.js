@@ -198,8 +198,8 @@ AFRAME.registerComponent('grabable', {
       this.lastGrabState = null;
       this.isGrabbed = false;
       this.hooverState = false;
-      this.colideRight = null;
-      this.colideLeft = null;
+      this.colideRight = false;
+      this.colideLeft = false;
 
       // Inicialización de los vectores
       this.vectorX = new THREE.Vector3();
@@ -307,6 +307,8 @@ AFRAME.registerComponent('grabable', {
                z: this.el.getAttribute('position').z
             });
          }
+      } else if (this.colideRight && rightPinch && this.colideLeft && leftPinch){
+         this.el.setAttribute('material', 'color', 'black');
       } else {
          this.el.setAttribute('material', 'color', 'orange');
          this.reparent(this.el.sceneEl);
