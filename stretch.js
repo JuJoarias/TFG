@@ -196,7 +196,6 @@ AFRAME.registerComponent('grabable', {
       this.rightDetector = document.querySelector('#right-detector');
       this.lastPinchState = null;
       this.lastGrabState = null;
-      this.initialDistance = null;
       this.isGrabbed = false;
       this.hooverState = false;
       this.colideRight = null;
@@ -292,11 +291,11 @@ AFRAME.registerComponent('grabable', {
          Math.pow(this.el.object3D.position.y - indexTipRight.object3D.position.y, 2) +
          Math.pow(this.el.object3D.position.z - indexTipRight.object3D.position.z, 2)
       );
+      if (Colide){
+         this.hooverState = true;
+      }
 
-      if ((Colide && rightPinch) || (Colide && leftPinch)) {
-         if (Colide){
-             this.hooverState = true;
-         }
+      if ((this.colideRight && rightPinch) || (this.colideLeft && leftPinch)) {
          if (rightPinch) {
             this.el.setAttribute('material', 'color', 'green');
             this.updateFakeCoords();
@@ -318,7 +317,6 @@ AFRAME.registerComponent('grabable', {
          this.el.setAttribute('material', 'color', 'orange');
          this.hooverState = false;
          this.reparent(this.el.sceneEl);
-         this.initialDistance = null; // Reiniciar la distancia inicial cuando no hay pinch
       }
    },
    
