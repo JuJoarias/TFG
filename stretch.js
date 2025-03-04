@@ -280,15 +280,18 @@ AFRAME.registerComponent('grabable', {
 
    updateState: function (rightPinch, leftPinch, manoDerecha, manoIzquierda) {
       const indexTipRight = manoDerecha.joints["index-finger-tip"];
+      const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
 
       if ((this.colideRight || this.colideLeft ) && (rightPinch || leftPinch)) {
          if ((this.colideLeft && this.colideRight) && (rightPinch && leftPinch)) {
             this.el.setAttribute('material', 'color', 'black');
+            this.reparent(this.el.sceneEl);
+            this.el.emit('stretchStart', {hand0: indexTipLeft, hand1: indexTipRight})
    
          } else if (this.colideLeft && leftPinch) {
             const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
             this.el.setAttribute('material', 'color', 'blue');
-   
+            this.el.emit('stretchEnd');
             const newPosition = indexTipLeft.object3D.position;
    
             this.el.setAttribute('position', {
@@ -300,6 +303,7 @@ AFRAME.registerComponent('grabable', {
             this.el.setAttribute('material', 'color', 'green');
             this.updateFakeCoords();
             this.reparent(indexTipRight.object3D);
+            this.el.emit('stretchEnd');
          }
       
       } else {
@@ -388,4 +392,62 @@ AFRAME.registerComponent('grabable', {
          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
       }
    },
+});
+
+AFRAME.registerComponent('stretch', {
+
+   init: function () {
+      this.el.addEventListener('stretchStart', this.onGrabStart.bind(this));
+      this.el.addEventListener('stretchEnd', this.onGrabEnd.bind(this));
+      this.hand1 = null;
+      this.hand2 = null;
+      this.initialDistance = null;
+      this.previousDistance = null;
+      this.currentScale = null;
+   },
+
+   onGrabStart: function (event) {
+      if (event.detail.hand1 && event.detail.hand2) {
+         this.hand1 = event.detail.hand1;
+         this.hand2 = event.detail.hand2;
+
+         const hand1Pos = this.hand1.object3D.position;
+         const hand2Pos = this.hand2.object3D.position;
+         
+         this.initialDistance = hand1Pos.distanceTo(hand2Pos);
+         this.previousDistance = this.initialDistance;
+
+         // Guardar la escala actual antes de estirar
+         this.currentScale = Object.assign({}, this.el.getAttribute('scale'));
+      }
+   },
+
+   onGrabEnd: function () {
+      this.hand1 = null;
+      this.hand2 = null;
+      this.initialDistance = null;
+      this.previousDistance = null;
+   },
+
+   tick: function () {
+      if (this.hand1 && this.hand2) {
+         const hand1Pos = this.hand1.object3D.position;
+         const hand2Pos = this.hand2.object3D.position;
+         const currentDistance = hand1Pos.distanceTo(hand2Pos);
+
+         // 🔹 Solo modificar la escala si la distancia entre las manos ha cambiado
+         if (Math.abs(currentDistance - this.previousDistance) > 0.01) {
+         const scaleFactor = currentDistance / this.initialDistance;
+
+         this.el.setAttribute('scale', {
+            x: this.currentScale.x * scaleFactor,
+            y: this.currentScale.y * scaleFactor,
+            z: this.currentScale.z * scaleFactor
+         });
+
+         // Actualizamos la distancia previa
+         this.previousDistance = currentDistance;
+         }
+      }
+   }
 });
