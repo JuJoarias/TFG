@@ -422,7 +422,7 @@ AFRAME.registerComponent('stretch', {
          this.previousDistance = this.initialDistance;
          
          // Guardar la escala actual antes de estirar
-         this.currentScale = Object.assign({}, this.el.getAttribute('scale'));
+         this.currentScale =  this.el.getAttribute('scale');
          // document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id} current scale: ${this.currentScale}`);
       }
    },
@@ -449,11 +449,11 @@ AFRAME.registerComponent('stretch', {
 
          document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${this.hand1.id} y ${this.hand2.id} Current distance : ${currentDistance} y scale factor ${scaleFactor}`);
 
-         this.el.setAttribute('scale', 
-            this.currentScale.x * scaleFactor,
-            this.currentScale.y * scaleFactor,
-            this.currentScale.z * scaleFactor
-         );
+         // this.el.setAttribute('scale', 
+         //    this.currentScale.x * scaleFactor,
+         //    this.currentScale.y * scaleFactor,
+         //    this.currentScale.z * scaleFactor
+         // );
 
          // Actualizamos la distancia previa
          this.previousDistance = currentDistance;
