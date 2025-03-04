@@ -269,10 +269,8 @@ AFRAME.registerComponent('grabable', {
       const leftPinchState = manoIzquierda.pinchState;
       const Colide = this.isGrabbed;
       if (this.colideLeft || this.colideRight){
-         this.hooverState = true;
-      } else {this.hooverState = false;}
-      this.hoover(this.hooverState);
-
+         this.el.emit('hooverStart');
+      } else {this.el.emit('hooverEnd');}
       
       this.updateState(rightPinchState, leftPinchState, manoDerecha, manoIzquierda); 
    
@@ -309,14 +307,6 @@ AFRAME.registerComponent('grabable', {
          this.el.setAttribute('material', 'color', 'red');
          this.reparent(this.el.sceneEl);
          this.el.emit('stretchEnd');
-      }
-   },
-   
-   hoover: function(hoover){
-      if (hoover){
-         this.el.setAttribute('material', 'opacity', '0.8');
-      } else{
-         this.el.setAttribute('material', 'opacity', '1');
       }
    },
 
@@ -394,11 +384,41 @@ AFRAME.registerComponent('grabable', {
    },
 });
 
+AFRAME.registerComponent('hoover', {
+
+   init: function(){
+      this.el.addEventListener('hooverStart', this.onHooverStart.bind(this));
+      this.el.addEventListener('hooverEnd', this.onHooverEnd.bind(this));
+      this.hooverState = false;
+      this.isHoovering = false;
+   },
+
+   onHooverStart: function () {
+      if (this.isHoovering) return;
+      this.isHoovering = true;
+
+      this.hooverState = true;
+   },
+
+   onHooverEnd: function () {
+      this.hooverState = false;
+      this.isHoovering = false;
+   },
+
+   tick: function () {
+      if (this.hooverState){
+         this.el.setAttribute('material', 'opacity', '0.8');
+      } else{
+         this.el.setAttribute('material', 'opacity', '1');
+      }
+   },
+});
+
 AFRAME.registerComponent('stretch', {
 
    init: function () {
-      this.el.addEventListener('stretchStart', this.onGrabStart.bind(this));
-      this.el.addEventListener('stretchEnd', this.onGrabEnd.bind(this));
+      this.el.addEventListener('stretchStart', this.onStretchStart.bind(this));
+      this.el.addEventListener('stretchEnd', this.onStretchEnd.bind(this));
       this.hand1 = null;
       this.hand2 = null;
       this.initialDistance = null;
@@ -408,7 +428,7 @@ AFRAME.registerComponent('stretch', {
       document.querySelector('#text').setAttribute('text', `value: iniciamos stretch`);
    },
 
-   onGrabStart: function (event) {
+   onStretchStart: function (event) {
       if (this.isStretching) return; 
       this.isStretching = true;
 
@@ -428,7 +448,7 @@ AFRAME.registerComponent('stretch', {
       }
    },
 
-   onGrabEnd: function () {
+   onStretchEnd: function () {
       document.querySelector('#text').setAttribute('text', `value: Evento strechEnd`);
       this.hand1 = null;
       this.hand2 = null;
