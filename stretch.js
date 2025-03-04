@@ -403,11 +403,12 @@ AFRAME.registerComponent('stretch', {
       this.initialDistance = null;
       this.previousDistance = null;
       this.currentScale = null;
+      this.first = true;
       document.querySelector('#text').setAttribute('text', `value: iniciamos stretch`);
    },
 
    onGrabStart: function (event) {
-      if (event.detail.hand1 && event.detail.hand2) {
+      if (event.detail.hand1 && event.detail.hand2 && this.first) {
          this.hand1 = event.detail.hand1;
          this.hand2 = event.detail.hand2;
          
@@ -433,6 +434,7 @@ AFRAME.registerComponent('stretch', {
 
    tick: function () {
       if (this.hand1 && this.hand2) {
+         this.first = false;
          const hand1Pos = this.hand1.object3D.position;
          const hand2Pos = this.hand2.object3D.position;
          const currentDistance = hand1Pos.distanceTo(hand2Pos);
