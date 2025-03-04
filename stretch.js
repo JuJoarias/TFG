@@ -286,7 +286,7 @@ AFRAME.registerComponent('grabable', {
          if ((this.colideLeft && this.colideRight) && (rightPinch && leftPinch)) {
             this.el.setAttribute('material', 'color', 'black');
             this.reparent(this.el.sceneEl);
-            this.el.emit('stretchStart', {hand0: indexTipLeft, hand1: indexTipRight})
+            this.el.emit('stretchStart', {hand1: indexTipLeft, hand2: indexTipRight})
    
          } else if (this.colideLeft && leftPinch) {
             const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
