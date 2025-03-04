@@ -282,10 +282,8 @@ AFRAME.registerComponent('grabable', {
       const indexTipRight = manoDerecha.joints["index-finger-tip"];
 
       if ((this.colideRight || this.colideLeft ) && (rightPinch || leftPinch)) {
-         if (this.colideRight && rightPinch) {
-            this.el.setAttribute('material', 'color', 'green');
-            this.updateFakeCoords();
-            this.reparent(indexTipRight.object3D);
+         if ((this.colideLeft && this.colideRight) && (rightPinch && leftPinch)) {
+            this.el.setAttribute('material', 'color', 'black');
    
          } else if (this.colideLeft && leftPinch) {
             const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
@@ -298,8 +296,10 @@ AFRAME.registerComponent('grabable', {
                y: this.el.getAttribute('position').y,
                z: this.el.getAttribute('position').z
             });
-         } else if ((this.colideLeft && this.colideRight) && (rightPinch && leftPinch)){ // revisar por que no entra aqui
-            this.el.setAttribute('material', 'color', 'black');
+         } else if (this.colideRight && rightPinch){ // revisar por que no entra aqui
+            this.el.setAttribute('material', 'color', 'green');
+            this.updateFakeCoords();
+            this.reparent(indexTipRight.object3D);
          }
       
       } else {
