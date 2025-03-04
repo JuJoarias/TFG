@@ -273,7 +273,7 @@ AFRAME.registerComponent('grabable', {
       } else {this.hooverState = false;}
       this.hoover(this.hooverState);
 
-      document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
+      
       this.updateState(rightPinchState, leftPinchState, manoDerecha, manoIzquierda); 
    
    },
@@ -404,9 +404,11 @@ AFRAME.registerComponent('stretch', {
       this.initialDistance = null;
       this.previousDistance = null;
       this.currentScale = null;
+      document.querySelector('#text').setAttribute('text', `value: iniciamos stretch`);
    },
 
    onGrabStart: function (event) {
+      document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1} y ${event.detail.hand2}`);
       if (event.detail.hand1 && event.detail.hand2) {
          this.hand1 = event.detail.hand1;
          this.hand2 = event.detail.hand2;
