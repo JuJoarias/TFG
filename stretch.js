@@ -407,8 +407,8 @@ AFRAME.registerComponent('stretch', {
    },
 
    onGrabStart: function (event) {
-      document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id}`);
       if (event.detail.hand1 && event.detail.hand2) {
+         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id}`);
          this.hand1 = event.detail.hand1;
          this.hand2 = event.detail.hand2;
 
@@ -424,6 +424,7 @@ AFRAME.registerComponent('stretch', {
    },
 
    onGrabEnd: function () {
+      document.querySelector('#text').setAttribute('text', `value: Evento strechEnd`);
       this.hand1 = null;
       this.hand2 = null;
       this.initialDistance = null;
