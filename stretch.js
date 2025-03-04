@@ -408,18 +408,18 @@ AFRAME.registerComponent('stretch', {
 
    onGrabStart: function (event) {
       if (event.detail.hand1 && event.detail.hand2) {
-         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id}`);
          this.hand1 = event.detail.hand1;
          this.hand2 = event.detail.hand2;
-
+         
          const hand1Pos = this.hand1.object3D.position;
          const hand2Pos = this.hand2.object3D.position;
          
          this.initialDistance = hand1Pos.distanceTo(hand2Pos);
          this.previousDistance = this.initialDistance;
-
+         
          // Guardar la escala actual antes de estirar
          this.currentScale = Object.assign({}, this.el.getAttribute('scale'));
+         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id} current scale: ${this.currentScale}`);
       }
    },
 
