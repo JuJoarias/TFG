@@ -289,7 +289,6 @@ AFRAME.registerComponent('grabable', {
             this.el.emit('stretchStart', {hand1: indexTipLeft, hand2: indexTipRight})
    
          } else if (this.colideLeft && leftPinch) {
-            const indexTipLeft = manoIzquierda.joints["index-finger-tip"];
             this.el.setAttribute('material', 'color', 'blue');
             this.el.emit('stretchEnd');
             const newPosition = indexTipLeft.object3D.position;
@@ -408,7 +407,7 @@ AFRAME.registerComponent('stretch', {
    },
 
    onGrabStart: function (event) {
-      document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1} y ${event.detail.hand2}`);
+      document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id}`);
       if (event.detail.hand1 && event.detail.hand2) {
          this.hand1 = event.detail.hand1;
          this.hand2 = event.detail.hand2;
@@ -441,11 +440,13 @@ AFRAME.registerComponent('stretch', {
          if (Math.abs(currentDistance - this.previousDistance) > 0.01) {
          const scaleFactor = currentDistance / this.initialDistance;
 
-         this.el.setAttribute('scale', {
-            x: this.currentScale.x * scaleFactor,
-            y: this.currentScale.y * scaleFactor,
-            z: this.currentScale.z * scaleFactor
-         });
+         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${this.hand1.id} y ${this.hand2.id}; Current distance : ${currentDistance} y scale factor ${scaleFactor}`);
+
+         this.el.setAttribute('scale', 
+            this.currentScale.x * scaleFactor,
+            this.currentScale.y * scaleFactor,
+            this.currentScale.z * scaleFactor
+         );
 
          // Actualizamos la distancia previa
          this.previousDistance = currentDistance;
