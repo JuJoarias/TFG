@@ -422,7 +422,7 @@ AFRAME.registerComponent('stretch', {
          this.previousDistance = this.initialDistance;
          
          // Guardar la escala actual antes de estirar
-         this.currentScale =  this.el.getAttribute('scale');
+         this.currentScale = this.el.object3D.scale.clone();
          // document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id} current scale: ${this.currentScale}`);
       }
    },
@@ -447,13 +447,10 @@ AFRAME.registerComponent('stretch', {
          if (Math.abs(currentDistance - this.previousDistance) > 0.01) {
          const scaleFactor = currentDistance / this.initialDistance;
 
-         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${this.hand1.id} y ${this.hand2.id} Current distance : ${currentDistance} y scale factor ${scaleFactor}`);
+         // document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${this.hand1.id} y ${this.hand2.id} Current distance : ${currentDistance} y scale factor ${scaleFactor}`);
 
-         // this.el.setAttribute('scale', 
-         //    this.currentScale.x * scaleFactor,
-         //    this.currentScale.y * scaleFactor,
-         //    this.currentScale.z * scaleFactor
-         // );
+         const newScale = this.currentScale.clone().multiplyScalar(scaleFactor);
+         this.el.object3D.scale.copy(newScale);
 
          // Actualizamos la distancia previa
          this.previousDistance = currentDistance;
