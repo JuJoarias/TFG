@@ -419,7 +419,7 @@ AFRAME.registerComponent('stretch', {
          
          // Guardar la escala actual antes de estirar
          this.currentScale = Object.assign({}, this.el.getAttribute('scale'));
-         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id} current scale: ${this.currentScale}`);
+         // document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${event.detail.hand1.id} y ${event.detail.hand2.id} current scale: ${this.currentScale}`);
       }
    },
 
@@ -432,6 +432,7 @@ AFRAME.registerComponent('stretch', {
    },
 
    tick: function () {
+      document.querySelector('#text').setAttribute('text', `value: dentro de tick. hand1: ${this.hand1} y hand2: ${this.hand2}`);
       if (this.hand1 && this.hand2) {
          const hand1Pos = this.hand1.object3D.position;
          const hand2Pos = this.hand2.object3D.position;
