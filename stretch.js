@@ -436,7 +436,7 @@ AFRAME.registerComponent('stretch', {
          const hand1Pos = this.hand1.object3D.position;
          const hand2Pos = this.hand2.object3D.position;
          const currentDistance = hand1Pos.distanceTo(hand2Pos);
-         document.querySelector('#text').setAttribute('text', `value: dentro de tick. hand1: ${this.hand1} y hand2: ${this.hand2} current distance: ${currentDistance} y previous distance: ${this.previousDistance}`);
+         document.querySelector('#text').setAttribute('text', `value: dentro de tick. hand1: ${this.hand1} y hand2: ${this.hand2} current distance: ${currentDistance} y previous distance: ${this.previousDistance} init distance: ${this.initialDistance}`);
 
          // 🔹 Solo modificar la escala si la distancia entre las manos ha cambiado
          if (Math.abs(currentDistance - this.previousDistance) > 0.01) {
