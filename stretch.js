@@ -440,7 +440,7 @@ AFRAME.registerComponent('stretch', {
          if (Math.abs(currentDistance - this.previousDistance) > 0.01) {
          const scaleFactor = currentDistance / this.initialDistance;
 
-         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${this.hand1.id} y ${this.hand2.id}; Current distance : ${currentDistance} y scale factor ${scaleFactor}`);
+         document.querySelector('#text').setAttribute('text', `value: Datos del evento stretchStart ${this.hand1.id} y ${this.hand2.id} Current distance : ${currentDistance} y scale factor ${scaleFactor}`);
 
          this.el.setAttribute('scale', 
             this.currentScale.x * scaleFactor,
