@@ -308,6 +308,7 @@ AFRAME.registerComponent('grabable', {
       } else {
          this.el.setAttribute('material', 'color', 'red');
          this.reparent(this.el.sceneEl);
+         this.el.emit('stretchEnd');
       }
    },
    
