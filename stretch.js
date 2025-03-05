@@ -390,6 +390,14 @@ AFRAME.registerComponent('drag', {
       this.finger = null,
       this.hand = null;
       this.isDragging = false;
+
+      this.vectorX = new THREE.Vector3();
+      this.vectorZ = new THREE.Vector3();
+      this.vectorXZ = new THREE.Vector3();
+      this.fakeX = new THREE.Vector3();
+      this.fakeY = new THREE.Vector3();
+      this.fakeZ = new THREE.Vector3();
+      this.rotationMatrix = new THREE.Matrix4();
    },
 
    onDragStart: function(event){
@@ -406,6 +414,14 @@ AFRAME.registerComponent('drag', {
       this.finger = null,
       this.hand = null;
       this.isDragging = false;
+
+      this.vectorX = new THREE.Vector3();
+      this.vectorZ = new THREE.Vector3();
+      this.vectorXZ = new THREE.Vector3();
+      this.fakeX = new THREE.Vector3();
+      this.fakeY = new THREE.Vector3();
+      this.fakeZ = new THREE.Vector3();
+      this.rotationMatrix = new THREE.Matrix4();
    },
 
    tick: function(){
