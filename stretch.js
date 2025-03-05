@@ -409,7 +409,7 @@ AFRAME.registerComponent('drag', {
       }
    },
 
-   onDragend: function(){
+   onDragEnd: function(){
       this.reparent(this.el.sceneEl);
       this.finger = null,
       this.hand = null;
