@@ -283,39 +283,143 @@ AFRAME.registerComponent('grabable', {
       if ((this.colideRight || this.colideLeft ) && (rightPinch || leftPinch)) {
          if ((this.colideLeft && this.colideRight) && (rightPinch && leftPinch)) {
             this.el.setAttribute('material', 'color', 'black');
-            this.reparent(this.el.sceneEl);
+            // this.reparent(this.el.sceneEl);
             this.el.emit('stretchStart', {hand1: indexTipLeft, hand2: indexTipRight})
-   
+            this.el.emit('slideEnd');
+            this.el.emit('dragEnd');
          } else if (this.colideLeft && leftPinch) {
             this.el.setAttribute('material', 'color', 'blue');
+            this.el.emit('slideStart', {finger: indexTipLeft})
             this.el.emit('stretchEnd');
-            const newPosition = indexTipLeft.object3D.position;
-   
-            this.el.setAttribute('position', {
-               x: newPosition.x,
-               y: this.el.getAttribute('position').y,
-               z: this.el.getAttribute('position').z
-            });
+            this.el.emit('dragEnd');
          } else if (this.colideRight && rightPinch){ 
             this.el.setAttribute('material', 'color', 'green');
-            this.updateFakeCoords();
-            this.reparent(indexTipRight.object3D);
+            // this.updateFakeCoords(manoDerecha);
+            // this.reparent(indexTipRight.object3D);
+            this.el.emit('dragStart', {mano: manoDerecha, finger: indexTipRight})
             this.el.emit('stretchEnd');
+            this.el.emit('slideEnd');
          }
       
       } else {
          this.el.setAttribute('material', 'color', 'red');
-         this.reparent(this.el.sceneEl);
+         // this.reparent(this.el.sceneEl);
          this.el.emit('stretchEnd');
+         this.el.emit('slideEnd');
+         this.el.emit('dragEnd');
       }
    },
 
-   updateFakeCoords: function () {
+   // updateFakeCoords: function (mano) {
+   //    // Actualizar las posiciones de las esferas de la mano derecha
+   //    const pos1 = mano.joints["index-finger-metacarpal"].object3D.position;
+   //    const pos2 = mano.joints["index-finger-tip"].object3D.position;
+   //    const pos3 = mano.joints["pinky-finger-metacarpal"].object3D.position;
+
+   //    // Calcular el vector X (de esfera1 a esfera2)
+   //    this.vectorX.copy(pos2).sub(pos1).normalize();
+   //    this.fakeX.copy(this.vectorX);
+
+   //    // Calcular el vector Z (perpendicular al eje X, desde esfera3)
+   //    this.vectorXZ.copy(pos3).sub(pos1);
+   //    this.vectorZ.crossVectors(this.vectorX, this.vectorXZ).normalize();
+   //    this.fakeZ.copy(this.vectorZ);
+
+   //    // Calcular el eje Y como el producto cruzado entre X y Z
+   //    this.fakeY.crossVectors(this.fakeZ, this.fakeX).normalize();
+
+   //    // Asegurarnos de que el sistema sea ortonormal
+   //    if (this.fakeY.length() === 0) {
+   //       this.fakeZ.negate();
+   //       this.fakeY.crossVectors(this.fakeZ, this.fakeX).normalize();
+   //    }
+
+   //    // Definir la matriz de rotación usando los ejes falsos
+   //    this.rotationMatrix.makeBasis(this.fakeX, this.fakeY, this.fakeZ);
+
+   //    // Aplicar la rotación al cubo
+   //    this.el.object3D.setRotationFromMatrix(this.rotationMatrix);
+   // },
+
+   // reparent: function (newParent) {
+   //    const el = this.el;
+
+   //    // Verificar si el nuevo padre es un elemento DOM o un Object3D
+   //    if (!newParent) {
+   //       console.error('Nuevo padre no válido:', newParent);
+   //       return;
+   //    }
+
+   //    // Si el nuevo padre es un objeto DOM, tomamos su object3D
+   //    if (newParent instanceof HTMLElement) {
+   //       newParent = newParent.object3D;  // Convertimos el DOM a object3D
+   //    }
+
+   //    // Si el nuevo padre es un object3D, hacemos el reparenting
+   //    if (newParent instanceof THREE.Object3D) {
+   //       // Verificamos si ya es hijo del nuevo padre
+   //       if (el.object3D.parent === newParent) return;
+
+   //       // Guardar la posición global del cubo estático
+   //       const worldPosition = new THREE.Vector3();
+   //       worldPosition.setFromMatrixPosition(el.object3D.matrixWorld);
+
+   //       // Mover el object3D al nuevo padre
+   //       newParent.attach(el.object3D);
+
+   //       // Si el nuevo padre no es la escena, ajustar la posición local
+   //       if (newParent !== this.el.sceneEl.object3D) {
+   //          const localPosition = new THREE.Vector3();
+   //          localPosition.setFromMatrixPosition(newParent.matrixWorld).negate();
+   //          localPosition.add(worldPosition);
+   //          el.object3D.position.copy(localPosition);
+   //       } else {
+   //          // Si el nuevo padre es la escena, restaurar la posición original
+   //          el.object3D.position.copy(worldPosition);
+   //       }
+   //    } else {
+   //       console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
+   //    }
+   // },
+});
+
+AFRAME.registerComponent('drag', {
+   init: function(){
+      this.el.addEventListener('dragStart', this.onDragStart.bind(this));
+      this.el.addEventListener('dragEnd', this.onDragEnd.bind(this));
+      this.finger = null,
+      this.hand = null;
+      this.isDragging = false;
+   },
+
+   onDragStart: function(event){
+      if (this.isDragging) return;
+
+      if (event.detail.mano && event.detail.finger){
+         this.hand = event.detail.mano;
+         this.finger = event.detail.finger;
+      }
+   },
+
+   onDragend: function(){
+      this.reparent(this.el.sceneEl);
+      this.finger = null,
+      this.hand = null;
+      this.isDragging = false;
+   },
+
+   tick: function(){
+      if (this.hand && this.finger){
+         this.updateFakeCoords(this.hand);
+         this.reparent(this.finger.object3D);
+      }
+   },
+
+   updateFakeCoords: function (mano) {
       // Actualizar las posiciones de las esferas de la mano derecha
-      const manoDerecha = this.rightHandEntity.components.manos;
-      const pos1 = manoDerecha.joints["index-finger-metacarpal"].object3D.position;
-      const pos2 = manoDerecha.joints["index-finger-tip"].object3D.position;
-      const pos3 = manoDerecha.joints["pinky-finger-metacarpal"].object3D.position;
+      const pos1 = mano.joints["index-finger-metacarpal"].object3D.position;
+      const pos2 = mano.joints["index-finger-tip"].object3D.position;
+      const pos3 = mano.joints["pinky-finger-metacarpal"].object3D.position;
 
       // Calcular el vector X (de esfera1 a esfera2)
       this.vectorX.copy(pos2).sub(pos1).normalize();
@@ -380,6 +484,58 @@ AFRAME.registerComponent('grabable', {
          }
       } else {
          console.error('Nuevo padre debe ser un HTMLElement o un Object3D.');
+      }
+   },
+});
+
+AFRAME.registerComponent('slide', {
+
+   schema: {
+      axis: { type: 'string', default: 'x', oneOf: ['x', 'y', 'z', 'xy', 'xz', 'yz'] }
+   },
+
+   init: function(){
+      this.el.addEventListener('slideStart', this.onSlideStart.bind(this));
+      this.el.addEventListener('slideEnd', this.onSlideEnd.bind(this));
+      this.finger = null;
+      this.initialOffset = { x: 0, y: 0, z: 0 };;
+      this.isSliding = false;
+   },
+
+   onSlideStart: function(event){
+      if (this.isSliding) return;
+      this.isSliding = true;
+
+      if(event.detail.finger){
+         this.finger = event.detail.finger
+         this.initialOffset.x = this.el.object3D.position.x - this.finger.object3D.position.x;
+         this.initialOffset.y = this.el.object3D.position.y - this.finger.object3D.position.y;
+         this.initialOffset.z = this.el.object3D.position.z - this.finger.object3D.position.z;
+      }
+   },
+
+   onSlideEnd: function(){
+      this.finger = null;
+      this.initialOffset = { x: 0, y: 0, z: 0 };;
+      this.isSliding = false;
+   },
+
+   tick: function(){
+      if (this.finger){
+         const fingerPos = this.finger.object3D.position;
+         let newPos = { 
+            x: this.el.object3D.position.x, 
+            y: this.el.object3D.position.y, 
+            z: this.el.object3D.position.z 
+         };
+
+         // Aplicar movimiento según el eje permitido
+         if (this.data.axis.includes('x')) newPos.x = fingerPos.x + this.initialOffset.x;
+         if (this.data.axis.includes('y')) newPos.y = fingerPos.y + this.initialOffset.y;
+         if (this.data.axis.includes('z')) newPos.z = fingerPos.z + this.initialOffset.z;
+
+         // Aplicar la nueva posición
+         this.el.setAttribute('position', newPos);
       }
    },
 });
