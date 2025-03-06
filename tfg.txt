@@ -157,3 +157,30 @@ slide
 Drag and drop
 stretch
 hoover
+
+6-3-25
+cosas a mencionar: 
+	cambio de colisionadores, quite la mayoría, se estorbaban entre si y dificultaban las interacciones 
+	Creación de los componentes : drag, hoover, slide y stretch. El slide acepta en schema los 3 ejes y los 3 planos auxiliares. 
+
+
+intentar adaptar lo mio a superhands, clonar lo suyo e ir viendo como implementan ellos las manos
+
+en issues mirar si alguien suguiere usar las manos, si no en new issue proponer lo mio 
+
+Limpiar mi repositorio un poco los ficheros, crear carpetas... y ponerle una licencia, ponerle la misma que la de superhands. 
+
+integrar en superhands con un fork y en una rama nueva que yo cree y a trabajar desde ahí. 
+
+Crear una escena de demo con lo que tengo, con un cartel que explique y demás 
+
+documentar bien los distintos componentes que tengo explicar si son para depurar y demás
+
+Tareas:
+- limpiar el repositorio
+- Documentar en el readme
+- copiar la licencia de superhands
+- hacerme un fork de superhands y crear una rama nueva para trabajar
+- mirar las issues y si no hay ninguna parecida a lo que quiero hacer una nueva
+- crear escena demo con lo que ya tengo
+- hacer que las demos de superhands funcionen con lo mio
