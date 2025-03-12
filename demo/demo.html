@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo</title>
+    <script>
+        delete AFRAME.components["grabbable"];
+    </script>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="demo.js"></script> 
+</head>
+<body>
+    <a-scene 
+        xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+        webxr="optionalFeatures: hand-tracking"
+        background="color: #444444">
+        
+        <!-- Manos -->
+        <a-entity>
+            <a-camera></a-camera>
+            <a-entity id="left-hand" manos="hand: left" ></a-entity>
+            <a-entity id="right-hand" manos="hand: right" ></a-entity>
+        </a-entity>
+
+        <!-- Cubos -->
+        <a-box id="cube" position="0 1 -0.5" color="red" scale="0.25 0.25 0.25" grabable drag slide stretch hoover></a-box>
+        
+        <!-- test de panel flotante demo -->
+        <a-entity floating-panel="type: text; text: Hola Mundo; width: 3; height: 1.5; color: blue; textColor: yellow" position="0 2 -3"></a-entity>
+    </a-scene>
+</body>
+</html>
