@@ -84,7 +84,8 @@ AFRAME.registerComponent('manos', {
           if (inputSource.handedness === this.data.hand && inputSource.hand) {
              const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
              const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
-             const indexPhalanx = this.frame.getJointPose(inputSource.hand.get("index-finger-phalanx-intermediate"), this.referenceSpace); 
+             const indexPhalanx = this.frame.getJointPose(inputSource.hand.get("index-finger-phalanx-intermediate"), this.referenceSpace);
+             const indexKnuckle = this.frame.getJointPose(inputSource.hand.get("index-finger-phalanx-proximal"), this.referenceSpace);  
              const middleTip = this.frame.getJointPose(inputSource.hand.get("middle-finger-tip"), this.referenceSpace);
              const ringTip = this.frame.getJointPose(inputSource.hand.get("ring-finger-tip"), this.referenceSpace);
              const pinkyTip = this.frame.getJointPose(inputSource.hand.get("pinky-finger-tip"), this.referenceSpace);
@@ -131,13 +132,23 @@ AFRAME.registerComponent('manos', {
                             new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
                         );
                         this.pointerEntity = document.createElement('a-entity');
-                        this.pointerEntity.setAttribute('geometry', { primitive: 'cone', radiusBottom: 0.01, height: 0.1 });
-                        this.pointerEntity.setAttribute('material', { color: 'red' });
+                        // Configura el raycaster para que apunte en la dirección del vector
+                        this.pointerEntity.setAttribute('raycaster', {
+                            objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
+                            far: 10,  // Distancia máxima de interacción
+                            showLine: true,  // Muestra una línea de rayos para visualización
+                            cursor: true  // Activa el cursor en el puntero
+                        });
+                        
+                        // Posiciona el puntero en la punta del dedo
                         this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                        
+                        // Rota la entidad para que apunte en la dirección del vector
                         this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
+                        
                         this.el.appendChild(this.pointerEntity);
                     } else{
-                        this.el.emit('click', { hand: this.data.hand });
+                        this.pointerEntity.emit('click');
                     }
                 } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
                    this.pointState = false;
