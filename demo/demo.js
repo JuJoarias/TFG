@@ -22,6 +22,7 @@ AFRAME.registerComponent('manos', {
        this.fistState = false;
        this.pointState = false;
        this.openHandState = false;
+       this.pointer = null;
 
        orderedJoints.flat().forEach((jointName) => {
           const jointEntity = document.createElement('a-sphere');
@@ -83,17 +84,14 @@ AFRAME.registerComponent('manos', {
           if (inputSource.handedness === this.data.hand && inputSource.hand) {
              const thumbTip = this.frame.getJointPose(inputSource.hand.get("thumb-tip"), this.referenceSpace);
              const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
+             const indexPhalanx = this.frame.getJointPose(inputSource.hand.get("index-finger-phalanx-intermediate"), this.referenceSpace); 
              const middleTip = this.frame.getJointPose(inputSource.hand.get("middle-finger-tip"), this.referenceSpace);
              const ringTip = this.frame.getJointPose(inputSource.hand.get("ring-finger-tip"), this.referenceSpace);
              const pinkyTip = this.frame.getJointPose(inputSource.hand.get("pinky-finger-tip"), this.referenceSpace);
              const wrist = this.frame.getJointPose(inputSource.hand.get("wrist"), this.referenceSpace);
 
              if (thumbTip && indexTip) {
-                const pinchDistanceCalc = Math.sqrt(
-                   Math.pow(thumbTip.transform.position.x - indexTip.transform.position.x, 2) +
-                   Math.pow(thumbTip.transform.position.y - indexTip.transform.position.y, 2) +
-                   Math.pow(thumbTip.transform.position.z - indexTip.transform.position.z, 2)
-                );
+                const pinchDistanceCalc = this.calcDistance(thumbTip, indexTip)
 
                 if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
                    this.pinchState = true;
@@ -105,12 +103,13 @@ AFRAME.registerComponent('manos', {
              }
 
              // Detectar si los dedos están doblados
-             if (wrist && indexTip && middleTip && ringTip && pinkyTip) {
+             if (wrist && indexTip && middleTip && ringTip && pinkyTip && indexPhalanx) {
 
-                const isIndexExtended = this.isFingerExtended(indexTip, wrist);
-                const isMiddleBent = !this.isFingerExtended(middleTip, wrist);
-                const isRingBent = !this.isFingerExtended(ringTip, wrist);
-                const isPinkyBent = !this.isFingerExtended(pinkyTip, wrist);
+                const isIndexExtended = this.calcDistance(indexTip, wrist) > curlThreshold;
+                const isMiddleBent = !(this.calcDistance(middleTip, wrist) > curlThreshold);
+                const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
+                const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
+                const pistol = this.calcDistance(indexPhalanx, thumbTip) > 0.04;
 
                 // Fist (Puño cerrado)
                 if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
@@ -125,9 +124,28 @@ AFRAME.registerComponent('manos', {
                 if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
                    this.pointState = true;
                    this.el.emit('pointstart', { hand: this.data.hand });
+                   if (!pistol){
+                        const vector = new THREE.Vector3();
+                        vector.subVectors(
+                            new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
+                            new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
+                        );
+                        this.pointerEntity = document.createElement('a-entity');
+                        this.pointerEntity.setAttribute('geometry', { primitive: 'cone', radiusBottom: 0.01, height: 0.1 });
+                        this.pointerEntity.setAttribute('material', { color: 'red' });
+                        this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                        this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
+                        this.el.appendChild(this.pointerEntity);
+                    } else{
+                        this.el.emit('click', { hand: this.data.hand });
+                    }
                 } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
                    this.pointState = false;
                    this.el.emit('pointend', { hand: this.data.hand });
+                   if(this.pointerEntity){
+                        this.el.removeChild(this.pointerEntity);
+                        this.pointerEntity = null;
+                   }
                 }
 
                 // Open Hand (Mano abierta)
@@ -143,12 +161,12 @@ AFRAME.registerComponent('manos', {
        }
     },
 
-    isFingerExtended: function (fingerTip, wrist) {
+    calcDistance: function (fingerTip, wrist) {
         return Math.sqrt(
             Math.pow(fingerTip.transform.position.x - wrist.transform.position.x, 2) +
             Math.pow(fingerTip.transform.position.y - wrist.transform.position.y, 2) +
             Math.pow(fingerTip.transform.position.z - wrist.transform.position.z, 2)
-        ) > curlThreshold;
+        );
     }  
 });
  
@@ -514,46 +532,89 @@ AFRAME.registerComponent('stretch', {
 
 
 // Componente para crear paneles flotantes para la demo
-
 AFRAME.registerComponent('floating-panel', {
     schema: {
-        type: { type: 'string', default: 'text' }, // 'text' o 'image'
-        text: { type: 'string', default: 'Texto de ejemplo' },
-        image: { type: 'string', default: '' }, // Ruta de la imagen/GIF
+        type: { type: 'string', default: 'text' }, // 'text', 'image' o 'video'
+        title: { type: 'string', default: '' }, // Título del panel
+        content: { type: 'string', default: '' }, // Texto, URL de imagen o video
         width: { type: 'number', default: 2 },
         height: { type: 'number', default: 1 },
-        color: { type: 'color', default: '#444' },
+        color: { type: 'color', default: '#333' },
         textColor: { type: 'color', default: '#FFF' }
     },
-  
+
     init: function () {
         const data = this.data;
         const el = this.el;
 
-        // Crear el panel de fondo
-        const panel = document.createElement('a-plane');
-        panel.setAttribute('width', data.width);
-        panel.setAttribute('height', data.height);
-        panel.setAttribute('color', data.color);
-        el.appendChild(panel);
+        // Crear el panel de fondo (ahora visible por ambos lados)
+        const background = document.createElement('a-plane');
+        background.setAttribute('width', data.width);
+        background.setAttribute('height', data.height);
+        background.setAttribute('color', data.color);
+        background.setAttribute('side', 'double'); // Hace que el panel sea visible por ambos lados
+        el.appendChild(background);
 
-        // Determinar si es texto o imagen
+        // Crear el título en la parte superior del panel
+        const title = document.createElement('a-text');
+        title.setAttribute('value', data.title);
+        title.setAttribute('color', data.textColor);
+        title.setAttribute('align', 'center');
+        title.setAttribute('width', data.width * 0.9);
+        title.setAttribute('position', `0 ${(data.height / 2) - 0.2} 0.01`);
+        title.setAttribute('wrap-count', 20);
+        title.setAttribute('font-weight', 'bold');
+        title.setAttribute('scale', '1.5 1.5 1');
+        el.appendChild(title);
+
+        // Ajustar la posición del contenido para centrarlo mejor
+        const contentY = (data.height / 9) - 0.2;
+
         if (data.type === 'text') {
-            const textEntity = document.createElement('a-text');
-            textEntity.setAttribute('value', data.text);
-            textEntity.setAttribute('align', 'center');
-            textEntity.setAttribute('color', data.textColor);
-            textEntity.setAttribute('width', data.width * 0.9); // Ajuste de tamaño al panel
-            textEntity.setAttribute('position', `0 0 0.05`);
-            el.appendChild(textEntity);
-        } else if (data.type === 'image' && data.image) {
-            const imageEntity = document.createElement('a-image');
-            imageEntity.setAttribute('src', data.image);
-            imageEntity.setAttribute('width', data.width * 0.9);
-            imageEntity.setAttribute('height', data.height * 0.9);
-            imageEntity.setAttribute('position', `0 0 0.05`);
-            el.appendChild(imageEntity);
+            const text = document.createElement('a-text');
+            text.setAttribute('value', data.content);
+            text.setAttribute('color', data.textColor);
+            text.setAttribute('align', 'center');
+            text.setAttribute('width', data.width * 0.85);
+            text.setAttribute('position', `0 ${contentY} 0.01`);
+            text.setAttribute('wrap-count', 35);
+            el.appendChild(text);
+
+        } else if (data.type === 'image') {
+            const image = document.createElement('a-image');
+            image.setAttribute('src', data.content);
+            image.setAttribute('width', data.width * 0.9);
+            image.setAttribute('height', data.height * 0.5);
+            image.setAttribute('position', `0 ${contentY} 0.01`);
+            el.appendChild(image);
+
+        } else if (data.type === 'video') {
+            const video = document.createElement('a-video');
+            video.setAttribute('src', data.content);
+            video.setAttribute('width', data.width * 0.9);
+            video.setAttribute('height', data.height * 0.5);
+            video.setAttribute('position', `0 ${contentY} 0.01`);
+            el.appendChild(video);
+
+            // Crear un botón para iniciar el video
+            const button = document.createElement('a-entity');
+            button.setAttribute('geometry', 'primitive: plane; width: 0.75; height: 0.25');
+            button.setAttribute('material', 'color: green');
+            button.setAttribute('text', 'value: Play Video; color: white; align: center');
+            button.setAttribute('position', '0 -0.02 0.05');
+            button.setAttribute('class', 'clickable');
+            el.appendChild(button);
+
+            // Función para empezar a reproducir el video al hacer clic
+            button.addEventListener('click', () => {
+                video.play(); // Reproducir el video
+                button.setAttribute('visible', 'false'); // Ocultar el botón
+            });
+
+            // Cuando el video termine, mostrar el botón nuevamente
+            video.addEventListener('ended', () => {
+                button.setAttribute('visible', 'true'); // Volver a mostrar el botón
+            });
         }
     }
 });
-  

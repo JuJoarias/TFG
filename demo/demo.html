@@ -4,30 +4,60 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo</title>
+    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script>
         delete AFRAME.components["grabbable"];
     </script>
-    <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
     <script src="demo.js"></script> 
 </head>
 <body>
     <a-scene 
         xr-mode-ui="enabled: true; enterVRDisabled: false;" 
         webxr="optionalFeatures: hand-tracking"
-        background="color: #444444">
-        
-        <!-- Manos -->
-        <a-entity>
-            <a-camera></a-camera>
-            <a-entity id="left-hand" manos="hand: left" ></a-entity>
-            <a-entity id="right-hand" manos="hand: right" ></a-entity>
+        background="color: skyblue">
+
+        <a-assets>
+            <video id="components" src="5_3_25.mp4"></video>
+        </a-assets>
+
+        <a-sky color="#87CEEB"></a-sky>
+
+        <a-plane position="0 0 0" rotation="-90 0 0" width="1000" height="1000" color="#888888" repeat="100 100"></a-plane>
+
+        <a-entity id="rig" movement-controls position="0 1.6 0">
+            <a-camera wasd-controls look-controls></a-camera>
         </a-entity>
 
-        <!-- Cubos -->
-        <a-box id="cube" position="0 1 -0.5" color="red" scale="0.25 0.25 0.25" grabable drag slide stretch hoover></a-box>
+        <a-entity>
+            <a-entity id="left-hand" manos="hand: left"></a-entity>
+            <a-entity id="right-hand" manos="hand: right"></a-entity>
+        </a-entity>
+
+        <a-entity floating-panel="type: text; title: Instructions; content: In front of you, you have several cubes. On top of each cube you have a little video showing how to interact with it. \n\n Make sure that your hands are showing before interacting with the elements.; width: 1.5; height: 1; color: orange; textColor: black" position="0 4 -2"></a-entity>
+
+        <a-entity id="cubes">
+            <a-box color="red" scale="0.5 0.5 0.5" position="4 1 -5" grabbable drag></a-box>
+            <a-entity position="4 2 -5" floating-panel="type: text; title: Instructions;content: 'Cubo 1'; width: 2; height: 1; color: blue; textColor: white; align: center;"></a-entity>
+            <a-cylinder position="4 0.3 -5" radius="0.6" height="0.1" color="gray"></a-cylinder>
         
-        <!-- test de panel flotante demo -->
-        <a-entity floating-panel="type: text; text: Hola Mundo; width: 3; height: 1.5; color: blue; textColor: yellow" position="0 2 -3"></a-entity>
+            <a-box color="green" scale="0.5 0.5 0.5" position="2 1 -6" grabbable stretch></a-box>
+            <a-entity position="2 2 -6" floating-panel="type: text; title: Instructions;content: 'Cubo 2'; width: 2; height: 1; color: blue; textColor: white; align: center;"></a-entity>
+            <a-cylinder position="2 0.3 -6" radius="0.6" height="0.1" color="gray"></a-cylinder>
+        
+            <a-box color="yellow" scale="0.5 0.5 0.5" position="-4 1 -5" grabbable slide></a-box>
+            <a-entity position="-4 2 -5" floating-panel="type: text; title: Instructions;content: 'Cubo 3'; width: 2; height: 1; color: blue; textColor: white; align: center;"></a-entity>
+            <a-cylinder position="-4 0.3 -5" radius="0.6" height="0.1" color="gray"></a-cylinder>
+        
+            <a-box color="orange" scale="0.5 0.5 0.5" position="-2 1 -6" grabbable hoover></a-box>
+            <a-entity position="-2 2 -6" floating-panel="type: text; title: Instructions;content: 'Cubo 4'; width: 2; height: 1; color: blue; textColor: white; align: center;"></a-entity>
+            <a-cylinder position="-2 0.3 -6" radius="0.6" height="0.1" color="gray"></a-cylinder>
+            
+            <a-box color="purple" scale="0.5 0.5 0.5" position="0 1 -7" grabbable drag slide stretch hoover></a-box>
+            <a-entity position="0 2 -7" floating-panel="type: video; title: Instructions;content: #components; width: 2; height: 1; color: blue; textColor: white; align: center;"></a-entity>
+            <a-cylinder position="0 0.3 -7" radius="0.6" height="0.1" color="gray"></a-cylinder>
+        </a-entity>
+
+        
     </a-scene>
 </body>
 </html>
