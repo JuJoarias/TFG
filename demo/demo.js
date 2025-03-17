@@ -144,66 +144,63 @@ AFRAME.registerComponent('manos', {
     },
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
-        document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
-        
-        if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
-            this.pointState = true;
-            this.el.emit('pointstart', { hand: this.data.hand });
-            
-            if (!pistol) {
-                if (this.pointerEntity) {
-                    this.pointerEntity.emit('clickend');
-                    return;
-                }
-                
-                // Crea una nueva entidad para el puntero
-                this.pointerEntity = document.createElement('a-entity');
-                
-                // Configura el raycaster para el puntero
-                this.pointerEntity.setAttribute('raycaster', {
-                    objects: '.clickable',  // Objetos con los que interactuar
-                    far: 10,  // Distancia máxima
-                    showLine: true,  // Muestra la línea del rayo
-                    cursor: true  // Activa el cursor en el puntero
-                });
-                
-                // Posiciona el puntero en la punta del dedo
-                this.pointerEntity.setAttribute('position', indexTip.transform.position);
-                
-                // Añade el puntero a la escena
-                this.el.appendChild(this.pointerEntity);
-                document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
-                
-                // Actualiza la posición y dirección del raycaster cada fotograma dentro de tick
-                this.pointerEntity.setAttribute('tick', () => {
-                    if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent) {
-                        // Calcular la dirección entre el nudillo y la punta del dedo
-                        const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
-                        
-                        // Actualiza la posición del puntero (en la punta del dedo)
-                        this.pointerEntity.setAttribute('position', indexTip.transform.position);
-                        
-                        // Rota el puntero para que apunte en la dirección del vector calculado
-                        this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
-                    }
-                });
+    document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
     
-            } else {
-                document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
-                this.pointerEntity.emit('click');
-            }
-        } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
-            this.pointState = false;
-            this.el.emit('pointend', { hand: this.data.hand });
-            document.querySelector('#text').setAttribute('text', `value: Fin de point`);
-            
+    if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
+        this.pointState = true;
+        this.el.emit('pointstart', { hand: this.data.hand });
+        
+        if (!pistol) {
             if (this.pointerEntity) {
-                this.el.removeChild(this.pointerEntity);
                 this.pointerEntity.emit('clickend');
-                this.pointerEntity = null;
+                return;
             }
+            
+            // Crea una nueva entidad para el puntero
+            this.pointerEntity = document.createElement('a-entity');
+            
+            // Configura el raycaster para el puntero
+            this.pointerEntity.setAttribute('raycaster', {
+                objects: '.clickable',  // Objetos con los que interactuar
+                far: 10,  // Distancia máxima
+                showLine: true,  // Muestra la línea del rayo
+                cursor: true  // Activa el cursor en el puntero
+            });
+            
+            // Posiciona el puntero en la punta del dedo
+            this.pointerEntity.setAttribute('position', indexTip.transform.position);
+            
+            // Añade el puntero a la escena
+            this.el.appendChild(this.pointerEntity);
+            document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+                
+            // Calcular la dirección entre el nudillo y la punta del dedo
+            const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
+            
+            // Actualiza la posición del puntero (en la punta del dedo)
+            this.pointerEntity.setAttribute('position', indexTip.transform.position);
+            
+            // Rota el puntero para que apunte en la dirección del vector calculado
+            this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
+                
+            
+
+        } else {
+            document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+            this.pointerEntity.emit('click');
         }
-    },
+    } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
+        this.pointState = false;
+        this.el.emit('pointend', { hand: this.data.hand });
+        document.querySelector('#text').setAttribute('text', `value: Fin de point`);
+        
+        if (this.pointerEntity) {
+            this.el.removeChild(this.pointerEntity);
+            this.pointerEntity.emit('clickend');
+            this.pointerEntity = null;
+        }
+    }
+},
 
     detectOpenhand: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, openHandState){
         document.querySelector('#text').setAttribute('text', `value: openhand: ${this.openHandState}`);
