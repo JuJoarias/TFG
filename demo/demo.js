@@ -151,11 +151,11 @@ AFRAME.registerComponent('manos', {
                         // this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
                         
                         // this.el.appendChild(this.pointerEntity);
-                        document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+                        // document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
 
                     } else{
                         if(this.clicked) return;
-                        document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+                        // document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                         // this.pointerEntity.emit('click');
                         this.clicked = true;
                     }
