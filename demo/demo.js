@@ -112,7 +112,7 @@ AFRAME.registerComponent('manos', {
                 const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
                 const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
                 const pistol = this.calcDistance(indexPhalanx, thumbTip) < 0.04;
-                // document.querySelector('#text').setAttribute('text', `value: midle ${isMiddleBent}, pistol: ${pistol}`);
+                document.querySelector('#text2').setAttribute('text', `value:pistol: ${pistol}`);
 
                 // Fist (Puño cerrado)
                 if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
@@ -127,7 +127,7 @@ AFRAME.registerComponent('manos', {
                 if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
                    this.pointState = true;
                    this.el.emit('pointstart', { hand: this.data.hand });
-                   document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}, index extended: ${isIndexExtended}`);
+                   document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
                    if (!pistol){
                         this.clicked = false;
                         if (this.pointerEntity) return;
