@@ -173,16 +173,16 @@ AFRAME.registerComponent('manos', {
                 
                 // Añade el puntero a la escena
                 this.el.appendChild(this.pointerEntity);
-                document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+                // document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
                     
-                // Calcular la dirección entre el nudillo y la punta del dedo
-                const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
+                // // Calcular la dirección entre el nudillo y la punta del dedo
+                // const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
                 
-                // Actualiza la posición del puntero (en la punta del dedo)
-                this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                // // Actualiza la posición del puntero (en la punta del dedo)
+                // this.pointerEntity.setAttribute('position', indexTip.transform.position);
                 
-                // Rota el puntero para que apunte en la dirección del vector calculado
-                this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
+                // // Rota el puntero para que apunte en la dirección del vector calculado
+                // this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
                     
                 
 
@@ -193,7 +193,7 @@ AFRAME.registerComponent('manos', {
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
             this.el.emit('pointend', { hand: this.data.hand });
-            document.querySelector('#text').setAttribute('text', `value: Fin de point`);
+            // document.querySelector('#text').setAttribute('text', `value: Fin de point`);
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
@@ -232,7 +232,7 @@ AFRAME.registerComponent('manos', {
     },
 
     detectOpenhand: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, openHandState){
-        document.querySelector('#text').setAttribute('text', `value: openhand: ${this.openHandState}`);
+        // document.querySelector('#text').setAttribute('text', `value: openhand: ${this.openHandState}`);
         if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !openHandState) {
             this.openHandState = true;
             this.el.emit('openhandstart', { hand: this.data.hand });
@@ -551,11 +551,12 @@ AFRAME.registerComponent('hoover', {
     },
 });
 
-AFRAME.registerComponent('clickable', {
+AFRAME.registerComponent('clickables', {
 
     init: function(){
         this.el.addEventListener('click', this.onClickStart.bind(this)); 
         this.el.addEventListener('clickend', this.onClickEnd.bind(this)); 
+        this.el.setAttribute('class', 'clickable');
         this.Clicked = false; 
         this.isClicking = false; 
     },
