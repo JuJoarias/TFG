@@ -200,11 +200,11 @@ AFRAME.registerComponent('manos', {
         }
     },
 
-    calcDistance: function (fingerTip, wrist) {
+    calcDistance: function (finger1, finger2) {
         return Math.sqrt(
-            Math.pow(fingerTip.transform.position.x - wrist.transform.position.x, 2) +
-            Math.pow(fingerTip.transform.position.y - wrist.transform.position.y, 2) +
-            Math.pow(fingerTip.transform.position.z - wrist.transform.position.z, 2)
+            Math.pow(finger1.transform.position.x - finger2.transform.position.x, 2) +
+            Math.pow(finger1.transform.position.y - finger2.transform.position.y, 2) +
+            Math.pow(finger1.transform.position.z - finger2.transform.position.z, 2)
         );
     },  
 });
