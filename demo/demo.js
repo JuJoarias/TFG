@@ -23,8 +23,7 @@ AFRAME.registerComponent('manos', {
        this.pointState = false;
        this.openHandState = false;
        this.pointer = null;
-       this.clicked = null;
-       this.pistol = null;
+       this.clicked = false;
 
        orderedJoints.flat().forEach((jointName) => {
           const jointEntity = document.createElement('a-sphere');
@@ -93,17 +92,7 @@ AFRAME.registerComponent('manos', {
              const pinkyTip = this.frame.getJointPose(inputSource.hand.get("pinky-finger-tip"), this.referenceSpace);
              const wrist = this.frame.getJointPose(inputSource.hand.get("wrist"), this.referenceSpace);
 
-             if (thumbTip && indexTip) {
-                const pinchDistanceCalc = this.calcDistance(thumbTip, indexTip)
-
-                if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
-                   this.pinchState = true;
-                   this.el.emit('pinchstart', { hand: this.data.hand });
-                } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
-                   this.pinchState = false;
-                   this.el.emit('pinchend', { hand: this.data.hand });
-                }
-             }
+             this.detectPinch(thumbTip, indexTip); 
 
              // Detectar si los dedos están doblados
              if (wrist && indexTip && middleTip && ringTip && pinkyTip && indexPhalanx) {
@@ -112,77 +101,102 @@ AFRAME.registerComponent('manos', {
                 const isMiddleBent = !(this.calcDistance(middleTip, wrist) > curlThreshold);
                 const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
                 const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
-                this.pistol = this.calcDistance(indexPhalanx, thumbTip) < 0.04;
-                document.querySelector('#text2').setAttribute('text', `value:pistol: ${this.pistol}`);
+                const pistol = this.calcDistance(indexPhalanx, thumbTip) < 0.04;
+                document.querySelector('#text2').setAttribute('text', `value:pistol: ${pistol}`);
 
                 // Fist (Puño cerrado)
-                if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
-                   this.fistState = true;
-                   this.el.emit('fiststart', { hand: this.data.hand });
-                } else if ((isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.fistState) {
-                   this.fistState = false;
-                   this.el.emit('fistend', { hand: this.data.hand });
-                }
+                this.detectFist(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.fistState);
 
-                // Point (Apuntar con el índice)
-                if ((isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) || this.pointState) {
-                   this.pointState = true;
-                   this.el.emit('pointstart', { hand: this.data.hand });
-                   document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${this.pistol}`);
-                   if (!this.pistol){
-                        this.clicked = false;
-                        if (this.pointerEntity) return;
-                        const vector = new THREE.Vector3();
-                        vector.subVectors(
-                            new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
-                            new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
-                        );
-                        this.pointerEntity = document.createElement('a-entity');
-                        // // Configura el raycaster para que apunte en la dirección del vector
-                        // this.pointerEntity.setAttribute('raycaster', {
-                        //     objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
-                        //     far: 10,  // Distancia máxima de interacción
-                        //     showLine: true,  // Muestra una línea de rayos para visualización
-                        //     cursor: true  // Activa el cursor en el puntero
-                        // });
-                        
-                        // // Posiciona el puntero en la punta del dedo
-                        // this.pointerEntity.setAttribute('position', indexTip.transform.position);
-                        
-                        // // Rota la entidad para que apunte en la dirección del vector
-                        // this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
-                        
-                        // this.el.appendChild(this.pointerEntity);
-                        document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
-
-                    } else{
-                        if(this.clicked) return;
-                        document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
-                        // this.pointerEntity.emit('click');
-                        this.clicked = true;
-                    }
-                } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
-                   this.pointState = false;
-                   this.clicked = false;
-                   this.el.emit('pointend', { hand: this.data.hand });
-                   document.querySelector('#text').setAttribute('text', `value: Fin de point`);
-                   if(this.pointerEntity){
-                        // this.el.removeChild(this.pointerEntity);
-                        this.pointerEntity = null;
-                   }
-                }
+                // Point (Apuntar con el índice)   // hacer funcion de este gesto(y todos de paso) para poder llamar la funcion en cada tick en vez de que compruebe una sola vez
+                this.detectPoint((isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.pointState, pistol));
 
                 // Open Hand (Mano abierta)
-                if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !this.openHandState) {
-                   this.openHandState = true;
-                   this.el.emit('openhandstart', { hand: this.data.hand });
-                } else if ((!isIndexExtended || isMiddleBent || isRingBent || isPinkyBent) && this.openHandState) {
-                   this.openHandState = false;
-                   this.el.emit('openhandend', { hand: this.data.hand });
-                }
+                this.detectOpenhand(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.openHandState);
              }
           }
        }
+    },
+
+    detectPinch: function (thumbTip, indexTip){
+        if (thumbTip && indexTip) {
+            const pinchDistanceCalc = this.calcDistance(thumbTip, indexTip)
+
+            if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
+               this.pinchState = true;
+               this.el.emit('pinchstart', { hand: this.data.hand });
+            } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
+               this.pinchState = false;
+               this.el.emit('pinchend', { hand: this.data.hand });
+            }
+        }
+    },
+
+    detectFist: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, fistState){
+        if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !fistState) {
+            this.fistState = true;
+            this.el.emit('fiststart', { hand: this.data.hand });
+         } else if ((isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && fistState) {
+            this.fistState = false;
+            this.el.emit('fistend', { hand: this.data.hand });
+         }
+    },
+
+    detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol){
+        if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
+            this.pointState = true;
+            this.el.emit('pointstart', { hand: this.data.hand });
+            document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
+            if (!pistol){
+                this.clicked = false;
+                if (this.pointerEntity) return;
+                const vector = new THREE.Vector3();
+                vector.subVectors(
+                    new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
+                    new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
+                );
+                this.pointerEntity = document.createElement('a-entity');
+                // // Configura el raycaster para que apunte en la dirección del vector
+                // this.pointerEntity.setAttribute('raycaster', {
+                //     objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
+                //     far: 10,  // Distancia máxima de interacción
+                //     showLine: true,  // Muestra una línea de rayos para visualización
+                //     cursor: true  // Activa el cursor en el puntero
+                // });
+                
+                // // Posiciona el puntero en la punta del dedo
+                // this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                
+                // // Rota la entidad para que apunte en la dirección del vector
+                // this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
+                
+                // this.el.appendChild(this.pointerEntity);
+                document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+            } else{
+                if(this.clicked) return;
+                document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+                this.clicked = true;
+                // this.pointerEntity.emit('click');
+            }
+        } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
+            this.pointState = false;
+            this.clicked = false;
+            this.el.emit('pointend', { hand: this.data.hand });
+            document.querySelector('#text').setAttribute('text', `value: Fin de point`);
+            if(this.pointerEntity){
+                 // this.el.removeChild(this.pointerEntity);
+                 this.pointerEntity = null;
+            }
+        }
+    },
+
+    detectOpenhand: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, openHandState){
+        if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !openHandState) {
+            this.openHandState = true;
+            this.el.emit('openhandstart', { hand: this.data.hand });
+        } else if ((!isIndexExtended || isMiddleBent || isRingBent || isPinkyBent) && openHandState) {
+            this.openHandState = false;
+            this.el.emit('openhandend', { hand: this.data.hand });
+        }
     },
 
     calcDistance: function (fingerTip, wrist) {
@@ -191,7 +205,7 @@ AFRAME.registerComponent('manos', {
             Math.pow(fingerTip.transform.position.y - wrist.transform.position.y, 2) +
             Math.pow(fingerTip.transform.position.z - wrist.transform.position.z, 2)
         );
-    }  
+    },  
 });
  
 AFRAME.registerComponent('grabable', {
