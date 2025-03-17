@@ -172,18 +172,6 @@ AFRAME.registerComponent('manos', {
                 
                 // Añade el puntero a la escena
                 this.el.appendChild(this.pointerEntity);
-                // document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
-                    
-                // // Calcular la dirección entre el nudillo y la punta del dedo
-                // const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
-                
-                // // Actualiza la posición del puntero (en la punta del dedo)
-                // this.pointerEntity.setAttribute('position', indexTip.transform.position);
-                
-                // // Rota el puntero para que apunte en la dirección del vector calculado
-                // this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
-                    
-                
 
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value: dentro de point haciendo pistol/click`);
@@ -551,35 +539,35 @@ AFRAME.registerComponent('hoover', {
 });
 
 AFRAME.registerComponent('clickables', {
-
-    init: function(){
-        this.el.addEventListener('click', this.onClickStart.bind(this)); 
-        this.el.addEventListener('clickend', this.onClickEnd.bind(this)); 
+    init: function () {
+        this.el.addEventListener('click', this.onClickStart.bind(this));
+        this.el.addEventListener('clickend', this.onClickEnd.bind(this));
         this.el.setAttribute('class', 'clickable');
-        this.Clicked = false; 
-        this.isClicking = false; 
+        this.Clicked = false;
+        this.isClicking = false;
+
+        // Guardamos el color original
+        this.originalColor = this.el.getAttribute('color') || 'white';
     },
 
-    onClickStart:  function(){
-        if(this.isClicking) return; 
-
+    onClickStart: function () {
+        if (this.isClicking) return;
         this.isClicking = true;
-        this.Clicked = true; 
+        this.Clicked = true;
     },
 
-    onClickEnd: function() {
-        this.Clicked = false; 
+    onClickEnd: function () {
+        this.Clicked = false;
         this.isClicking = false;
     },
 
-    tick: function(){
-        const originalColor = this.el.getAttribute('material').color;
-        if (this.Clicked){
-            this.el.setAttribute('material', 'color', 'purple'); 
-        } else{
-            this.el.setAttribute('material', 'color', originalColor ); 
+    tick: function () {
+        if (this.Clicked) {
+            this.el.setAttribute('color', 'purple'); // Color al hacer clic
+        } else {
+            this.el.setAttribute('color', this.originalColor); // Vuelve al color original
         }
-    },
+    }
 });
 
 AFRAME.registerComponent('stretch', {
