@@ -45,6 +45,7 @@ AFRAME.registerComponent('manos', {
        } else {
           this.updateSkeleton();
           this.detectGesture();
+          this.updatePointer();
        }
     },
 
@@ -144,63 +145,91 @@ AFRAME.registerComponent('manos', {
     },
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
-    document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
-    
-    if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
-        this.pointState = true;
-        this.el.emit('pointstart', { hand: this.data.hand });
+        document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
         
-        if (!pistol) {
-            if (this.pointerEntity) {
-                this.pointerEntity.emit('clickend');
-                return;
-            }
+        if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
+            this.pointState = true;
+            this.el.emit('pointstart', { hand: this.data.hand });
             
-            // Crea una nueva entidad para el puntero
-            this.pointerEntity = document.createElement('a-entity');
-            
-            // Configura el raycaster para el puntero
-            this.pointerEntity.setAttribute('raycaster', {
-                objects: '.clickable',  // Objetos con los que interactuar
-                far: 10,  // Distancia máxima
-                showLine: true,  // Muestra la línea del rayo
-                cursor: true  // Activa el cursor en el puntero
-            });
-            
-            // Posiciona el puntero en la punta del dedo
-            this.pointerEntity.setAttribute('position', indexTip.transform.position);
-            
-            // Añade el puntero a la escena
-            this.el.appendChild(this.pointerEntity);
-            document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+            if (!pistol) {
+                if (this.pointerEntity) {
+                    this.pointerEntity.emit('clickend');
+                    return;
+                }
                 
-            // Calcular la dirección entre el nudillo y la punta del dedo
-            const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
-            
-            // Actualiza la posición del puntero (en la punta del dedo)
-            this.pointerEntity.setAttribute('position', indexTip.transform.position);
-            
-            // Rota el puntero para que apunte en la dirección del vector calculado
-            this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
+                // Crea una nueva entidad para el puntero
+                this.pointerEntity = document.createElement('a-entity');
                 
-            
+                // Configura el raycaster para el puntero
+                this.pointerEntity.setAttribute('raycaster', {
+                    objects: '.clickable',  // Objetos con los que interactuar
+                    far: 10,  // Distancia máxima
+                    showLine: true,  // Muestra la línea del rayo
+                    cursor: true  // Activa el cursor en el puntero
+                });
+                
+                // Posiciona el puntero en la punta del dedo
+                this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                
+                // Añade el puntero a la escena
+                this.el.appendChild(this.pointerEntity);
+                document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+                    
+                // Calcular la dirección entre el nudillo y la punta del dedo
+                const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
+                
+                // Actualiza la posición del puntero (en la punta del dedo)
+                this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                
+                // Rota el puntero para que apunte en la dirección del vector calculado
+                this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
+                    
+                
 
-        } else {
-            document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
-            this.pointerEntity.emit('click');
+            } else {
+                document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+                this.pointerEntity.emit('click');
+            }
+        } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
+            this.pointState = false;
+            this.el.emit('pointend', { hand: this.data.hand });
+            document.querySelector('#text').setAttribute('text', `value: Fin de point`);
+            
+            if (this.pointerEntity) {
+                this.el.removeChild(this.pointerEntity);
+                this.pointerEntity.emit('clickend');
+                this.pointerEntity = null;
+            }
         }
-    } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
-        this.pointState = false;
-        this.el.emit('pointend', { hand: this.data.hand });
-        document.querySelector('#text').setAttribute('text', `value: Fin de point`);
+    },
+
+    updatePointer: function () {
+        if (!this.pointerEntity) return;
         
-        if (this.pointerEntity) {
-            this.el.removeChild(this.pointerEntity);
-            this.pointerEntity.emit('clickend');
-            this.pointerEntity = null;
+        const session = this.el.sceneEl.renderer.xr.getSession();
+        const inputSources = session.inputSources;
+        
+        for (const inputSource of inputSources) {
+            if (inputSource.handedness === this.data.hand && inputSource.hand) {
+                const indexTip = this.frame.getJointPose(inputSource.hand.get("index-finger-tip"), this.referenceSpace);
+                const indexKnuckle = this.frame.getJointPose(inputSource.hand.get("index-finger-phalanx-proximal"), this.referenceSpace);
+                
+                if (indexTip && indexKnuckle) {
+                    // Actualiza la posición del puntero en la punta del dedo
+                    this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                    
+                    // Calcula la dirección entre el nudillo y la punta del dedo
+                    const direction = new THREE.Vector3().subVectors(
+                        new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
+                        new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
+                    );
+                    
+                    // Rota el puntero para que apunte en la dirección del vector calculado
+                    this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
+                }
+            }
         }
-    }
-},
+    },
 
     detectOpenhand: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, openHandState){
         document.querySelector('#text').setAttribute('text', `value: openhand: ${this.openHandState}`);
