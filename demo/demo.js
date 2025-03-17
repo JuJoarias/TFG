@@ -95,7 +95,7 @@ AFRAME.registerComponent('manos', {
              this.detectPinch(thumbTip, indexTip); 
 
              // Detectar si los dedos están doblados
-             if (wrist && indexTip && middleTip && ringTip && pinkyTip && indexPhalanx) {
+             if (wrist && indexTip && middleTip && ringTip && pinkyTip && indexPhalanx && thumbTip && indexKnuckle) {
 
                 const isIndexExtended = this.calcDistance(indexTip, wrist) > curlThreshold;
                 const isMiddleBent = !(this.calcDistance(middleTip, wrist) > curlThreshold);
@@ -108,7 +108,7 @@ AFRAME.registerComponent('manos', {
                 this.detectFist(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.fistState);
 
                 // Point (Apuntar con el índice)   // hacer funcion de este gesto(y todos de paso) para poder llamar la funcion en cada tick en vez de que compruebe una sola vez
-                this.detectPoint((isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.pointState, pistol));
+                this.detectPoint((isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.pointState, pistol, indexKnuckle, indexTip));
 
                 // Open Hand (Mano abierta)
                 this.detectOpenhand(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.openHandState);
@@ -141,7 +141,7 @@ AFRAME.registerComponent('manos', {
          }
     },
 
-    detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol){
+    detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip){
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
