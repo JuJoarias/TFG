@@ -145,7 +145,7 @@ AFRAME.registerComponent('manos', {
     },
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
-        document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
+        // document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
         
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
             this.pointState = true;
@@ -153,7 +153,7 @@ AFRAME.registerComponent('manos', {
             
             if (!pistol) {
                 if (this.pointerEntity) {
-                    this.pointerEntity.emit('clickend');
+                    this.el.emit('clickend');
                     return;
                 }
                 
@@ -188,7 +188,7 @@ AFRAME.registerComponent('manos', {
 
             } else {
                 document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
-                this.pointerEntity.emit('click');
+                this.el.emit('click');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
@@ -197,7 +197,7 @@ AFRAME.registerComponent('manos', {
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
-                this.pointerEntity.emit('clickend');
+                this.el.emit('clickend');
                 this.pointerEntity = null;
             }
         }
