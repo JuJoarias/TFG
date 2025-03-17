@@ -145,9 +145,9 @@ AFRAME.registerComponent('manos', {
     },
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
-        // document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
         
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
+            document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
             
@@ -186,7 +186,7 @@ AFRAME.registerComponent('manos', {
                     
                 
 
-            } else {
+            } else if (pistol){
                 document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                 this.el.emit('click');
             }
