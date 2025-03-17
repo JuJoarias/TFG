@@ -131,28 +131,32 @@ AFRAME.registerComponent('manos', {
                             new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
                             new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
                         );
-                        this.pointerEntity = document.createElement('a-entity');
-                        // Configura el raycaster para que apunte en la dirección del vector
-                        this.pointerEntity.setAttribute('raycaster', {
-                            objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
-                            far: 10,  // Distancia máxima de interacción
-                            showLine: true,  // Muestra una línea de rayos para visualización
-                            cursor: true  // Activa el cursor en el puntero
-                        });
+                        // this.pointerEntity = document.createElement('a-entity');
+                        // // Configura el raycaster para que apunte en la dirección del vector
+                        // this.pointerEntity.setAttribute('raycaster', {
+                        //     objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
+                        //     far: 10,  // Distancia máxima de interacción
+                        //     showLine: true,  // Muestra una línea de rayos para visualización
+                        //     cursor: true  // Activa el cursor en el puntero
+                        // });
                         
-                        // Posiciona el puntero en la punta del dedo
-                        this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                        // // Posiciona el puntero en la punta del dedo
+                        // this.pointerEntity.setAttribute('position', indexTip.transform.position);
                         
-                        // Rota la entidad para que apunte en la dirección del vector
-                        this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
+                        // // Rota la entidad para que apunte en la dirección del vector
+                        // this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
                         
-                        this.el.appendChild(this.pointerEntity);
+                        // this.el.appendChild(this.pointerEntity);
+                        document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+
                     } else{
+                        document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol`);
                         this.pointerEntity.emit('click');
                     }
                 } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
                    this.pointState = false;
                    this.el.emit('pointend', { hand: this.data.hand });
+                   document.querySelector('#text').setAttribute('text', `value: Fin de point`);
                    if(this.pointerEntity){
                         this.el.removeChild(this.pointerEntity);
                         this.pointerEntity = null;
