@@ -24,7 +24,6 @@ AFRAME.registerComponent('manos', {
        this.pointState = false;
        this.openHandState = false;
        this.pointerEntity = null;
-       this.clicked = false;
 
        orderedJoints.flat().forEach((jointName) => {
           const jointEntity = document.createElement('a-sphere');
@@ -148,8 +147,10 @@ AFRAME.registerComponent('manos', {
             this.el.emit('pointstart', { hand: this.data.hand });
             document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
             if (!pistol){
-                this.clicked = false;
-                if (this.pointerEntity) return;
+                if (this.pointerEntity){
+                    this.pointerEntity.emit('clickend'); 
+                    return
+                };
                 const vector = new THREE.Vector3();
                 vector.subVectors(
                     new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
@@ -173,19 +174,17 @@ AFRAME.registerComponent('manos', {
                 // this.el.appendChild(this.pointerEntity);
                 document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
             } else{
-                if(this.clicked) return;
                 document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
-                this.clicked = true;
                 // this.pointerEntity.emit('click');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
-            this.clicked = false;
             this.el.emit('pointend', { hand: this.data.hand });
             document.querySelector('#text').setAttribute('text', `value: Fin de point`);
             if(this.pointerEntity){
-                 // this.el.removeChild(this.pointerEntity);
-                 this.pointerEntity = null;
+                // this.el.removeChild(this.pointerEntity);
+                this.pointerEntity.emit('clickend');
+                this.pointerEntity = null;
             }
         }
     },
@@ -505,6 +504,37 @@ AFRAME.registerComponent('hoover', {
            this.el.setAttribute('material', 'opacity', '0.8');
         } else{
            this.el.setAttribute('material', 'opacity', '1');
+        }
+    },
+});
+
+AFRAME.registerComponent('clickable', {
+
+    init: function(){
+        this.el.addEventListener('click', this.onClickStart.bind(this)); 
+        this.el.addEventListener('clickend', this.onClickEnd.bind(this)); 
+        this.Clicked = false; 
+        this.isClicking = false; 
+    },
+
+    onClickStart:  function(){
+        if(this.isClicking) return; 
+
+        this.isClicking = true;
+        this.Clicked = true; 
+    },
+
+    onClickEnd: function() {
+        this.Clicked = false; 
+        this.isClicking = false;
+    },
+
+    tick: function(){
+        const originalColor = this.el.getAttribute('material').color;
+        if (this.Clicked){
+            this.el.setAttribute('material', 'color', 'purple'); 
+        } else{
+            this.el.setAttribute('material', 'color', originalColor ); 
         }
     },
 });
