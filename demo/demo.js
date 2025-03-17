@@ -119,6 +119,7 @@ AFRAME.registerComponent('manos', {
 
     detectPinch: function (thumbTip, indexTip){
         if (thumbTip && indexTip) {
+            document.querySelector('#text').setAttribute('text', `value: pinch: ${this.pinchState}`);
             const pinchDistanceCalc = this.calcDistance(thumbTip, indexTip)
 
             if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
@@ -132,6 +133,7 @@ AFRAME.registerComponent('manos', {
     },
 
     detectFist: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, fistState){
+        document.querySelector('#text').setAttribute('text', `value: fist: ${this.fistState}`);
         if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !fistState) {
             this.fistState = true;
             this.el.emit('fiststart', { hand: this.data.hand });
@@ -142,10 +144,10 @@ AFRAME.registerComponent('manos', {
     },
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip){
+        document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
-            document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
             if (!pistol){
                 if (this.pointerEntity){
                     this.pointerEntity.emit('clickend'); 
@@ -190,6 +192,7 @@ AFRAME.registerComponent('manos', {
     },
 
     detectOpenhand: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, openHandState){
+        document.querySelector('#text').setAttribute('text', `value: openhand: ${this.openHandState}`);
         if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !openHandState) {
             this.openHandState = true;
             this.el.emit('openhandstart', { hand: this.data.hand });
