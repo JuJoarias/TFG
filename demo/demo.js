@@ -143,27 +143,34 @@ AFRAME.registerComponent('manos', {
          }
     },
 
-    detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip){
+    detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
         document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
+        
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !pointState) {
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
-            if (!pistol){
-                if (this.pointerEntity){
-                    this.pointerEntity.emit('clickend'); 
-                    return
-                };
+            
+            if (!pistol) {
+                if (this.pointerEntity) {
+                    this.pointerEntity.emit('clickend');
+                    return;
+                }
+                
+                // Calcula la dirección del rayo entre el nudillo y la punta del dedo
                 const vector = new THREE.Vector3();
                 vector.subVectors(
                     new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
                     new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
                 );
+                
+                // Crea una nueva entidad para el puntero
                 this.pointerEntity = document.createElement('a-entity');
-                // Configura el raycaster para que apunte en la dirección del vector
+                
+                // Configura el raycaster para el puntero
                 this.pointerEntity.setAttribute('raycaster', {
-                    objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
-                    far: 10,  // Distancia máxima de interacción
-                    showLine: true,  // Muestra una línea de rayos para visualización
+                    objects: '.clickable',  // Objetos con los que interactuar
+                    far: 10,  // Distancia máxima
+                    showLine: true,  // Muestra la línea del rayo
                     cursor: true  // Activa el cursor en el puntero
                 });
                 
@@ -171,11 +178,14 @@ AFRAME.registerComponent('manos', {
                 this.pointerEntity.setAttribute('position', indexTip.transform.position);
                 
                 // Rota la entidad para que apunte en la dirección del vector
-                this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
+                const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
+                this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
                 
+                // Añade el puntero a la escena
                 this.el.appendChild(this.pointerEntity);
                 document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
-            } else{
+                
+            } else {
                 document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                 this.pointerEntity.emit('click');
             }
@@ -183,7 +193,8 @@ AFRAME.registerComponent('manos', {
             this.pointState = false;
             this.el.emit('pointend', { hand: this.data.hand });
             document.querySelector('#text').setAttribute('text', `value: Fin de point`);
-            if(this.pointerEntity){
+            
+            if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
                 this.pointerEntity.emit('clickend');
                 this.pointerEntity = null;
