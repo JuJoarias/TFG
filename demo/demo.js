@@ -127,6 +127,7 @@ AFRAME.registerComponent('manos', {
                 if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
                    this.pointState = true;
                    this.el.emit('pointstart', { hand: this.data.hand });
+                   document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
                    if (!pistol){
                         this.clicked = false;
                         if (this.pointerEntity) return;
@@ -165,7 +166,7 @@ AFRAME.registerComponent('manos', {
                    this.el.emit('pointend', { hand: this.data.hand });
                    document.querySelector('#text').setAttribute('text', `value: Fin de point`);
                    if(this.pointerEntity){
-                        this.el.removeChild(this.pointerEntity);
+                        // this.el.removeChild(this.pointerEntity);
                         this.pointerEntity = null;
                    }
                 }
