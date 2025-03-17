@@ -125,7 +125,7 @@ AFRAME.registerComponent('manos', {
                 }
 
                 // Point (Apuntar con el índice)
-                if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) {
+                if ((isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) || this.pistol) {
                    this.pointState = true;
                    this.el.emit('pointstart', { hand: this.data.hand });
                    document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${this.pistol}`);
