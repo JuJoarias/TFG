@@ -156,13 +156,6 @@ AFRAME.registerComponent('manos', {
                     return;
                 }
                 
-                // Calcula la dirección del rayo entre el nudillo y la punta del dedo
-                const vector = new THREE.Vector3();
-                vector.subVectors(
-                    new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
-                    new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
-                );
-                
                 // Crea una nueva entidad para el puntero
                 this.pointerEntity = document.createElement('a-entity');
                 
@@ -177,14 +170,24 @@ AFRAME.registerComponent('manos', {
                 // Posiciona el puntero en la punta del dedo
                 this.pointerEntity.setAttribute('position', indexTip.transform.position);
                 
-                // Rota la entidad para que apunte en la dirección del vector
-                const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
-                this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
-                
                 // Añade el puntero a la escena
                 this.el.appendChild(this.pointerEntity);
                 document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
                 
+                // Actualiza la posición y dirección del raycaster cada fotograma dentro de tick
+                this.pointerEntity.setAttribute('tick', () => {
+                    if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent) {
+                        // Calcular la dirección entre el nudillo y la punta del dedo
+                        const direction = new THREE.Vector3().subVectors(indexKnuckle.transform.position, indexTip.transform.position);
+                        
+                        // Actualiza la posición del puntero (en la punta del dedo)
+                        this.pointerEntity.setAttribute('position', indexTip.transform.position);
+                        
+                        // Rota el puntero para que apunte en la dirección del vector calculado
+                        this.pointerEntity.object3D.lookAt(this.pointerEntity.object3D.position.clone().add(direction));
+                    }
+                });
+    
             } else {
                 document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                 this.pointerEntity.emit('click');
