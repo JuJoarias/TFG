@@ -103,7 +103,6 @@ AFRAME.registerComponent('manos', {
                 const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
                 const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
                 const pistol = this.calcDistance(indexPhalanx, thumbTip) < pistolThreshold;
-                document.querySelector('#text2').setAttribute('text', `value:pistol: ${pistol}`);
 
                 // Fist (Puño cerrado)
                 this.detectFist(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, this.fistState);
@@ -120,7 +119,7 @@ AFRAME.registerComponent('manos', {
 
     detectPinch: function (thumbTip, indexTip){
         if (thumbTip && indexTip) {
-            document.querySelector('#text').setAttribute('text', `value: pinch: ${this.pinchState}`);
+            // document.querySelector('#text').setAttribute('text', `value: pinch: ${this.pinchState}`);
             const pinchDistanceCalc = this.calcDistance(thumbTip, indexTip)
 
             if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
@@ -134,7 +133,7 @@ AFRAME.registerComponent('manos', {
     },
 
     detectFist: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, fistState){
-        document.querySelector('#text').setAttribute('text', `value: fist: ${this.fistState}`);
+        // document.querySelector('#text').setAttribute('text', `value: fist: ${this.fistState}`);
         if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !fistState) {
             this.fistState = true;
             this.el.emit('fiststart', { hand: this.data.hand });
@@ -187,7 +186,7 @@ AFRAME.registerComponent('manos', {
                 
 
             } else if (pistol){
-                document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+                document.querySelector('#text2').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                 this.el.emit('click');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
