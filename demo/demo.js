@@ -111,6 +111,7 @@ AFRAME.registerComponent('manos', {
                 const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
                 const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
                 const pistol = this.calcDistance(indexPhalanx, thumbTip) > 0.04;
+                document.querySelector('#text').setAttribute('text', `value: midle ${isMiddleBent}, pistol: ${pistol}`);
 
                 // Fist (Puño cerrado)
                 if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
