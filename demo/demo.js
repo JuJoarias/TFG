@@ -125,7 +125,7 @@ AFRAME.registerComponent('manos', {
                 }
 
                 // Point (Apuntar con el índice)
-                if ((isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) || this.pointState || (!this.pistol && this.pointState)) {
+                if ((isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.pointState) || this.pointState) {
                    this.pointState = true;
                    this.el.emit('pointstart', { hand: this.data.hand });
                    document.querySelector('#text').setAttribute('text', `value: point: ${this.pointState}, pistol: ${this.pistol}`);
@@ -153,11 +153,11 @@ AFRAME.registerComponent('manos', {
                         // this.pointerEntity.setAttribute('rotation', vector.clone().normalize());
                         
                         // this.el.appendChild(this.pointerEntity);
-                        // document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
+                        document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
 
                     } else{
                         if(this.clicked) return;
-                        // document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+                        document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                         // this.pointerEntity.emit('click');
                         this.clicked = true;
                     }
