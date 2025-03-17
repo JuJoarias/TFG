@@ -22,7 +22,7 @@ AFRAME.registerComponent('manos', {
        this.fistState = false;
        this.pointState = false;
        this.openHandState = false;
-       this.pointer = null;
+       this.pointerEntity = null;
        this.clicked = false;
 
        orderedJoints.flat().forEach((jointName) => {
