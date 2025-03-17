@@ -28,9 +28,11 @@
             <a-camera wasd-controls look-controls></a-camera>
         </a-entity>
 
+        <!-- Manos -->
         <a-entity>
-            <a-entity id="left-hand" manos="hand: left"></a-entity>
-            <a-entity id="right-hand" manos="hand: right"></a-entity>
+            <a-camera></a-camera>
+            <a-entity id="left-hand" manos="hand: left" ></a-entity>
+            <a-entity id="right-hand" manos="hand: right" ></a-entity>
         </a-entity>
 
         <a-entity floating-panel="type: text; title: Instructions; content: In front of you, you have several cubes. On top of each cube you have a little video showing how to interact with it. \n\n Make sure that your hands are showing before interacting with the elements.; width: 1.5; height: 1; color: orange; textColor: black" position="0 4 -2"></a-entity>
