@@ -1,5 +1,6 @@
 const pinchDistance = 0.02;
-const curlThreshold = 0.09; // Umbral de curvatura para detectar si un dedo está doblado
+const curlThreshold = 0.095; // Umbral de curvatura para detectar si un dedo está doblado
+const pistolThreshold = 0.04;
 
 const orderedJoints = [
     ["wrist"],
@@ -101,7 +102,7 @@ AFRAME.registerComponent('manos', {
                 const isMiddleBent = !(this.calcDistance(middleTip, wrist) > curlThreshold);
                 const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
                 const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
-                const pistol = this.calcDistance(indexPhalanx, thumbTip) < 0.04;
+                const pistol = this.calcDistance(indexPhalanx, thumbTip) < pistolThreshold;
                 document.querySelector('#text2').setAttribute('text', `value:pistol: ${pistol}`);
 
                 // Fist (Puño cerrado)
