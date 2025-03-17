@@ -23,6 +23,7 @@ AFRAME.registerComponent('manos', {
        this.pointState = false;
        this.openHandState = false;
        this.pointer = null;
+       this.clicked = null;
 
        orderedJoints.flat().forEach((jointName) => {
           const jointEntity = document.createElement('a-sphere');
@@ -110,8 +111,8 @@ AFRAME.registerComponent('manos', {
                 const isMiddleBent = !(this.calcDistance(middleTip, wrist) > curlThreshold);
                 const isRingBent = !(this.calcDistance(ringTip, wrist) > curlThreshold);
                 const isPinkyBent = !(this.calcDistance(pinkyTip, wrist) > curlThreshold);
-                const pistol = this.calcDistance(indexPhalanx, thumbTip) > 0.04;
-                document.querySelector('#text').setAttribute('text', `value: midle ${isMiddleBent}, pistol: ${pistol}`);
+                const pistol = this.calcDistance(indexPhalanx, thumbTip) < 0.04;
+                // document.querySelector('#text').setAttribute('text', `value: midle ${isMiddleBent}, pistol: ${pistol}`);
 
                 // Fist (Puño cerrado)
                 if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !this.fistState) {
@@ -127,12 +128,14 @@ AFRAME.registerComponent('manos', {
                    this.pointState = true;
                    this.el.emit('pointstart', { hand: this.data.hand });
                    if (!pistol){
+                        this.clicked = false;
+                        if (this.pointerEntity) return;
                         const vector = new THREE.Vector3();
                         vector.subVectors(
                             new THREE.Vector3(indexKnuckle.transform.position.x, indexKnuckle.transform.position.y, indexKnuckle.transform.position.z),
                             new THREE.Vector3(indexTip.transform.position.x, indexTip.transform.position.y, indexTip.transform.position.z)
                         );
-                        // this.pointerEntity = document.createElement('a-entity');
+                        this.pointerEntity = document.createElement('a-entity');
                         // // Configura el raycaster para que apunte en la dirección del vector
                         // this.pointerEntity.setAttribute('raycaster', {
                         //     objects: '.clickable',  // Clase de los objetos con los que puede interactuar el puntero
@@ -151,11 +154,14 @@ AFRAME.registerComponent('manos', {
                         document.querySelector('#text').setAttribute('text', `value: dentro de point sin hacer pistol`);
 
                     } else{
-                        document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol`);
-                        this.pointerEntity.emit('click');
+                        if(this.clicked) return;
+                        document.querySelector('#text').setAttribute('text', `value: dentro de point haciendo pistol/click`);
+                        // this.pointerEntity.emit('click');
+                        this.clicked = true;
                     }
                 } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && this.pointState) {
                    this.pointState = false;
+                   this.clicked = false;
                    this.el.emit('pointend', { hand: this.data.hand });
                    document.querySelector('#text').setAttribute('text', `value: Fin de point`);
                    if(this.pointerEntity){
