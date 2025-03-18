@@ -44,10 +44,16 @@ AFRAME.registerComponent('manos', {
           this.frame = this.el.sceneEl.frame;
           this.referenceSpace = this.el.sceneEl.renderer.xr.getReferenceSpace();
        } else {
-          this.updateSkeleton();
-          this.detectGesture();
-          this.updatePointer();
-       }
+            this.updateSkeleton();
+            this.detectGesture();
+            this.updatePointer();
+            const raycaster = this.pointerEntity.getAttribute('raycaster');
+            if (raycaster && raycaster.intersection) {
+                this.intersectedObjectid = raycaster.intersection.object.id;
+            } else {
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, sin colisión`);
+            }
+        }
     },
 
     updateSkeleton: function () {
@@ -175,17 +181,14 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-                // Verificar si hay intersección
-                const raycaster = this.pointerEntity.getAttribute('raycaster');
-                if (raycaster && raycaster.intersection) {
-                    this.intersectedObjectid = raycaster.intersection.object.id;
-                    document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, id collided: ${this.intersectedObjectid}`);
-                    
-                    // Emitir el evento con el ID de la colisión
+            
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, id collided: ${this.intersectedObjectid}`);
+                
+                // Emitir el evento con el ID de la colisión
+                if (this.intersectedObjectid) {
                     this.el.emit('clickStart', { id: this.intersectedObjectid });
-                } else {
-                    document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, sin colisión`);
                 }
+                
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
