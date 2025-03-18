@@ -151,7 +151,7 @@ AFRAME.registerComponent('manos', {
             
             if (!pistol) {
                 if (this.pointerEntity) {
-                    this.pointerEntity.emit('clickend');
+                    this.el.emit('clickend');
                     return;
                 }
                 
@@ -175,7 +175,7 @@ AFRAME.registerComponent('manos', {
 
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
-                this.pointerEntity.emit('clickStart');
+                this.el.emit('clickStart');
 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
@@ -185,7 +185,7 @@ AFRAME.registerComponent('manos', {
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
-                this.pointerEntity.emit('clickend');
+                this.el.emit('clickend');
                 this.pointerEntity = null;
             }
         }
