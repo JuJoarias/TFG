@@ -160,10 +160,10 @@ AFRAME.registerComponent('manos', {
                 
                 // Configura el raycaster para el puntero
                 this.pointerEntity.setAttribute('raycaster', {
-                    objects: '.clickable',  // Objetos con los que interactuar
-                    far: 10,  // Distancia máxima
-                    showLine: true,  // Muestra la línea del rayo
-                    cursor: true  // Activa el cursor en el puntero
+                    objects: '*',  // Interactuar con todo
+                    far: 10,        // Distancia máxima
+                    showLine: true, // Muestra la línea del rayo
+                    interval: 100  // Reduce la frecuencia de actualización
                 });
                 
                 // Posiciona el puntero en la punta del dedo
@@ -181,7 +181,7 @@ AFRAME.registerComponent('manos', {
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
             this.el.emit('pointend', { hand: this.data.hand });
-            document.querySelector('#text').setAttribute('text', `value: Fin de point`);
+            document.querySelector('#text2').setAttribute('text', `value: Fin de point`);
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
@@ -553,14 +553,14 @@ AFRAME.registerComponent('clickables', {
     },
 
     onClickStart: function () {
-        document.querySelector('#text2').setAttribute('text', `value:se recibe click click`);
+        document.querySelector('#text3').setAttribute('text', `value:se recibe click click`);
         if (this.isClicking) return;
         this.isClicking = true;
         this.Clicked = true;
     },
 
     onClickEnd: function () {
-        document.querySelector('#text2').setAttribute('text', `value: no hay click`);
+        document.querySelector('#text3').setAttribute('text', `value: no hay click`);
 
         this.Clicked = false;
         this.isClicking = false;
