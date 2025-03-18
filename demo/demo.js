@@ -543,7 +543,6 @@ AFRAME.registerComponent('clickables', {
     init: function () {
         this.el.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.addEventListener('clickend', this.onClickEnd.bind(this));
-        this.el.setAttribute('class', 'clickable');
         this.Clicked = false;
         this.isClicking = false;
 
