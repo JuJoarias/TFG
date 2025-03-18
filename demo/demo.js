@@ -541,8 +541,8 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickables', {
     init: function () {
-        this.el.addEventListener('clickStart', this.onClickStart.bind(this));
-        this.el.addEventListener('clickend', this.onClickEnd.bind(this));
+        this.el.sceneEl.addEventListener('clickStart', this.onClickStart.bind(this));
+        this.el.sceneEl.addEventListener('clickend', this.onClickEnd.bind(this));
         this.Clicked = false;
         this.isClicking = false;
 
