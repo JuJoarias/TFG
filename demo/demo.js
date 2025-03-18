@@ -145,13 +145,13 @@ AFRAME.registerComponent('manos', {
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
         document.querySelector('#text').setAttribute('text', `value: pointstate: ${this.pointState}, index extended: ${isIndexExtended}, middle bend: ${isMiddleBent}, ring bend: ${isRingBent}, pinky bend: ${isPinkyBent}, pistol. ${pistol}`);
-        if ((isIndexExtended && isMiddleBent && isRingBent && isPinkyBent)||  this.pointState) {
+        if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent ) {
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
             
             if (!pistol) {
                 if (this.pointerEntity) {
-                    this.el.emit('clickend');
+                    this.pointerEntity.emit('clickend');
                     return;
                 }
                 
@@ -174,9 +174,9 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
+                this.pointerEntity.emit('clickStart');
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol`);
 
-                this.el.emit('clickStart');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
@@ -185,7 +185,7 @@ AFRAME.registerComponent('manos', {
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
-                this.el.emit('clickend');
+                this.pointerEntity.emit('clickend');
                 this.pointerEntity = null;
             }
         }
@@ -541,6 +541,7 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickables', {
     init: function () {
+        document.querySelector('#text3').setAttribute('text', `value:El componente clickables esta en marcha`);
         this.el.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.addEventListener('clickend', this.onClickEnd.bind(this));
         this.el.setAttribute('class', 'clickable');
