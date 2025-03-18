@@ -175,12 +175,17 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-                if (raycasterEl.getAttribute('raycaster').intersection) {
-                    this.intersectedObjectid = raycasterEl.getAttribute('raycaster').intersection.object.id;
+                // Verificar si hay intersección
+                const raycaster = this.pointerEntity.getAttribute('raycaster');
+                if (raycaster && raycaster.intersection) {
+                    this.intersectedObjectid = raycaster.intersection.object.id;
+                    document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, id collided: ${this.intersectedObjectid}`);
+                    
+                    // Emitir el evento con el ID de la colisión
+                    this.el.emit('clickStart', { id: this.intersectedObjectid });
+                } else {
+                    document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, sin colisión`);
                 }
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, id collided: ${this.intersectedObjectid}`);
-                this.el.emit('clickStart', { id: this.intersectedObjectid });
-
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
