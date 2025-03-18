@@ -175,7 +175,7 @@ AFRAME.registerComponent('manos', {
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol`);
 
-                this.el.emit('clickstart');
+                this.el.emit('clickStart');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
@@ -540,7 +540,7 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickables', {
     init: function () {
-        this.el.addEventListener('clickstart', this.onClickStart.bind(this));
+        this.el.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.addEventListener('clickend', this.onClickEnd.bind(this));
         this.el.setAttribute('class', 'clickable');
         this.Clicked = false;
