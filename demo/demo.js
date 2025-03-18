@@ -151,7 +151,7 @@ AFRAME.registerComponent('manos', {
             
             if (!pistol) {
                 if (this.pointerEntity) {
-                    this.el.emit('clickend');
+                    this.el.sceneEl.emit('clickend');
                     return;
                 }
                 
@@ -175,17 +175,17 @@ AFRAME.registerComponent('manos', {
 
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
-                this.el.emit('clickStart');
+                this.el.sceneEl.emit('clickStart');
 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
-            this.el.emit('pointend', { hand: this.data.hand });
+            this.el.sceneEl.emit('pointend', { hand: this.data.hand });
             document.querySelector('#text2').setAttribute('text', `value: Fin de point`);
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
-                this.el.emit('clickend');
+                this.el.sceneEl.emit('clickend');
                 this.pointerEntity = null;
             }
         }
@@ -541,8 +541,8 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickables', {
     init: function () {
-        this.el.addEventListener('clickStart', this.onClickStart.bind(this));
-        this.el.addEventListener('clickend', this.onClickEnd.bind(this));
+        this.el.sceneEl.addEventListener('clickStart', this.onClickStart.bind(this));
+        this.el.sceneEl.addEventListener('clickend', this.onClickEnd.bind(this));
         this.Clicked = false;
         this.isClicking = false;
 
