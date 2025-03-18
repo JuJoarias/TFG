@@ -48,11 +48,10 @@ AFRAME.registerComponent('manos', {
             this.detectGesture();
             this.updatePointer();
             const raycaster = this.pointerEntity.getAttribute('raycaster');
-            if (raycaster && raycaster.intersection) {
-                this.intersectedObjectid = raycaster.intersection.object.id;
-            } else {
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, sin colisión`);
-            }
+            this.el.addEventListener('raycaster-intersection', evt => {
+                this.intersectedObjectid = evt.detail.els;
+            });
+            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObjectid}`);
         }
     },
 
@@ -151,7 +150,6 @@ AFRAME.registerComponent('manos', {
     },
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
-        document.querySelector('#text').setAttribute('text', `value: pointstate: ${this.pointState}, index extended: ${isIndexExtended}, middle bend: ${isMiddleBent}, ring bend: ${isRingBent}, pinky bend: ${isPinkyBent}, pistol. ${pistol}`);
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent ) {
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
@@ -168,9 +166,9 @@ AFRAME.registerComponent('manos', {
                 // Configura el raycaster para el puntero
                 this.pointerEntity.setAttribute('raycaster', {
                     objects: '*',  // Interactuar con todo
-                    far: 10,        // Distancia máxima
+                    far: 100,        // Distancia máxima
                     showLine: true, // Muestra la línea del rayo
-                    interval: 100  // Reduce la frecuencia de actualización
+                    interval: 50  // Reduce la frecuencia de actualización
                 });
                 
                 // Posiciona el puntero en la punta del dedo
@@ -182,7 +180,7 @@ AFRAME.registerComponent('manos', {
 
             } else if (pistol){
             
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, id collided: ${this.intersectedObjectid}`);
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
                 
                 // Emitir el evento con el ID de la colisión
                 if (this.intersectedObjectid) {
