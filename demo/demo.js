@@ -145,7 +145,7 @@ AFRAME.registerComponent('manos', {
 
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
         document.querySelector('#text').setAttribute('text', `value: pointstate: ${this.pointState}, index extended: ${isIndexExtended}, middle bend: ${isMiddleBent}, ring bend: ${isRingBent}, pinky bend: ${isPinkyBent}, pistol. ${pistol}`);
-        if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent ) {
+        if ((isIndexExtended && isMiddleBent && isRingBent && isPinkyBent)||  this.pointState) {
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
             
