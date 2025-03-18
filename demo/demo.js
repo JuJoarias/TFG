@@ -174,7 +174,6 @@ AFRAME.registerComponent('manos', {
                 this.el.appendChild(this.pointerEntity);
 
             } else if (pistol){
-                document.querySelector('#text2').setAttribute('text', `value: dentro de point haciendo pistol/click`);
                 this.el.emit('click');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
@@ -551,12 +550,15 @@ AFRAME.registerComponent('clickables', {
     },
 
     onClickStart: function () {
+        document.querySelector('#text2').setAttribute('text', `value:se recibe click click`);
         if (this.isClicking) return;
         this.isClicking = true;
         this.Clicked = true;
     },
 
     onClickEnd: function () {
+        document.querySelector('#text2').setAttribute('text', `value: no hay click`);
+
         this.Clicked = false;
         this.isClicking = false;
     },
