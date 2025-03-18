@@ -146,7 +146,6 @@ AFRAME.registerComponent('manos', {
     detectPoint: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, pointState, pistol, indexKnuckle, indexTip) {
         document.querySelector('#text').setAttribute('text', `value: pointstate: ${this.pointState}, index extended: ${isIndexExtended}, middle bend: ${isMiddleBent}, ring bend: ${isRingBent}, pinky bend: ${isPinkyBent}`);
         if (isIndexExtended && isMiddleBent && isRingBent && isPinkyBent ) {
-            document.querySelector('#text2').setAttribute('text', `value: point: ${this.pointState}, pistol: ${pistol}`);
             this.pointState = true;
             this.el.emit('pointstart', { hand: this.data.hand });
             
@@ -174,7 +173,9 @@ AFRAME.registerComponent('manos', {
                 this.el.appendChild(this.pointerEntity);
 
             } else if (pistol){
-                this.el.emit('click');
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol`);
+
+                this.el.emit('clickstart');
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
@@ -539,7 +540,7 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickables', {
     init: function () {
-        this.el.addEventListener('click', this.onClickStart.bind(this));
+        this.el.addEventListener('clickstart', this.onClickStart.bind(this));
         this.el.addEventListener('clickend', this.onClickEnd.bind(this));
         this.el.setAttribute('class', 'clickable');
         this.Clicked = false;
