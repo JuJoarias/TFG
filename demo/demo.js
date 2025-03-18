@@ -151,7 +151,7 @@ AFRAME.registerComponent('manos', {
             
             if (!pistol) {
                 if (this.pointerEntity) {
-                    this.el.sceneEl.emit('clickend');
+                    this.el.emit('clickend');
                     return;
                 }
                 
@@ -175,17 +175,17 @@ AFRAME.registerComponent('manos', {
 
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
-                this.el.sceneEl.emit('clickStart');
+                this.el.emit('clickStart');
 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
-            this.el.sceneEl.emit('pointend', { hand: this.data.hand });
+            this.el.emit('pointend', { hand: this.data.hand });
             document.querySelector('#text2').setAttribute('text', `value: Fin de point`);
             
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
-                this.el.sceneEl.emit('clickend');
+                this.el.emit('clickend');
                 this.pointerEntity = null;
             }
         }
