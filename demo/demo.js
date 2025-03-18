@@ -541,7 +541,6 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickables', {
     init: function () {
-        document.querySelector('#text3').setAttribute('text', `value:El componente clickables esta en marcha`);
         this.el.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.addEventListener('clickend', this.onClickEnd.bind(this));
         this.el.setAttribute('class', 'clickable');
@@ -553,7 +552,7 @@ AFRAME.registerComponent('clickables', {
     },
 
     onClickStart: function () {
-        document.querySelector('#text3').setAttribute('text', `value:se recibe click click`);
+        document.querySelector('#text3').setAttribute('text', `value:se recibe click`);
         if (this.isClicking) return;
         this.isClicking = true;
         this.Clicked = true;
@@ -567,6 +566,8 @@ AFRAME.registerComponent('clickables', {
     },
 
     tick: function () {
+        document.querySelector('#text3').setAttribute('text', `value:valor de isclicked: ${this.Clicked}`);
+
         if (this.Clicked) {
             this.el.setAttribute('color', 'purple'); // Color al hacer clic
         } else {
