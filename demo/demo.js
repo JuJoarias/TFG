@@ -24,6 +24,7 @@ AFRAME.registerComponent('manos', {
        this.pointState = false;
        this.openHandState = false;
        this.pointerEntity = null;
+       this.intersectedObjectid = null;
 
        orderedJoints.flat().forEach((jointName) => {
           const jointEntity = document.createElement('a-sphere');
@@ -175,7 +176,10 @@ AFRAME.registerComponent('manos', {
 
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
-                this.el.emit('clickStart');
+                if (raycasterEl.getAttribute('raycaster').intersection) {
+                    this.intersectedObjectid = raycasterEl.getAttribute('raycaster').intersection.object.id;
+                }
+                this.el.emit('clickStart', { id: this.intersectedObjectid });
 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
@@ -539,22 +543,27 @@ AFRAME.registerComponent('hoover', {
     },
 });
 
-AFRAME.registerComponent('clickables', {
+AFRAME.registerComponent('clickable', {
     init: function () {
         this.el.sceneEl.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.sceneEl.addEventListener('clickend', this.onClickEnd.bind(this));
         this.Clicked = false;
         this.isClicking = false;
+        this.id = null;
 
         // Guardamos el color original
         this.originalColor = this.el.getAttribute('color') || 'white';
     },
 
-    onClickStart: function () {
+    onClickStart: function (event) {
         document.querySelector('#text3').setAttribute('text', `value:se recibe click`);
         if (this.isClicking) return;
-        this.isClicking = true;
-        this.Clicked = true;
+        this.id = event.detail.id
+        if (this.id === this.el.id){
+            this.isClicking = true;
+            this.Clicked = true;
+
+        }
     },
 
     onClickEnd: function () {
@@ -562,6 +571,7 @@ AFRAME.registerComponent('clickables', {
 
         this.Clicked = false;
         this.isClicking = false;
+        this.id = null;
     },
 
     tick: function () {
