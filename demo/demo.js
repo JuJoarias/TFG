@@ -171,6 +171,7 @@ AFRAME.registerComponent('manos', {
                 
                 // Añade el puntero a la escena
                 this.el.appendChild(this.pointerEntity);
+                document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol`);
