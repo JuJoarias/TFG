@@ -175,10 +175,10 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
                 if (raycasterEl.getAttribute('raycaster').intersection) {
                     this.intersectedObjectid = raycasterEl.getAttribute('raycaster').intersection.object.id;
                 }
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, id collided: ${this.intersectedObjectid}`);
                 this.el.emit('clickStart', { id: this.intersectedObjectid });
 
             }
@@ -559,11 +559,11 @@ AFRAME.registerComponent('clickable', {
         document.querySelector('#text3').setAttribute('text', `value:se recibe click`);
         if (this.isClicking) return;
         this.id = event.detail.id
-        if (this.id === this.el.id){
-            this.isClicking = true;
-            this.Clicked = true;
+        // if (this.id === this.el.id){
+        this.isClicking = true;
+        this.Clicked = true;
 
-        }
+        // }
     },
 
     onClickEnd: function () {
