@@ -47,10 +47,6 @@ AFRAME.registerComponent('manos', {
             this.updateSkeleton();
             this.detectGesture();
             this.updatePointer();
-            const raycaster = this.pointerEntity.getAttribute('raycaster');
-            this.el.addEventListener('raycaster-intersection', evt => {
-                this.intersectedObjectid = evt.detail.els;
-            });
             document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObjectid}`);
         }
     },
@@ -179,13 +175,15 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-            
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
+                this.el.addEventListener('raycaster-intersection', evt => {
+                    this.intersectedObjectid = evt.detail.el;
+                });
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, ${this.intersectedObjectid}`);
                 
                 // Emitir el evento con el ID de la colisión
-                if (this.intersectedObjectid) {
-                    this.el.emit('clickStart', { id: this.intersectedObjectid });
-                }
+                // if (this.intersectedObjectid) {
+                //     this.el.emit('clickStart', { id: this.intersectedObjectid });
+                // }
                 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
