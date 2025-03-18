@@ -174,8 +174,8 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}`);
                 this.pointerEntity.emit('clickStart');
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol`);
 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
