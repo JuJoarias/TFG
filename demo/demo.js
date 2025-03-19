@@ -47,7 +47,6 @@ AFRAME.registerComponent('manos', {
             this.updateSkeleton();
             this.detectGesture();
             this.updatePointer();
-            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject}`);
         }
     },
 
@@ -121,7 +120,6 @@ AFRAME.registerComponent('manos', {
 
     detectPinch: function (thumbTip, indexTip){
         if (thumbTip && indexTip) {
-            // document.querySelector('#text').setAttribute('text', `value: pinch: ${this.pinchState}`);
             const pinchDistanceCalc = this.calcDistance(thumbTip, indexTip)
 
             if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
@@ -135,7 +133,6 @@ AFRAME.registerComponent('manos', {
     },
 
     detectFist: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, fistState){
-        // document.querySelector('#text').setAttribute('text', `value: fist: ${this.fistState}`);
         if (!isIndexExtended && isMiddleBent && isRingBent && isPinkyBent && !fistState) {
             this.fistState = true;
             this.el.emit('fiststart', { hand: this.data.hand });
@@ -172,7 +169,6 @@ AFRAME.registerComponent('manos', {
                 
                 // Añade el puntero a la escena
                 this.el.appendChild(this.pointerEntity);
-                document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
                 this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
@@ -180,16 +176,13 @@ AFRAME.registerComponent('manos', {
                 
                 //Emitir el evento con el ID de la colisión falta probar
                 if (this.intersectedObject.length > 0) {
-                    document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
                     this.el.emit('clickStart', { id: this.intersectedObject[0].id });
                 } 
                 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
             this.pointState = false;
-            this.el.emit('pointend', { hand: this.data.hand });
-            document.querySelector('#text2').setAttribute('text', `value: Fin de point`);
-            
+            this.el.emit('pointend', { hand: this.data.hand });            
             if (this.pointerEntity) {
                 this.el.removeChild(this.pointerEntity);
                 this.el.emit('clickend');
@@ -227,7 +220,6 @@ AFRAME.registerComponent('manos', {
     },
 
     detectOpenhand: function(isIndexExtended, isMiddleBent, isRingBent, isPinkyBent, openHandState){
-        // document.querySelector('#text').setAttribute('text', `value: openhand: ${this.openHandState}`);
         if (isIndexExtended && !isMiddleBent && !isRingBent && !isPinkyBent && !openHandState) {
             this.openHandState = true;
             this.el.emit('openhandstart', { hand: this.data.hand });
@@ -559,7 +551,6 @@ AFRAME.registerComponent('clickable', {
     },
 
     onClickStart: function (event) {
-        document.querySelector('#text3').setAttribute('text', `value:se recibe click, id de este elemento: ${this.el.id}`);
         if (this.isClicking) return;
         this.id = event.detail.id
         if (this.id === this.el.id){
@@ -570,16 +561,12 @@ AFRAME.registerComponent('clickable', {
     },
 
     onClickEnd: function () {
-        document.querySelector('#text3').setAttribute('text', `value: no hay click`);
-
         this.Clicked = false;
         this.isClicking = false;
         this.id = null;
     },
 
     tick: function () {
-        // document.querySelector('#text3').setAttribute('text', `value:valor de isclicked: ${this.Clicked}`);
-
         if (this.Clicked) {
             this.el.setAttribute('color', 'purple'); // Color al hacer clic
         } else {
