@@ -178,9 +178,9 @@ AFRAME.registerComponent('manos', {
                 this.el.addEventListener('raycaster-intersection', evt => {
                     this.intersectedObjectid = evt.detail.el;
                 });
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, ${this.intersectedObjectid}`);
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObjectid}`);
                 
-                // Emitir el evento con el ID de la colisión
+                // Emitir el evento con el ID de la colisión falta probar
                 // if (this.intersectedObjectid) {
                 //     this.el.emit('clickStart', { id: this.intersectedObjectid });
                 // }
