@@ -175,8 +175,8 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-                this.el.addEventListener('raycaster-intersection', evt => {
-                    this.intersectedObjectid = evt.detail.el;
+                this.el.addEventListener('raycaster-intersected', evt => {
+                    this.intersectedObjectid = evt.detail.els[0].id;
                 });
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObjectid}`);
                 
