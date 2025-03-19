@@ -181,7 +181,7 @@ AFRAME.registerComponent('manos', {
                 //Emitir el evento con el ID de la colisión falta probar
                 if (this.intersectedObject.length > 0) {
                     document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
-                    // this.el.emit('clickStart', { id: this.intersectedObject });
+                    this.el.emit('clickStart', { id: this.intersectedObject[0].id });
                 } 
                 
             }
@@ -562,11 +562,11 @@ AFRAME.registerComponent('clickable', {
         document.querySelector('#text3').setAttribute('text', `value:se recibe click`);
         if (this.isClicking) return;
         this.id = event.detail.id
-        // if (this.id === this.el.id){
-        this.isClicking = true;
-        this.Clicked = true;
+        if (this.id === this.el.id){
+            this.isClicking = true;
+            this.Clicked = true;
 
-        // }
+        }
     },
 
     onClickEnd: function () {
