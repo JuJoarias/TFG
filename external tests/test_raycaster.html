@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  </head>
+  <body>
+    <a-scene background="color: black">
+      <!-- Cubo más pequeño en z = -5 con animación de izquierda a derecha -->
+      <a-box id="targetCube" position="0 0 -5" color="red" scale="0.5 0.5 0.5"
+             animation="property: position; from: -2 0 -5; to: 2 0 -5; dir: alternate; loop: true; dur: 2000">
+      </a-box>
+      
+      <!-- Texto para mostrar la colisión -->
+      <a-text id="collisionText" value="null" position="-1 3 -3" color="white"></a-text>
+      
+      <a-camera position="0 1.6 0"></a-camera>
+    </a-scene>
+    
+    <script>
+      // Crear la nueva entidad de puntero y configurarla con raycaster
+      const pointerEntity = document.createElement('a-entity');
+      pointerEntity.setAttribute('raycaster', {
+        objects: '*',  // Interactuar con todo
+        far: 100,        // Distancia máxima
+        showLine: true,  // Muestra la línea del rayo
+        interval: 50     // Reduce la frecuencia de actualización
+      });
+      // Añadir el raycaster a la escena cuando se cargue
+      document.querySelector('a-scene').appendChild(pointerEntity);
+
+      const text = document.querySelector('#collisionText');
+      const cube = document.querySelector('#targetCube');
+      
+      // Función para verificar colisión
+      function checkCollision() {
+        const intersections = pointerEntity.components.raycaster.intersectedEls;
+        
+        if (intersections.includes(cube)) {
+          text.setAttribute('value', cube.id);
+        } else {
+          text.setAttribute('value', 'null');
+        }
+
+        requestAnimationFrame(checkCollision);
+      }
+      
+      // Asegurar que el raycaster se inicializa correctamente
+      setTimeout(checkCollision, 100); 
+    </script>
+  </body>
+</html>
