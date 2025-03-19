@@ -318,24 +318,24 @@ AFRAME.registerComponent('grabable', {
 
         if ((this.colideRight || this.colideLeft ) && (rightPinch || leftPinch)) {
             if ((this.colideLeft && this.colideRight) && (rightPinch && leftPinch)) {
-                this.el.setAttribute('material', 'color', 'black');
+                // this.el.setAttribute('material', 'color', 'black');
                 this.el.emit('stretchStart', {hand1: indexTipLeft, hand2: indexTipRight})
                 this.el.emit('slideEnd');
                 this.el.emit('dragEnd');
             } else if (this.colideLeft && leftPinch) {
-                this.el.setAttribute('material', 'color', 'blue');
+                // this.el.setAttribute('material', 'color', 'blue');
                 this.el.emit('slideStart', {finger: indexTipLeft})
                 this.el.emit('stretchEnd');
                 this.el.emit('dragEnd');
             } else if (this.colideRight && rightPinch){ 
-                this.el.setAttribute('material', 'color', 'green');
+                // this.el.setAttribute('material', 'color', 'green');
                 this.el.emit('dragStart', {mano: manoDerecha, finger: indexTipRight})
                 this.el.emit('stretchEnd');
                 this.el.emit('slideEnd');
             }
           
         } else {
-            this.el.setAttribute('material', 'color', 'red');
+            // this.el.setAttribute('material', 'color', 'red');
             this.el.emit('stretchEnd');
             this.el.emit('slideEnd');
             this.el.emit('dragEnd');
