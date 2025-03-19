@@ -175,9 +175,8 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-                this.el.addEventListener('raycaster-intersected', evt => {
-                    this.intersectedObjectid = evt.detail.els[0].id;
-                });
+                this.intersectedObjectid = this.pointerEntity.components.raycaster.intersectedEls;
+                
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObjectid}`);
                 
                 // Emitir el evento con el ID de la colisión falta probar
