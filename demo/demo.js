@@ -322,7 +322,7 @@ AFRAME.registerComponent('grabable', {
                 this.el.emit('stretchStart', {hand1: indexTipLeft, hand2: indexTipRight})
                 this.el.emit('slideEnd');
                 this.el.emit('dragEnd');
-            } else if (this.colideLeft && leftPinch) {
+            } else if (this.colideLeft && leftPinch) { 
                 // this.el.setAttribute('material', 'color', 'blue');
                 this.el.emit('slideStart', {finger: indexTipLeft})
                 this.el.emit('stretchEnd');
