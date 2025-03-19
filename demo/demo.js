@@ -47,11 +47,7 @@ AFRAME.registerComponent('manos', {
             this.updateSkeleton();
             this.detectGesture();
             this.updatePointer();
-            if(this.intersectedObject){
-                this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
-
-            }
-            // if(this.intersectedObject) {document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject[0].id}`);}
+            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject}`);
         }
     },
 
@@ -178,7 +174,9 @@ AFRAME.registerComponent('manos', {
                 this.el.appendChild(this.pointerEntity);
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
-            } else if (pistol){                
+            } else if (pistol){
+                this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
+                
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
                 
                 // Emitir el evento con el ID de la colisión falta probar
