@@ -10,4 +10,8 @@ The current implemented gestures are:
 * Grab: Doing a gesture while hoovering an entity to interact with it
 * Stretch: Grab the entity with both hands to resize it
 * Drag: Grab the entity with the right hand to move it freely 
-* slide: Grab the entity with the left hand to slide it in an specific axis or plane 
+* slide: Grab the entity with the left hand to slide it in an specific axis or plane
+* Click: While doing the point gesture you can click on the element 
+
+
+Try the demo in [Demo](https://jujoarias.github.io/TFG/demo/demo.html)
