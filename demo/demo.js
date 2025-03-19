@@ -47,7 +47,8 @@ AFRAME.registerComponent('manos', {
             this.updateSkeleton();
             this.detectGesture();
             this.updatePointer();
-            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject}`);
+            this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
+            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject[0].id}`);
         }
     },
 
@@ -161,7 +162,7 @@ AFRAME.registerComponent('manos', {
                 
                 // Configura el raycaster para el puntero
                 this.pointerEntity.setAttribute('raycaster', {
-                    objects: '.clickable',  // Interactuar con todo
+                    objects: '*',  // Interactuar con todo
                     far: 100,        // Distancia máxima
                     showLine: true, // Muestra la línea del rayo
                     interval: 50  // Reduce la frecuencia de actualización
@@ -174,9 +175,7 @@ AFRAME.registerComponent('manos', {
                 this.el.appendChild(this.pointerEntity);
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
-            } else if (pistol){
-                this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
-                
+            } else if (pistol){                
                 document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
                 
                 // Emitir el evento con el ID de la colisión falta probar
@@ -548,7 +547,6 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickable', {
     init: function () {
-        this.el.setAttribute('class', 'clickable');
         this.el.sceneEl.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.sceneEl.addEventListener('clickend', this.onClickEnd.bind(this));
         this.Clicked = false;
