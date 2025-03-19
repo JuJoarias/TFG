@@ -48,9 +48,7 @@ AFRAME.registerComponent('manos', {
             this.detectGesture();
             this.updatePointer();
             this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
-            if(this.intersectedObject) {
-                document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject[0].id}`);
-            }
+            // if(this.intersectedObject) {document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject[0].id}`);}
         }
     },
 
