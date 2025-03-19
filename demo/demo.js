@@ -161,7 +161,7 @@ AFRAME.registerComponent('manos', {
                 
                 // Configura el raycaster para el puntero
                 this.pointerEntity.setAttribute('raycaster', {
-                    objects: '*',  // Interactuar con todo
+                    objects: '.clickable',  // Interactuar con todo
                     far: 100,        // Distancia máxima
                     showLine: true, // Muestra la línea del rayo
                     interval: 50  // Reduce la frecuencia de actualización
@@ -548,6 +548,7 @@ AFRAME.registerComponent('hoover', {
 
 AFRAME.registerComponent('clickable', {
     init: function () {
+        this.el.setAttribute('class', 'clickable');
         this.el.sceneEl.addEventListener('clickStart', this.onClickStart.bind(this));
         this.el.sceneEl.addEventListener('clickend', this.onClickEnd.bind(this));
         this.Clicked = false;
