@@ -24,7 +24,7 @@ AFRAME.registerComponent('manos', {
        this.pointState = false;
        this.openHandState = false;
        this.pointerEntity = null;
-       this.intersectedObjectid = null;
+       this.intersectedObject = null;
 
        orderedJoints.flat().forEach((jointName) => {
           const jointEntity = document.createElement('a-sphere');
@@ -47,7 +47,7 @@ AFRAME.registerComponent('manos', {
             this.updateSkeleton();
             this.detectGesture();
             this.updatePointer();
-            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObjectid}`);
+            document.querySelector('#text').setAttribute('text', `value: ${this.intersectedObject}`);
         }
     },
 
@@ -175,13 +175,13 @@ AFRAME.registerComponent('manos', {
                 document.querySelector('#text2').setAttribute('text', `value:fuera de pistol`);
 
             } else if (pistol){
-                this.intersectedObjectid = this.pointerEntity.components.raycaster.intersectedEls.id;
+                this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
                 
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObjectid}`);
+                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
                 
                 // Emitir el evento con el ID de la colisión falta probar
-                // if (this.intersectedObjectid) {
-                //     this.el.emit('clickStart', { id: this.intersectedObjectid });
+                // if (this.intersectedObject) {
+                //     this.el.emit('clickStart', { id: this.intersectedObject });
                 // }
                 
             }
