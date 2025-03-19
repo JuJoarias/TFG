@@ -559,7 +559,7 @@ AFRAME.registerComponent('clickable', {
     },
 
     onClickStart: function (event) {
-        document.querySelector('#text3').setAttribute('text', `value:se recibe click`);
+        document.querySelector('#text3').setAttribute('text', `value:se recibe click, id de este elemento: ${this.el.id}`);
         if (this.isClicking) return;
         this.id = event.detail.id
         if (this.id === this.el.id){
@@ -578,7 +578,7 @@ AFRAME.registerComponent('clickable', {
     },
 
     tick: function () {
-        document.querySelector('#text3').setAttribute('text', `value:valor de isclicked: ${this.Clicked}`);
+        // document.querySelector('#text3').setAttribute('text', `value:valor de isclicked: ${this.Clicked}`);
 
         if (this.Clicked) {
             this.el.setAttribute('color', 'purple'); // Color al hacer clic
