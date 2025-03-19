@@ -177,12 +177,12 @@ AFRAME.registerComponent('manos', {
             } else if (pistol){
                 this.intersectedObject = this.pointerEntity.components.raycaster.intersectedEls;
                 
-                document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
                 
-                // Emitir el evento con el ID de la colisión falta probar
-                // if (this.intersectedObject) {
-                //     this.el.emit('clickStart', { id: this.intersectedObject });
-                // }
+                //Emitir el evento con el ID de la colisión falta probar
+                if (this.intersectedObject.length > 0) {
+                    document.querySelector('#text2').setAttribute('text', `value:dentro de pistol, pointer entity: ${this.pointerEntity}, intersected with: ${this.intersectedObject[0].id}`);
+                    // this.el.emit('clickStart', { id: this.intersectedObject });
+                } 
                 
             }
         } else if ((!isIndexExtended || !isMiddleBent || !isRingBent || !isPinkyBent) && pointState) {
