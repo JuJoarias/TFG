@@ -14,4 +14,4 @@ The current implemented gestures are:
 * Click: While doing the point gesture you can click on the element 
 
 
-Try the demo in [Demo](https://jujoarias.github.io/TFG/demo/demo.html)
+Try the demo in [here](https://jujoarias.github.io/TFG/demo/demo.html)
