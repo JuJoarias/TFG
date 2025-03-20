@@ -184,3 +184,19 @@ Tareas:
 - mirar las issues y si no hay ninguna parecida a lo que quiero hacer una nueva
 - crear escena demo con lo que ya tengo
 - hacer que las demos de superhands funcionen con lo mio
+
+20-0325
+añadir lo del look at a los paneles 
+
+seguir mirando lo del superhands
+
+hacer que pueda pintar mism manos y que estas lane
+
+de cara a la memoria: (mirar el correo, el profe me mando unas notas)
+capitulo de las tecnologías que uso:aframe,webxr…
+capitulo explicando las manos
+capitulo explicando los distintos sprints que he tenido
+capitulo de desarroyo, explicar 4-5 reuniones explicando los puntos principales
+capitulo final, explicar los resultados (de momento dejarlo de lado)
+
+si consigo hacer algo de superhands, avisarle con antelación (si es posible) para que el lo vea
