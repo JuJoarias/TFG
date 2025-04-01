@@ -337,6 +337,10 @@ AFRAME.registerComponent('grabable', {
 
 AFRAME.registerComponent('drag', {
     init: function(){
+        if (!this.el.hasAttribute('grabable')) {
+            this.el.setAttribute('grabable', '');
+        }
+
         this.el.addEventListener('dragStart', this.onDragStart.bind(this));
         this.el.addEventListener('dragEnd', this.onDragEnd.bind(this));
         this.finger = null,
@@ -463,6 +467,10 @@ AFRAME.registerComponent('slide', {
     },
 
     init: function(){
+        if (!this.el.hasAttribute('grabable')) {
+            this.el.setAttribute('grabable', '');
+        }
+
         this.el.addEventListener('slideStart', this.onSlideStart.bind(this));
         this.el.addEventListener('slideEnd', this.onSlideEnd.bind(this));
         this.finger = null;
@@ -511,6 +519,10 @@ AFRAME.registerComponent('slide', {
 AFRAME.registerComponent('hoover', {
 
     init: function(){
+        if (!this.el.hasAttribute('grabable')) {
+            this.el.setAttribute('grabable', '');
+        }
+
        this.el.addEventListener('hooverStart', this.onHooverStart.bind(this));
        this.el.addEventListener('hooverEnd', this.onHooverEnd.bind(this));
        this.hooverState = false;
@@ -578,6 +590,9 @@ AFRAME.registerComponent('clickable', {
 AFRAME.registerComponent('stretch', {
 
     init: function () {
+       if (!this.el.hasAttribute('grabable')) {
+           this.el.setAttribute('grabable', '');
+       }
        this.el.addEventListener('stretchStart', this.onStretchStart.bind(this));
        this.el.addEventListener('stretchEnd', this.onStretchEnd.bind(this));
        this.hand1 = null;
