@@ -1,26 +1,28 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Superhands con Hand Tracking</title>
-    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/wmurphyrd/aframe-super-hands-component@master/dist/aframe-super-hands.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Frame Superhands Example</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/aframevr/super-hands.js/dist/super-hands.min.js"></script>
   </head>
   <body>
-    <a-scene vr-mode-ui="enabled: true" background="color: #ECECEC">
-
-      <!-- Cámara -->
-      <a-entity id="cameraRig" position="0 1.6 0">
-        <a-entity camera look-controls></a-entity>
+    <a-scene>
+      <!-- Definimos una cámara con el sistema de superhands -->
+      <a-entity id="camera" position="0 1.6 0" camera look-controls>
+        <a-entity id="left-hand" super-hands="hand: left" oculus-touch-controls="hand: left" raycaster="objects: .clickable"></a-entity>
+        <a-entity id="right-hand" super-hands="hand: right" oculus-touch-controls="hand: right" raycaster="objects: .clickable"></a-entity>
       </a-entity>
 
-      <!-- Manos con hand-tracking -->
-      <a-entity  super-hands></a-entity>
-      <a-entity  super-hands></a-entity>
+      <!-- Un objeto interactivo que se puede coger -->
+      <a-box position="0 2 -3" color="red" class="clickable" grabbable></a-box>
+      
+      <!-- Luz para iluminar la escena -->
+      <a-light type="directional" position="2 4 -3"></a-light>
 
-      <!-- Objeto grabbable -->
-      <a-box position="0 1 -1" color="tomato" width="0.3" height="0.3" depth="0.3" class="grabbable"></a-box>
-
+      <!-- Suelo -->
+      <a-plane position="0 0 -5" rotation="-90 0 0" width="10" height="10" color="#7BC8A4"></a-plane>
     </a-scene>
   </body>
 </html>
