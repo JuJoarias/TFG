@@ -248,6 +248,8 @@ AFRAME.registerComponent('grabable', {
         this.rightHandEntity = document.querySelector('#right-hand');
         this.colideRight = false;
         this.colideLeft = false;
+        this.leftPinchState = null;
+        this.rightPinchState = null;
 
         // Inicialización de los vectores
         this.vectorX = new THREE.Vector3();
@@ -294,13 +296,26 @@ AFRAME.registerComponent('grabable', {
            return;
         }
 
-        const rightPinchState = manoDerecha.pinchState;
-        const leftPinchState = manoIzquierda.pinchState;
+        this.addEventListener('pinchstart', (evt) => {
+            if (evt.detail.hand == 'Right'){
+                this.rightPinchState = True
+            } else{
+                this.leftPinchState = True
+            }
+        }) 
+
+        this.addEventListener('pinchend', (evt) => {
+            if (evt.detail.hand == 'Right'){
+                this.rightPinchState = False
+            } else{
+                this.leftPinchState = False
+            }
+        })
         if (this.colideLeft || this.colideRight){
             this.el.emit('hooverStart');
         } else {this.el.emit('hooverEnd');}
 
-        this.updateState(rightPinchState, leftPinchState, manoDerecha, manoIzquierda); 
+        this.updateState(rightPinchState, this.leftPinchState, manoDerecha, manoIzquierda); 
       
     },
 

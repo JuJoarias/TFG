@@ -189,6 +189,8 @@ AFRAME.registerComponent('grabable', {
       this.leftDetector = document.querySelector('#left-detector');
       this.rightDetector = document.querySelector('#right-detector');
       this.lastPinchState = null;
+      this.rightPinchState = null;
+      this.leftPinchState = null;
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
@@ -247,16 +249,29 @@ AFRAME.registerComponent('grabable', {
          return;
       }
 
-      const rightPinchState = manoDerecha.pinchState;
-      const leftPinchState = manoIzquierda.pinchState;
+      this.addEventListener('pinchstart', (evt) => {
+         if (evt.detail.hand == 'Right'){
+            this.rightPinchState = True
+         } else{
+            this.leftPinchState = True
+         }
+      }) 
+
+      this.addEventListener('pinchend', (evt) => {
+         if (evt.detail.hand == 'Right'){
+            this.rightPinchState = False
+         } else{
+            this.leftPinchState = False
+         }
+      })
       const Colide = this.isGrabbed;
       this.hoover(this.hooverState);
 
-      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState) {
-         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${rightPinchState}, Pinch izquierda: ${leftPinchState}`);
-         this.lastPinchState = rightPinchState;
+      if (this.rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || this.leftPinchState !== this.lastPinchState) {
+         document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${this.rightPinchState}, Pinch izquierda: ${this.leftPinchState}`);
+         this.lastPinchState = this.rightPinchState;
          this.lastGrabState = Colide;
-         this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda); 
+         this.updateState(this.rightPinchState, Colide, this.leftPinchState, manoDerecha, manoIzquierda); 
       }
    },
 
