@@ -248,14 +248,27 @@ AFRAME.registerComponent('grabable', {
          return;
       }
 
-      const rightPinchState = manoDerecha.pinchState;
-      const leftPinchState = manoIzquierda.pinchState;
-      if (this.colideLeft || this.colideRight){
-         this.el.emit('hooverStart');
-      } else {this.el.emit('hooverEnd');}
+      this.el.addEventListener('pinchstart', (evt) => {
+            if (evt.detail.hand == 'Right'){
+                this.rightPinchState = True
+            } else{
+                this.leftPinchState = True
+            }
+        }) 
+
+        this.el.addEventListener('pinchend', (evt) => {
+            if (evt.detail.hand == 'Right'){
+                this.rightPinchState = False
+            } else{
+                this.leftPinchState = False
+            }
+        })
+        if (this.colideLeft || this.colideRight){
+            this.el.emit('hooverStart');
+        } else {this.el.emit('hooverEnd');}
+
+        this.updateState(this.rightPinchState, this.leftPinchState, manoDerecha, manoIzquierda); 
       
-      this.updateState(rightPinchState, leftPinchState, manoDerecha, manoIzquierda); 
-   
    },
 
    updateState: function (rightPinch, leftPinch, manoDerecha, manoIzquierda) {
