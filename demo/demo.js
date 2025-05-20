@@ -296,7 +296,7 @@ AFRAME.registerComponent('grabable', {
            return;
         }
 
-        this.addEventListener('pinchstart', (evt) => {
+        this.el.addEventListener('pinchstart', (evt) => {
             if (evt.detail.hand == 'Right'){
                 this.rightPinchState = True
             } else{
@@ -304,7 +304,7 @@ AFRAME.registerComponent('grabable', {
             }
         }) 
 
-        this.addEventListener('pinchend', (evt) => {
+        this.el.addEventListener('pinchend', (evt) => {
             if (evt.detail.hand == 'Right'){
                 this.rightPinchState = False
             } else{
@@ -315,7 +315,7 @@ AFRAME.registerComponent('grabable', {
             this.el.emit('hooverStart');
         } else {this.el.emit('hooverEnd');}
 
-        this.updateState(rightPinchState, this.leftPinchState, manoDerecha, manoIzquierda); 
+        this.updateState(this.rightPinchState, this.leftPinchState, manoDerecha, manoIzquierda); 
       
     },
 
