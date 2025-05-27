@@ -296,7 +296,7 @@ AFRAME.registerComponent('grabable', {
            return;
         }
 
-        this.el.addEventListener('pinchstart', (evt) => {
+        scene.addEventListener('pinchstart', (evt) => {
             if (evt.detail.hand === 'left'){
                 this.leftPinchState = True
             } else{
@@ -304,7 +304,7 @@ AFRAME.registerComponent('grabable', {
             }
         }) 
 
-        this.el.addEventListener('pinchend', (evt) => {
+        scene.addEventListener('pinchend', (evt) => {
             if (evt.detail.hand === 'left'){
                 this.leftPinchState = True
             } else{
