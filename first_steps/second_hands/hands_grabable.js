@@ -253,7 +253,7 @@ AFRAME.registerComponent('grabable', {
       const Colide = this.isGrabbed;
       this.hoover(this.hooverState);
 
-      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== lastPinchState) {
+      if (rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || leftPinchState !== this.lastPinchState) {
          document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${this.rightPinchState}, Pinch izquierda: ${this.leftPinchState}`);
          this.lastPinchState = rightPinchState;
          this.lastGrabState = Colide;
