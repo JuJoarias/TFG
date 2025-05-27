@@ -124,10 +124,10 @@ AFRAME.registerComponent('manos', {
 
             if (pinchDistanceCalc < pinchDistance && !this.pinchState) {
                this.pinchState = true;
-               this.el.emit('pinchstart', { hand: this.data.hand });
+               this.el.emit('pinchstart', { hand: this.data.hand }, true);
             } else if (pinchDistanceCalc >= pinchDistance && this.pinchState) {
                this.pinchState = false;
-               this.el.emit('pinchend', { hand: this.data.hand });
+               this.el.emit('pinchend', { hand: this.data.hand }, true);
             }
         }
     },
