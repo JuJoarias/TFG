@@ -189,8 +189,6 @@ AFRAME.registerComponent('grabable', {
       this.leftDetector = document.querySelector('#left-detector');
       this.rightDetector = document.querySelector('#right-detector');
       this.lastPinchState = null;
-      this.rightPinchState = null;
-      this.leftPinchState = null;
       this.lastGrabState = null;
       this.initialDistance = null;
       this.isGrabbed = false;
@@ -249,29 +247,17 @@ AFRAME.registerComponent('grabable', {
          return;
       }
 
-      this.el.addEventListener('pinchstart', (evt) => {
-         if (evt.detail.hand == 'right'){
-            this.rightPinchState = True
-         } else{
-            this.leftPinchState = True
-         }
-      }) 
+      const rightPinchState = manoDerecha.pinchState;
+      const leftPinchState = manoIzquierda.pinchState;
 
-      this.el.addEventListener('pinchend', (evt) => {
-         if (evt.detail.hand == 'right'){
-            this.rightPinchState = False
-         } else{
-            this.leftPinchState = False
-         }
-      })
       const Colide = this.isGrabbed;
       this.hoover(this.hooverState);
 
-      if (this.rightPinchState !== this.lastPinchState || Colide !== this.lastGrabState || this.leftPinchState !== this.lastPinchState) {
+      if (rightPinchState !== lastPinchState || Colide !== this.lastGrabState || leftPinchState !== lastPinchState) {
          document.querySelector('#text').setAttribute('text', `value: Colide: ${Colide}, Pinch derecha: ${this.rightPinchState}, Pinch izquierda: ${this.leftPinchState}`);
-         this.lastPinchState = this.rightPinchState;
+         this.lastPinchState = rightPinchState;
          this.lastGrabState = Colide;
-         this.updateState(this.rightPinchState, Colide, this.leftPinchState, manoDerecha, manoIzquierda); 
+         this.updateState(rightPinchState, Colide, leftPinchState, manoDerecha, manoIzquierda); 
       }
    },
 

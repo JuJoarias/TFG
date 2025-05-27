@@ -248,26 +248,13 @@ AFRAME.registerComponent('grabable', {
          return;
       }
 
-      this.el.addEventListener('pinchstart', (evt) => {
-            if (evt.detail.hand == 'right'){
-                this.rightPinchState = True
-            } else{
-                this.leftPinchState = True
-            }
-        }) 
+      const rightPinchState = manoDerecha.pinchState;
+      const leftPinchState = manoIzquierda.pinchState;
 
-        this.el.addEventListener('pinchend', (evt) => {
-            if (evt.detail.hand == 'right'){
-                this.rightPinchState = False
-            } else{
-                this.leftPinchState = False
-            }
-        })
-        if (this.colideLeft || this.colideRight){
-            this.el.emit('hooverStart');
-        } else {this.el.emit('hooverEnd');}
-
-        this.updateState(this.rightPinchState, this.leftPinchState, manoDerecha, manoIzquierda); 
+      if (this.colideLeft || this.colideRight){
+          this.el.emit('hooverStart');
+      } else {this.el.emit('hooverEnd');}
+      this.updateState(rightPinchState, leftPinchState, manoDerecha, manoIzquierda); 
       
    },
 
