@@ -574,13 +574,13 @@ AFRAME.registerComponent('clickable', {
     },
 
     onClickEnd: function () {
-        
+        this.Clicked = false;
         this.isClicking = false;
         this.id = null;
     },
 
     tick: function () {
-        if (this.isClicking) {
+        if (this.Clicked) {
             this.el.setAttribute('color', 'purple'); // Color al hacer clic
         } else {
             this.el.setAttribute('color', this.originalColor); // Vuelve al color original
