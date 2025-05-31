@@ -206,3 +206,115 @@ si consigo hacer algo de superhands, avisarle con antelación (si es posible) pa
 En superhands la función emitCancelable es la que emite los eventos. intentar centrarme en que funcione el evento de click o el de hover. 
 
 Seguir escribiendo la memoria, cuando tenga un capitulo mandárselo para que le heche un vistazo.  
+
+
+22-04-25
+
+memoria: 
+en la introducción habalar un poco de la tecnologías y de como afectaron al proyecto. Intentar explicar de abajo arriba. 
+ej: cuando hablo de aframe mencionar HTML y java y luego hablar de HTML y java
+Hablar de nivel alto a abajo. 
+Al principio del capitulo una pequeña introducción mencionando las tecnologías. 
+
+En cada capitulo hacer algo mas de reflexión, enfocarme mas en como la uso, lo que tengo no esta mal, pero revisarlo y enfocarme en las cosas importantes. 
+
+Hacer mas referencias a libros, artículos, webs... 
+
+meter una ilustración por tecnología si es posible, ,algo que aporte
+
+Revisar la escritura
+
+en el código de aframe, cambiar el Font para que sea mas pequeño ,que ocupe menos, y quitar cosas que no tengan importancia. Mirar sobretodo el tamaño. 
+
+Hablar un poco mas de que los componentes de aframe son de java script y poner un ejemplo muy simplificado. 
+
+hablar de las cosas se pueden hacer con aframe
+
+resumen: 
+Descripción general pero también las cosas importantes de cada tecnología
+Hablar mas de three y meter ejemplos con imágenes 
+hablar de git aparte de GitHub
+hablar de las quest
+
+empezar a escribir los siguientes capítulos
+
+13-05-25
+
+cap 2:
+Mirar la ortografía, que haya constancia en la forma de escribir las cosas. 
+
+añadir alguna referencia mas
+
+añadir en las tecs el párrafo final de por que las he usado. Y explicar un poco mejor la introducción de los apartados de tecs principales y aux.
+
+cap 3:
+extender mas la introducción del cap, mas extenso y explicar que se explica usando vocabulario y estructura de metodología agile pese a que el proyecto como tal no se estructuro asi. 
+
+cambiar implementación por tareas realizadas. 
+
+Los títulos ser mas explicativos
+
+cambiar objetivo principal por objetivos. 
+
+en el sprint 1 explicar mejor lo de webXR ya que desde el principio como se decidio usar navegador webxr era la única opción. 
+
+explicar mejor los fragmentos de código y ver si puedo reducir el código, no poner todo y poner lo importante. 
+
+cap 4
+2 puntos de vista: 
+como usuario
+y como desarrolador, intentar no repetir mucho lo del cap 3. Posiblemente toque resumir el cap 3 y pasar esas partes al cap 4.
+
+
+22-05
+
+mirar si me compensa cambiar de orden los caps 3 y 4 
+
+del cap 4, la descripción funcional es muy corta, explicar un poco mis componentes y como cada uno puede ser funcional. Desde el punto de vista del usuario. Cambiar el titulo de 4.2 a algo tipo 'descripción funcional para el usuario' en vez de manual, ser mas especifico. Explicar que sin gafas no funciona... 
+
+del cap 3, definir mejor lo de los objetivos de cada cap
+
+del cap 4, describir de forma mas precisa la estructura del cap, al final del cap describir como se podría realizar una aplicación/escena utilizando mis componentes. antes de lo que puse de la información de webxr explicar un poco la api del handtracking, dividir la información en varias secciones . en vez de componentes interactivos poner componentes que interactúan con la escena. de cada componente su api seria el schema, los eventos que escucha y los eventos que emite, hablar de cada componente su api. 
+
+28-05
+
+resumen: intercambiar el primer y segundo párrafo, cambiar detección de manos por seguimiento, mencionar webxr - 
+
+explicar un poco mas el cap 4, entrar mas a fondo. mirar si intercambiar los caps 3 y 4 en orden por dar mas importancia al resultado que al proceso.- 
+
+en la introducción, añadir mas información, 1 sobre necesidad de interacción de las escenas y otro de la importancia del uso de manos - 
+
+repensar el objetivo general, quitar lo de la evolución, plantear si quiero que sea que sea un sistema como tal o una 'caja de herramientas' -
+
+en los obs específicos, cambair lo de implementación de detección por explorar, el ultimo casi quitarlo, meter como objetivo que funcione en las quest, añadir integración de otros componentes de aframe -
+
+en el apartado 1.3 enlazar los capítulos -
+
+del cap 2 añadir referencia para JavaScript, del three cambair la cita por algún libro o documentación propia, en HTML cambiar lo de canva por canvas, en webxr, hacer también referencia al estándar, también sobre la detección de manos (si encuentro), y para webgl lo mismo que webxr referenciar el estándar -
+
+del cap 3, 3.1.1 lo del planteamiento con el tutor sobra y en las tareas explicar mejor lo primero que hice y en el resultado explicar un poco el componente que cree para ese sprint 0. ser mas preciso en los objetivos del sprint 1, explorar superhands... en 3.2.2 explicar que se uso directamente la api de webxr - 
+
+lo del cap 3 mirarlo, si lo dejo asi tampoco esta mal ************
+
+del cap 4, cambair el titulo a descripccion del resultado final. explicar si es una caja de herramientas o sistema. el 4.2 es muy pobre, juntarlo con el 4.1, añadir alguna captura mas y describir mejor que es cada cubo y explicar mejor la escena. que la segunda seccion describir mejor los componentes. plantear hacer una seccion nueva de contruccion de escenas -
+
+el cap 5, describir por un aparte el experimento y por otra las sensaciones del usuario (lo que ya tengo basicamente), basicamente reescribir lo que tengo de manera mas formal y organizada y añadir un parrafo con mi opinion sobre mis resultados - 
+
+cap 6, hacer lo del analisis temporal, esfuerzos, material(ordenador, gafas, github...)... -
+
+si me da tiempo, hacer una escena nueva ej: escena de pintar 
+
+cambiar mi index por la pagina final y lo que hay ahora enlazarlo a esa pagina inicial
+
+Resumen de tarear por hacer: 
+-intercambair del índice los 2 primeros párrafos y mencionar webxr -
+- en la introducción, añadir mas informacions, párrafo sobre la necesidad de interacción en la escena y otro sobre la importancia de las manos-
+- intercambiar los caps 3 y 4-
+- del objetivo general, quitar lo de la evolución, plantearlo como una caja de herramientas- 
+- hypernelaces en el 1.3 - 
+- añadir en los obsjetivos específicos la integración con otros componentes aframe- 
+- añadir referencia de JavaScript- 
+- cambiar canva por canvas- 
+- hacer referencia de webxr al estándar y si encuentro a algo de las manos- 
+- hacer referencia de webgl al estándar (no hay como tal un estandar -> descartado) - 
+- 
