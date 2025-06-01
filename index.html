@@ -1,12 +1,165 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mi TFG</title>
+    <style>
+        body {
+            background: url('imagenes/fondo.gif') center center / cover no-repeat;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+
+        /* Sección del título principal */
+        #titulo {
+            background: url('imagenes/fondo_tfg.gif') center center / cover no-repeat;
+            height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+            text-align: center;
+        }
+
+        /* Título principal centrado y grande */
+        #titulo h1 {
+            font-size: 3em;
+            margin: 0;
+            text-align: center;
+        }
+
+        /* Secciones a partir de la segunda: centradas, 80% ancho, recuadro */
+        .seccion {
+            width: 80%;
+            max-width: 1200px; /* opcional, para que no se haga demasiado ancho */
+            margin: 30px auto;
+            padding: 30px 40px;
+            background: rgb(200, 198, 198);
+            border-radius: 12px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        /* Títulos h2 centrados */
+        .seccion h2 {
+            margin-top: 0;
+            color: #2c3e50;
+            text-align: center;
+        }
+
+        /* Contacto con texto centrado */
+        #contacto {
+            text-align: center;
+        }
+
+        /* Estilo para enlaces con imagen y texto debajo */
+        .image-link {
+            display: inline-block;
+            text-align: center;
+            margin: 10px 15px;
+            text-decoration: none;
+            color: #3498db;
+        }
+
+        .image-link img {
+            width: 160px;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .image-link:hover img {
+            transform: scale(1.05);
+            box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+        }
+
+        .caption {
+            margin-top: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            color: #3498db;
+        }
+
+        /* Enlaces (sin borde) */
+        a {
+            color: #3498db;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: #2166a5;
+        }
+
+        /* Videos en sección videos */
+        #videos video {
+            display: inline-block;
+            max-width: 45%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            margin: 10px 2.5%;
+        }
+    </style>
 </head>
 <body>
-    <a href="https://github.com/JuJoarias/TFG"target="_blank">Github con codigo</a>
-    <a href="demos.html"target="_blank">Demos</a>
+    <div id="titulo" class="seccion">
+        <h1>CONSTRUCCIÓN DE SISTEMA DE SEGUIMIENTO DE MANOS PARA ESCENAS XR</h1>
+    </div>
+
+    <div id="demos" class="seccion">
+        <h2>Demos</h2>
+        <p>
+            Descubre las distintas demos que se han ido realizando a lo largo de todo el proyecto. 
+        </p>
+        <a href="demos.html" target="_blank">
+            Demos
+        </a>
+    </div>
+
+    <div id="videos" class="seccion">
+        <h2>Videos</h2>
+        <p>
+            Acontinuación se muestran 2 videos en los cuales se muestran 2 escenas en las que se han implementado algunos 
+            de los componentes desarrollados en este proyecto para mostrar como se pueden implementar en una escena con muy pocas modificaciones.
+        </p>
+        <!-- Aquí puedes añadir contenido o enlaces con imágenes -->
+        <video controls width="400" style="margin: 10px;">
+            <source src="demo/5_3_25.mp4" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+        </video>
+        <video controls width="400" style="margin: 10px;">
+            <source src="demo/5_3_25.mp4" type="video/mp4">
+            Tu navegador no soporta el elemento de video.
+        </video>
+    </div>
+
+    <div id="recursos" class="seccion">
+        <h2>Recursos</h2>
+        <a href="https://github.com/JuJoarias/TFG" target="_blank" class="image-link">
+            <img src="imagenes/github.png" alt="Github con código" />
+            <div class="caption">Github con código</div>
+        </a>
+        <a href="placeholder" target="_blank" class="image-link">
+            <img src="imagenes/memoria.png" alt="memoria" />
+            <div class="caption">Memoria</div>
+        </a>
+        <a href="placeholder" target="_blank" class="image-link">
+            <img src="imagenes/presentacion.png" alt="presentacion" />
+            <div class="caption">Presentación</div>
+        </a>
+    </div>
+
+    <div id="contacto" class="seccion">
+        <h2>Contacto</h2>
+        <p>GRADO EN INGENIERÍA EN SISTEMAS AUDIOVISUALES Y MULTIMEDIA</p>
+        <p>Autor: Juan José Arias Rojas</p>
+        <p>Correo: juanjoseariasrojas@gmail.com</p>
+    </div>
 </body>
 </html>

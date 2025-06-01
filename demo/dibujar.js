@@ -347,6 +347,7 @@ AFRAME.registerComponent('drag', {
         this.finger = null,
         this.hand = null;
         this.isDragging = false;
+        this.interval = null;
         
         this.vectorX = new THREE.Vector3();
         this.vectorZ = new THREE.Vector3();
@@ -379,13 +380,14 @@ AFRAME.registerComponent('drag', {
         this.fakeY = new THREE.Vector3();
         this.fakeZ = new THREE.Vector3();
         this.rotationMatrix = new THREE.Matrix4();
+        clearInterval(this.interval);
     },
 
     tick: function(){
         if (this.hand && this.finger){
-            // this.updateFakeCoords(this.hand);
-            // this.reparent(this.finger.object3D);
-            this.startDrawingTrail(this.finger.object3D)
+            this.updateFakeCoords(this.hand);
+            this.reparent(this.finger.object3D);
+            this.startDrawingTrail()
         }
     },
 
@@ -461,22 +463,66 @@ AFRAME.registerComponent('drag', {
         }
     },
 
-    startDrawingTrail: function (object3D) {
-        const scene = document.querySelector('a-scene');
+    startDrawingTrail: function () {
+        const pen = this.el;
 
-        const interval = setInterval(() => {
-            const pos = new THREE.Vector3();
-            object3D.getWorldPosition(pos); // Obtener posición global
+        this.interval = setInterval(() => {
+            if (!this.drawing) return;
 
-            const esfera = document.createElement('a-sphere');
-            esfera.setAttribute('position', `${pos.x} ${pos.y} ${pos.z}`);
-            esfera.setAttribute('radius', '0.02');
-            esfera.setAttribute('color', 'green');
-            esfera.setAttribute('shadow', 'cast: false; receive: false');
+            // Crear la esfera
+            const dot = document.createElement('a-sphere');
+            dot.setAttribute('radius', 0.01);
+            dot.setAttribute('color', 'green');
 
-            scene.appendChild(esfera);
+            // Obtener la punta del cilindro
+            const tipOffset = new THREE.Vector3(0, -pen.object3D.scale.y * 0.5, 0); // punta inferior
+            const worldTip = new THREE.Vector3();
+            pen.object3D.localToWorld(tipOffset.clone()).copy(worldTip);
+
+            // Posición y rotación
+            dot.object3D.position.copy(tipOffset);
+            pen.object3D.localToWorld(dot.object3D.position);
+
+            dot.object3D.quaternion.copy(pen.object3D.quaternion); // igualar orientación
+
+            // Agregar a la escena
+            pen.sceneEl.object3D.add(dot.object3D);
         }, 100);
 
         return interval; // por si luego quieres parar el rastro con clearInterval(interval)
+    },
+});
+
+AFRAME.registerComponent('hoover', {
+
+    init: function(){
+        if (!this.el.hasAttribute('grabable')) {
+            this.el.setAttribute('grabable', '');
+        }
+
+       this.el.addEventListener('hooverStart', this.onHooverStart.bind(this));
+       this.el.addEventListener('hooverEnd', this.onHooverEnd.bind(this));
+       this.hooverState = false;
+       this.isHoovering = false;
+    },
+
+    onHooverStart: function () {
+       if (this.isHoovering) return;
+       this.isHoovering = true;
+
+       this.hooverState = true;
+    },
+
+    onHooverEnd: function () {
+       this.hooverState = false;
+       this.isHoovering = false;
+    },
+
+    tick: function () {
+        if (this.hooverState){
+           this.el.setAttribute('material', 'opacity', '0.8');
+        } else{
+           this.el.setAttribute('material', 'opacity', '1');
+        }
     },
 });
