@@ -1,0 +1,36 @@
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Juego A-Frame</title>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script>
+        delete AFRAME.components["grabbable"];
+    </script>
+    <script src="dibujar.js"></script>
+  </head>
+
+  <body>
+    <a-scene 
+      xr-mode-ui="enabled: true; enterVRDisabled: false;" 
+      webxr="optionalFeatures: hand-tracking"
+      background="color: black">
+
+      <!-- Cámara con cursor -->
+      <a-entity camera look-controls position="0 1.6 0">
+      </a-entity>
+
+      <!-- Manos -->
+      <a-entity>
+        <a-camera></a-camera>
+        <a-entity id="left-hand" manos="hand: left" ></a-entity>
+        <a-entity id="right-hand" manos="hand: right" ></a-entity>
+      </a-entity>
+
+      <!-- Suelo -->
+      <a-plane rotation="-90 0 0" width="20" height="20" color="#ccc"></a-plane>
+
+      <!-- Boligrafo -->
+      <a-cylinder id="boligrafo" class="interactable" position="0 1 -1" height="0.2" radius="0.02" color="blue" drag></a-cylinder>
+    </a-scene>
+  </body>
+</html>
