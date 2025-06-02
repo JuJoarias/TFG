@@ -486,7 +486,7 @@ AFRAME.registerComponent('drag', {
             dot.object3D.quaternion.copy(pen.object3D.quaternion); // igualar orientación
 
             // Agregar a la escena
-            pen.sceneEl.object3D.add(dot.object3D);
+            pen.appendChild(dot.object3D);
         }, 100);
 
         return interval; // por si luego quieres parar el rastro con clearInterval(interval)
