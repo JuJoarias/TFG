@@ -302,7 +302,7 @@ AFRAME.registerComponent('generar-cubos', {
 
 AFRAME.registerComponent('panel-inicial', {
   init: function () {
-    this.el.addEventListener('clickStart', () => {
+    this.el.sceneEl.addEventListener('clickStart', () => {
       // Eliminar panel
       this.el.parentNode.removeChild(this.el);
       // Iniciar el juego
