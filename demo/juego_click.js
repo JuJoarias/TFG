@@ -1,7 +1,7 @@
 // Variables juego
 let contadorAciertos = 0;
 let totalCubos = 5;
-let cuentaRegresiva = 5;
+let cuentaRegresiva = 30;
 let cuentaIntervalo;
 // variables manos
 const pistolThreshold = 0.04;
