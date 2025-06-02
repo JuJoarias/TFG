@@ -472,23 +472,19 @@ AFRAME.registerComponent('drag', {
         const scene = pen.sceneEl;
 
         const interval = setInterval(() => {
-            // Crear esfera como entidad A-Frame (NO THREE.js directamente)
             const dot = document.createElement('a-sphere');
             dot.setAttribute('radius', 0.01);
             dot.setAttribute('color', 'green');
 
-            // Calcular la punta del cilindro en coordenadas locales (eje Y negativo)
-            const localTip = new THREE.Vector3(0, -0.5 * pen.object3D.scale.y, 0); // Asume altura 1 por defecto
+            const localTip = new THREE.Vector3(0, -0.5 * pen.object3D.scale.y, 0);
+            const worldTip = pen.object3D.localToWorld(localTip.clone());
 
-            // Obtener posición global del pen
-            const worldTip  = new THREE.Vector3();
-            pen.object3D.localToWorld(localTip.clone()).copy(worldTip);
+            dot.setAttribute('position', `${worldTip.x} ${worldTip.y} ${worldTip.z}`);
 
-            // Establecer la posición como atributo A-Frame
-            dot.setAttribute('position', `${worldTip .x} ${worldTip .y} ${worldTip .z}`);
-
-            // Agregar la esfera a la escena de forma segura
             scene.appendChild(dot);
+
+            // Opcional: eliminar la esfera después de 2 segundos
+            setTimeout(() => dot.remove(), 2000);
         }, 50);
 
         return interval;
