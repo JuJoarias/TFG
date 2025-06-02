@@ -476,13 +476,13 @@ AFRAME.registerComponent('drag', {
             dot.setAttribute('radius', 0.01);
             dot.setAttribute('color', 'green');
 
-            const localTip = new THREE.Vector3(0, pen.object3D.scale.y, 0);
+            const localTip = new THREE.Vector3(0, 0.1*pen.object3D.scale.y, 0);
             const worldTip = pen.object3D.localToWorld(localTip.clone());
 
             dot.setAttribute('position', `${worldTip.x} ${worldTip.y} ${worldTip.z}`);
 
             scene.appendChild(dot);
-        }, 50);
+        }, 10);
 
         return interval;
     },
