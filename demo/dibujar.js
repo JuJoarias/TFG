@@ -481,11 +481,11 @@ AFRAME.registerComponent('drag', {
             const localTip = new THREE.Vector3(0, -0.5 * pen.object3D.scale.y, 0); // Asume altura 1 por defecto
 
             // Obtener posición global del pen
-            const worldPos = new THREE.Vector3();
+            const worldTip  = new THREE.Vector3();
             pen.object3D.localToWorld(localTip.clone()).copy(worldTip);
 
             // Establecer la posición como atributo A-Frame
-            dot.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
+            dot.setAttribute('position', `${worldTip .x} ${worldTip .y} ${worldTip .z}`);
 
             // Agregar la esfera a la escena de forma segura
             scene.appendChild(dot);
