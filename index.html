@@ -74,6 +74,13 @@
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
+        .image-link img.ajustar {
+            width: 400px;
+            height: 200px;
+            object-fit: cover;
+        }
+
+
         .image-link:hover img {
             transform: scale(1.05);
             box-shadow: 0 6px 16px rgba(0,0,0,0.3);
@@ -119,7 +126,7 @@
             Descubre las distintas demos que se han ido realizando a lo largo de todo el proyecto. 
         </p>
         <a href="demos.html" target="_blank" class="image-link">
-            <img src="imagenes/mosaico.png" alt="demos" />
+            <img src="imagenes/colage.png" class="ajustar" alt="demos" />
             <div class="caption">Demos</div>
         </a>
     </div>
@@ -132,11 +139,11 @@
         </p>
         <!-- Aquí puedes añadir contenido o enlaces con imágenes -->
         <video controls width="400" style="margin: 10px;">
-            <source src="demo/juego_clicks.mp4" type="video/mp4">
+            <source src="imagenes/juego_click.mp4" type="video/mp4">
             Tu navegador no soporta el elemento de video.
         </video>
         <video controls width="400" style="margin: 10px;">
-            <source src="demo/dibujar.mp4" type="video/mp4">
+            <source src="imagenes/dibujar.mp4" type="video/mp4">
             Tu navegador no soporta el elemento de video.
         </video>
     </div>
