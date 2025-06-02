@@ -366,7 +366,7 @@ AFRAME.registerComponent('drag', {
             this.hand = event.detail.mano;
             this.finger = event.detail.finger;
             this.isdrawing = true;
-            this.interval = startDrawingTrail();
+            this.interval = this.startDrawingTrail();
         }
     },
 
