@@ -387,7 +387,7 @@ AFRAME.registerComponent('drag', {
         if (this.hand && this.finger){
             this.updateFakeCoords(this.hand);
             this.reparent(this.finger.object3D);
-            // this.startDrawingTrail()
+            this.interval = this.startDrawingTrail()
         }
     },
 
