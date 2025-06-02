@@ -467,7 +467,7 @@ AFRAME.registerComponent('drag', {
         const pen = this.el;
         const scene = pen.sceneEl;
 
-        this.interval = setInterval(() => {
+        const interval = setInterval(() => {
             // Crear esfera como entidad A-Frame (NO THREE.js directamente)
             const dot = document.createElement('a-sphere');
             dot.setAttribute('radius', 0.01);
@@ -484,7 +484,7 @@ AFRAME.registerComponent('drag', {
             scene.appendChild(dot);
         }, 800);
 
-        return this.interval;
+        return interval;
     },
 });
 
