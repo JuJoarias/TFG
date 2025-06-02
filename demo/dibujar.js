@@ -348,6 +348,7 @@ AFRAME.registerComponent('drag', {
         this.hand = null;
         this.isDragging = false;
         this.interval = null;
+        this.isdrawing = null;
         
         this.vectorX = new THREE.Vector3();
         this.vectorZ = new THREE.Vector3();
@@ -359,12 +360,12 @@ AFRAME.registerComponent('drag', {
     },
 
     onDragStart: function(event){
-        if (this.isDragging) return;
+        if (this.isDragging || this.isdrawing) return;
         
         if (event.detail.mano && event.detail.finger){
             this.hand = event.detail.mano;
             this.finger = event.detail.finger;
-            this.interval = this.startDrawingTrail()
+            this.isdrawing = true;
         }
     },
 
@@ -373,6 +374,7 @@ AFRAME.registerComponent('drag', {
         this.finger = null,
         this.hand = null;
         this.isDragging = false;
+        this.isdrawing = null;
         
         this.vectorX = new THREE.Vector3();
         this.vectorZ = new THREE.Vector3();
@@ -388,6 +390,8 @@ AFRAME.registerComponent('drag', {
         if (this.hand && this.finger){
             this.updateFakeCoords(this.hand);
             this.reparent(this.finger.object3D);
+            
+            this.interval = startDrawingTrail();
         }
     },
 
@@ -464,6 +468,7 @@ AFRAME.registerComponent('drag', {
     },
 
     startDrawingTrail: function () {
+        
         const pen = this.el;
         const scene = pen.sceneEl;
 
