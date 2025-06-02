@@ -1,6 +1,6 @@
 // Variables juego
 let contadorAciertos = 0;
-let totalCubos = 5;
+let totalCubos = 15;
 let cuentaRegresiva = 30;
 let cuentaIntervalo;
 // variables manos
