@@ -482,7 +482,7 @@ AFRAME.registerComponent('drag', {
             dot.setAttribute('position', `${worldTip.x} ${worldTip.y} ${worldTip.z}`);
 
             scene.appendChild(dot);
-        }, 10);
+        }, 20);
 
         return interval;
     },
