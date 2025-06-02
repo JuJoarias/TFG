@@ -481,7 +481,7 @@ AFRAME.registerComponent('drag', {
             dot.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
 
             // Añadir a la escena (no al pen, para que no se mueva con él)
-            scene.appendChild(dot);
+            pen.appendChild(dot);
         }, 100);
 
         return interval; // por si luego quieres parar el rastro con clearInterval(interval)
