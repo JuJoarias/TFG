@@ -482,7 +482,7 @@ AFRAME.registerComponent('drag', {
 
             // Agregar la esfera a la escena de forma segura
             scene.appendChild(dot);
-        }, 500);
+        }, 800);
 
         return this.interval;
     },
