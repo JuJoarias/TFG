@@ -320,11 +320,12 @@ AFRAME.registerComponent('panel-inicial', {
   }
 });
 function mostrarResultado() {
+  const camara = document.querySelector('[camera]');
   const mensaje = document.createElement('a-text');
   mensaje.setAttribute('value', contadorAciertos === totalCubos ? 'You Win!' : 'Game Over');
   mensaje.setAttribute('color', contadorAciertos === totalCubos ? 'green' : 'red');
   mensaje.setAttribute('align', 'center');
   mensaje.setAttribute('position', '0 1.5 -2');
   mensaje.setAttribute('scale', '2 2 2');
-  this.el.sceneEl.appendChild(mensaje);
+  camara.appendChild(mensaje);
 }
