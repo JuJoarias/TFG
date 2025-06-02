@@ -1,7 +1,9 @@
+// Variables juego
 let contadorAciertos = 0;
 let totalCubos = 5;
-let cuentaRegresiva = 30;
+let cuentaRegresiva = 5;
 let cuentaIntervalo;
+// variables manos
 const pistolThreshold = 0.04;
 const pinchDistance = 0.02;
 const curlThreshold = 0.105;
@@ -325,7 +327,7 @@ function mostrarResultado() {
   mensaje.setAttribute('value', contadorAciertos === totalCubos ? 'You Win!' : 'Game Over');
   mensaje.setAttribute('color', contadorAciertos === totalCubos ? 'green' : 'red');
   mensaje.setAttribute('align', 'center');
-  mensaje.setAttribute('position', '0 1.5 -2');
+  mensaje.setAttribute('position', '0 1 -2');
   mensaje.setAttribute('scale', '2 2 2');
   camara.appendChild(mensaje);
 }
