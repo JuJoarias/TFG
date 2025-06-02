@@ -465,27 +465,23 @@ AFRAME.registerComponent('drag', {
 
     startDrawingTrail: function () {
         const pen = this.el;
+        const scene = pen.sceneEl;
 
         this.interval = setInterval(() => {
-
-            // Crear la esfera
+            // Crear esfera
             const dot = document.createElement('a-sphere');
             dot.setAttribute('radius', 0.01);
             dot.setAttribute('color', 'green');
 
-            // Obtener la punta del cilindro
-            const tipOffset = new THREE.Vector3(0, -pen.object3D.scale.y * 0.5, 0); // punta inferior
-            const worldTip = new THREE.Vector3();
-            pen.object3D.localToWorld(tipOffset.clone()).copy(worldTip);
+            // Obtener la posición global del pen
+            const worldPos = new THREE.Vector3();
+            pen.object3D.getWorldPosition(worldPos);
 
-            // Posición y rotación
-            dot.object3D.position.copy(tipOffset);
-            pen.object3D.localToWorld(dot.object3D.position);
+            // Establecer la posición en la esfera
+            dot.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
 
-            dot.object3D.quaternion.copy(pen.object3D.quaternion); // igualar orientación
-
-            // Agregar a la escena
-            pen.appendChild(dot);
+            // Añadir a la escena (no al pen, para que no se mueva con él)
+            scene.appendChild(dot);
         }, 100);
 
         return interval; // por si luego quieres parar el rastro con clearInterval(interval)
