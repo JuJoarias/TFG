@@ -364,6 +364,7 @@ AFRAME.registerComponent('drag', {
         if (event.detail.mano && event.detail.finger){
             this.hand = event.detail.mano;
             this.finger = event.detail.finger;
+            this.interval = this.startDrawingTrail()
         }
     },
 
@@ -387,7 +388,6 @@ AFRAME.registerComponent('drag', {
         if (this.hand && this.finger){
             this.updateFakeCoords(this.hand);
             this.reparent(this.finger.object3D);
-            this.interval = this.startDrawingTrail()
         }
     },
 
@@ -482,7 +482,7 @@ AFRAME.registerComponent('drag', {
 
             // Agregar la esfera a la escena de forma segura
             scene.appendChild(dot);
-        }, 100);
+        }, 500);
 
         return this.interval;
     },
