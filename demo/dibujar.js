@@ -467,7 +467,6 @@ AFRAME.registerComponent('drag', {
         const pen = this.el;
 
         this.interval = setInterval(() => {
-            if (!this.drawing) return;
 
             // Crear la esfera
             const dot = document.createElement('a-sphere');
@@ -486,7 +485,7 @@ AFRAME.registerComponent('drag', {
             dot.object3D.quaternion.copy(pen.object3D.quaternion); // igualar orientación
 
             // Agregar a la escena
-            pen.appendChild(dot.object3D);
+            pen.appendChild(dot);
         }, 100);
 
         return interval; // por si luego quieres parar el rastro con clearInterval(interval)
