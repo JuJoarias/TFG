@@ -468,23 +468,23 @@ AFRAME.registerComponent('drag', {
         const scene = pen.sceneEl;
 
         this.interval = setInterval(() => {
-            // Crear esfera
+            // Crear esfera como entidad A-Frame (NO THREE.js directamente)
             const dot = document.createElement('a-sphere');
             dot.setAttribute('radius', 0.01);
             dot.setAttribute('color', 'green');
 
-            // Obtener la posición global del pen
+            // Obtener posición global del pen
             const worldPos = new THREE.Vector3();
             pen.object3D.getWorldPosition(worldPos);
 
-            // Establecer la posición en la esfera
+            // Establecer la posición como atributo A-Frame
             dot.setAttribute('position', `${worldPos.x} ${worldPos.y} ${worldPos.z}`);
 
-            // Añadir a la escena (no al pen, para que no se mueva con él)
-            pen.appendChild(dot);
+            // Agregar la esfera a la escena de forma segura
+            scene.appendChild(dot);
         }, 100);
 
-        return interval; // por si luego quieres parar el rastro con clearInterval(interval)
+        return this.interval;
     },
 });
 
