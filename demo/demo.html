@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Demo</title>
     <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script>
     <script>
         delete AFRAME.components["grabbable"];
     </script>
@@ -16,9 +17,7 @@
         webxr="optionalFeatures: hand-tracking"
         background="color: skyblue">
 
-        <a-sky color="#87CEEB"></a-sky>
-
-        <a-plane position="0 0 0" rotation="-90 0 0" width="1000" height="1000" color="#888888" repeat="100 100"></a-plane>
+        <a-entity environment="preset: checkerboard"></a-entity>
 
         <a-entity id="rig" movement-controls position="0 1.6 0">
             <a-camera wasd-controls look-controls></a-camera>

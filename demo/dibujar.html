@@ -3,6 +3,7 @@
     <meta charset="utf-8" />
     <title>Juego A-Frame</title>
     <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-environment-component@1.5.x/dist/aframe-environment-component.min.js"></script>
     <script>
         delete AFRAME.components["grabbable"];
     </script>
@@ -14,6 +15,7 @@
       xr-mode-ui="enabled: true; enterVRDisabled: false;" 
       webxr="optionalFeatures: hand-tracking"
       background="color: black">
+      <a-entity environment="preset: threetowers"></a-entity>
 
       <!-- Manos -->
       <a-entity>
@@ -21,9 +23,6 @@
         <a-entity id="left-hand" manos="hand: left" ></a-entity>
         <a-entity id="right-hand" manos="hand: right" ></a-entity>
       </a-entity>
-
-      <!-- Suelo -->
-      <a-plane rotation="-90 0 0" width="20" height="20" color="grey"></a-plane>
 
       <!-- Boligrafo -->
       <a-cylinder id="boligrafo"  position="0 1 -0.3 " height="0.2" radius="0.02" color="blue" drag hoover></a-cylinder>
