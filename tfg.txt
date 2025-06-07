@@ -318,3 +318,18 @@ Resumen de tarear por hacer:
 - hacer referencia de webxr al estándar y si encuentro a algo de las manos- 
 - hacer referencia de webgl al estándar (no hay como tal un estandar -> descartado) - 
 - 
+
+3-06
+
+Repasar ortografia cuidadosamente y la comprensión (agradecimientos, revisar frases ... )
+revisar por plagios
+en el cap 5 se queda un poco corto (decir que escena es exactamente, mencionar donde la describi). decir si les meti yo en las escena y les di las gafas... describir mejor las instrucciones
+en la introduccion poner el enlace como pie de pagina
+si quiero, añadir algun pie de pagina con enlaces a las paginas de aframe, meta, quest3, github... 
+en latex cambiar la cita por un libro y usar la url que tengo ahora mismo como pie de pagina
+en el 3.1.1 decir que se ha construido una escena de prototipo para mostrar los resultados, en el primer parrafo y poner captura de la escena demo
+añadir enviroment a la escena de demo con cubos para que sea mas bonita: https://github.com/supermedium/aframe-environment-component
+describir mas detalladamente la escena, que si estas en ordenador no se pueden usar las manos, que pueden moverse conel ratón... explicar las 2 escenas que he creado nuevas (juego clicks y dibujar) con capturas (hacer ua subsection para cada demo)
+en el 3.2.1 cuando hablo de la detección de gestos (final pagina 23) meterlo en un subsection aparte
+en el 3.3 poner algún fragmento de código simple de HTML de una escena
+en 6.1 añadir un diagrama de gant o tabla mostrando lo mismo que el texto. 
