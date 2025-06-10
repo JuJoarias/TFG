@@ -104,14 +104,32 @@
             color: #2166a5;
         }
 
-        /* Videos en sección videos */
+        #videos {
+            display: flex;
+            flex-wrap: nowrap;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 20px;
+            flex-direction: row;
+            flex-wrap: wrap; /* opcional si en móvil quieres que bajen */
+            text-align: center;
+        }
+
+        /* Cada bloque ocupa 1/3 del ancho */
+        .elemento {
+            flex: 1 1 30%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Video grande y centrado */
         #videos video {
-            display: inline-block;
-            max-width: 45%;
+            width: 100%;
+            max-width: 100%;
             height: auto;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            margin: 10px 2.5%;
         }
     </style>
 </head>
@@ -127,25 +145,40 @@
         </p>
         <a href="demos.html" target="_blank" class="image-link">
             <img src="imagenes/colage.png" class="ajustar" alt="demos" />
-            <div class="caption">Demos</div>
+            <div class="caption">Click para ver todas las demos</div>
         </a>
     </div>
 
     <div id="videos" class="seccion">
         <h2>Videos</h2>
         <p>
-            Acontinuación se muestran 2 videos en los cuales se muestran 2 escenas en las que se han implementado algunos 
+            Acontinuación se muestran algunos videos en los cuales se muestran las escenas de demo finales. En la primera escena se muestran los componentes de forma individual mientras que en los otros se muestran aquellas escenas en las que se han implementado algunos 
             de los componentes desarrollados en este proyecto para mostrar como se pueden implementar en una escena con muy pocas modificaciones.
         </p>
-        <!-- Aquí puedes añadir contenido o enlaces con imágenes -->
-        <video controls width="400" style="margin: 10px;">
-            <source src="imagenes/juego_click.mp4" type="video/mp4">
-            Tu navegador no soporta el elemento de video.
-        </video>
-        <video controls width="400" style="margin: 10px;">
-            <source src="imagenes/dibujar.mp4" type="video/mp4">
-            Tu navegador no soporta el elemento de video.
-        </video>
+        <div class="elemento">
+            <h4>Demo Componentes</h4>
+            <video controls width="400" style="margin: 10px;">
+                <source src="imagenes/..." type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+            </video>
+            <a href="https://jujoarias.github.io/TFG/demo/demo.html" target="_blank">Click para probarlo</a>
+        </div>
+        <div class="elemento">
+            <h4>Demos Juego click</h4>
+            <video controls width="400" style="margin: 10px;">
+                <source src="imagenes/juego_click.mp4" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+            </video>
+            <a href="https://jujoarias.github.io/TFG/demo/juego_click.html" target="_blank">Click para probarlo</a>
+        </div>
+        <div class="elemento">
+            <h4>Demo Dibujar</h4>
+            <video controls width="400" style="margin: 10px;">
+                <source src="imagenes/dibujar.mp4" type="video/mp4">
+                Tu navegador no soporta el elemento de video.
+            </video>
+            <a href="https://jujoarias.github.io/TFG/demo/dibujar.html" target="_blank">Click para probarlo</a>
+        </div>
     </div>
 
     <div id="recursos" class="seccion">
